@@ -60,6 +60,16 @@ This app was built and tested with AI assistance (Kiro). All document processing
 
 The code is real, it compiles, it runs. If you spot something that could be cleaner, more idiomatic, or just better: PRs and issues are welcome.
 
+## Download
+
+Pre-built APKs are available from [GitHub Releases](https://github.com/sethusrinivasan/document-manager/releases/latest).
+
+1. Download `app-debug.apk` from the latest release
+2. Transfer to your Android phone
+3. Open and install (enable "Install from unknown sources" if prompted)
+
+No build tools required — just download and install.
+
 ## Quick start
 
 ```bash
