@@ -31,6 +31,21 @@ So I built this. It's open source, free to use, and the community is welcome to 
 - **Import from URL** *(experimental)* — download and import files from any web address
 - **DICOM viewer** *(experimental)* — medical image preview with custom parser
 
+
+
+## Screenshots
+
+| | | |
+|:---:|:---:|:---:|
+| ![1](docs/screenshots/1.jpg) | ![2](docs/screenshots/2.jpg) | ![3](docs/screenshots/3.jpg) |
+| Splash Screen | Organized by Tags | Documents in Tag Folder |
+| ![4](docs/screenshots/4.jpg) | ![5](docs/screenshots/5.jpg) | ![6](docs/screenshots/6.jpg) |
+| Document Preview | All Documents | Import Methods |
+| ![7](docs/screenshots/7.jpg) | ![8](docs/screenshots/8.jpg) | ![9](docs/screenshots/9.jpg) |
+| Search Documents | Backup & Restore | Experimental Features |
+| ![10](docs/screenshots/10.jpg) | | |
+| Review & Classify | | |
+
 ## Principles
 
 1. Your documents never leave your phone unless YOU share/backup them
