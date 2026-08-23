@@ -85,6 +85,9 @@ fun BackupScreen(onBack: () -> Unit) {
     var showPinDialog by remember { mutableStateOf(false) }
     var backupPin by remember { mutableStateOf("") }
     var pendingBackupUri by remember { mutableStateOf<Uri?>(null) }
+    var pendingRestoreUri by remember { mutableStateOf<Uri?>(null) }
+    var showRestorePinDialog by remember { mutableStateOf(false) }
+    var restorePin by remember { mutableStateOf("") }
     val folderPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri: Uri? ->
         if (uri != null) {
             pendingBackupUri = uri; showPinDialog = true        }
@@ -92,9 +95,35 @@ fun BackupScreen(onBack: () -> Unit) {
 
     val restorePicker = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         if (uri != null) {
-            screenState = "running"
-            scope.launch { doRestore(context, uri, null) { msg, err -> resultMessage = msg; resultIsError = err; screenState = "done" } }
+            pendingRestoreUri = uri
+            showRestorePinDialog = true
         }
+    }
+
+        // Restore PIN dialog - shown before restore to ask for backup password
+    if (showRestorePinDialog && pendingRestoreUri != null) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showRestorePinDialog = false; pendingRestoreUri = null },
+            title = { androidx.compose.material3.Text("Backup Password") },
+            text = { Column {
+                androidx.compose.material3.Text("If this backup was created with a password, enter it below.", fontSize = 13.sp, color = Color.Gray)
+                Spacer(Modifier.height(4.dp))
+                androidx.compose.material3.Text("Leave blank if no password was set.", fontSize = 12.sp, color = Color.Gray)
+                Spacer(Modifier.height(12.dp))
+                androidx.compose.material3.OutlinedTextField(value = restorePin, onValueChange = { restorePin = it }, label = { androidx.compose.material3.Text("Password (optional)") }, singleLine = true, modifier = Modifier.fillMaxWidth(),
+                    visualTransformation = if (restorePin.isNotEmpty()) androidx.compose.ui.text.input.PasswordVisualTransformation() else androidx.compose.ui.text.input.VisualTransformation.None)
+            } },
+            confirmButton = { androidx.compose.material3.TextButton(onClick = {
+                showRestorePinDialog = false
+                val pin = restorePin.ifBlank { null }
+                val uri = pendingRestoreUri!!
+                restorePin = ""
+                pendingRestoreUri = null
+                screenState = "running"
+                scope.launch { doRestore(context, uri, pin) { msg, err -> resultMessage = msg; resultIsError = err; screenState = "done" } }
+            }) { androidx.compose.material3.Text("Restore") } },
+            dismissButton = { androidx.compose.material3.TextButton(onClick = { showRestorePinDialog = false; pendingRestoreUri = null; restorePin = "" }) { androidx.compose.material3.Text("Cancel") } }
+        )
     }
 
     val driveSignIn = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
