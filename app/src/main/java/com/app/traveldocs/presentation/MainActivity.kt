@@ -421,9 +421,9 @@ fun MainScreen(
                         DropdownMenu(expanded = showGearMenu, onDismissRequest = { showGearMenu = false }) {
                             DropdownMenuItem(text = { Text("About") }, onClick = { showGearMenu = false; onAbout() })
                             DropdownMenuItem(text = { Text("Feedback") }, onClick = { showGearMenu = false; onFeedback() })
-                            DropdownMenuItem(text = { Text("Backup") }, onClick = { showGearMenu = false; onBackup() })
+                            if (com.app.traveldocs.data.local.FeatureFlags.isExperimentalEnabled(context) && com.app.traveldocs.data.local.FeatureFlags.isBackupRestoreEnabled(context)) DropdownMenuItem(text = { Text("Backup (Preview)") }, onClick = { showGearMenu = false; onBackup() })
                             if (BuildConfig.DEBUG || com.app.traveldocs.data.local.FeatureFlags.isExperimentalEnabled(context)) DropdownMenuItem(text = { Text("Diagnostics") }, onClick = { showGearMenu = false; onDiagnostics() })
-                            DropdownMenuItem(text = { Text("Restore") }, onClick = { showGearMenu = false; onRestore() })
+                            if (com.app.traveldocs.data.local.FeatureFlags.isExperimentalEnabled(context) && com.app.traveldocs.data.local.FeatureFlags.isBackupRestoreEnabled(context)) DropdownMenuItem(text = { Text("Restore (Preview)") }, onClick = { showGearMenu = false; onRestore() })
                             DropdownMenuItem(text = { Text("Review & Classify") }, onClick = { showGearMenu = false; onReview() })
                             if (com.app.traveldocs.data.local.FeatureFlags.isExperimentalEnabled(context) && com.app.traveldocs.data.local.FeatureFlags.isWifiShareEnabled(context)) DropdownMenuItem(text = { Text("WiFi Share") }, onClick = { showGearMenu = false; onWebShare() })
                             DropdownMenuItem(text = { Text("Settings") }, onClick = { showGearMenu = false; onSettings() })
