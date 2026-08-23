@@ -362,7 +362,13 @@ private suspend fun doRestore(context: Context, uri: Uri, password: String?, don
         DebugLogger.i("Restore", report)
 
         if (result.success) {
-            done(report, false)
+            done(report + "\n\nApp will restart to load restored data...", false)
+            // Must restart: Room's Hilt singleton holds a stale DB connection.
+            // No way to swap DB file under a live Room connection without restart.
+            android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                DebugLogger.i("Restore", "Restarting app to load restored database")
+                android.os.Process.killProcess(android.os.Process.myPid())
+            }, 3000)
         } else {
             done("Restore failed: ${result.message}", true)
         }

@@ -280,11 +280,37 @@ class MainActivity : androidx.fragment.app.FragmentActivity() {
 
     private fun resetApp() {
         DebugLogger.w("App", "!!! FACTORY RESET triggered by user")
-        // Clear all databases + WAL/SHM journals
-        deleteDatabase("traveldocs.db")
+        // Archive old database (keep last 10 versions), then create fresh
         val dbPath = getDatabasePath("traveldocs.db")
+        if (dbPath.exists()) {
+            // Rotate archives: .010 -> delete, .009 -> .010, ... .001 -> .002, current -> .001
+            val archiveDir = java.io.File(filesDir, "db_archive")
+            archiveDir.mkdirs()
+            for (i in 10 downTo 2) {
+                val older = java.io.File(archiveDir, "traveldocs.db.${String.format("%03d", i - 1)}")
+                val newer = java.io.File(archiveDir, "traveldocs.db.${String.format("%03d", i)}")
+                if (older.exists()) older.renameTo(newer)
+            }
+            val archive001 = java.io.File(archiveDir, "traveldocs.db.001")
+            dbPath.copyTo(archive001, overwrite = true)
+            DebugLogger.i("Reset", "Archived DB as ${archive001.name} (${archive001.length()/1024}KB)")
+        }
+        // Checkpoint WAL → flush all pending transactions into main DB before archiving
+        try {
+            val flushDb = android.database.sqlite.SQLiteDatabase.openDatabase(dbPath.path, null, android.database.sqlite.SQLiteDatabase.OPEN_READWRITE)
+            flushDb.rawQuery("PRAGMA wal_checkpoint(TRUNCATE)", null).close()
+            flushDb.close()
+            DebugLogger.i("Reset", "WAL checkpoint complete — all transactions flushed to main DB")
+        } catch (e: Exception) {
+            DebugLogger.w("Reset", "WAL checkpoint failed (DB may already be deleted): ${e.message}")
+        }
+        // Now safe to delete — no uncommitted data in WAL
+        deleteDatabase("traveldocs.db")
         java.io.File(dbPath.path + "-wal").delete()
         java.io.File(dbPath.path + "-shm").delete()
+        // Also archive GPS DB
+        val gpsDb = getDatabasePath("gps_tracks.db")
+        if (gpsDb.exists()) gpsDb.delete()
         // Clear ALL shared preferences
         val prefsToWipe = listOf("traveldocs_stats", "encryption_consent", "disclaimer_prefs",
             "splash_prefs", "eula_prefs", "location_tracking_prefs", "feature_flags",

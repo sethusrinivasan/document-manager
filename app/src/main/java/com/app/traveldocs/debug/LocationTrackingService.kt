@@ -202,7 +202,12 @@ class LocationTrackingService : Service() {
             .build()
     }
 
-    private val db by lazy { androidx.room.Room.databaseBuilder(applicationContext, com.app.traveldocs.data.local.TravelDocsDatabase::class.java, "traveldocs.db").fallbackToDestructiveMigration().build() }
+    // Separate SQLite database for GPS tracks — avoids contention with Room's main DB
+    private val db by lazy {
+        val gpsDb = android.database.sqlite.SQLiteDatabase.openOrCreateDatabase(applicationContext.getDatabasePath("gps_tracks.db"), null)
+        gpsDb.execSQL("CREATE TABLE IF NOT EXISTS gps_tracks (id INTEGER PRIMARY KEY AUTOINCREMENT, latitude REAL NOT NULL, longitude REAL NOT NULL, accuracy REAL NOT NULL, timestamp INTEGER NOT NULL, isMoving INTEGER NOT NULL DEFAULT 0)")
+        gpsDb
+    }
 
     private suspend fun storeTrackPoint(lat: Double, lng: Double, accuracy: Float) {
         try {
@@ -210,7 +215,7 @@ class LocationTrackingService : Service() {
                 latitude = lat, longitude = lng, accuracy = accuracy,
                 timestamp = System.currentTimeMillis(), isMoving = true
             )
-            db.gpsTrackDao().insert(entity)
+            try { db.execSQL("INSERT INTO gps_tracks (latitude, longitude, accuracy, timestamp, isMoving) VALUES (?, ?, ?, ?, ?)", arrayOf(entity.latitude, entity.longitude, entity.accuracy, entity.timestamp, if (entity.isMoving) 1 else 0)) } catch (_: Exception) {}
         } catch (e: Exception) {
             DebugLogger.e("LocationService", "Failed to store GPS track", e)
         }

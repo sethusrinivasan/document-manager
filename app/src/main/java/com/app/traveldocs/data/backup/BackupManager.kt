@@ -104,9 +104,17 @@ class BackupManager @Inject constructor() {
             }
         }
 
-        // 2. Export database
+        // 2. Export database (checkpoint WAL first to ensure all data is in main file)
         val dbFile = context.getDatabasePath("traveldocs.db")
         if (dbFile.exists()) {
+            try {
+                val checkpointDb = android.database.sqlite.SQLiteDatabase.openDatabase(dbFile.path, null, android.database.sqlite.SQLiteDatabase.OPEN_READWRITE)
+                checkpointDb.rawQuery("PRAGMA wal_checkpoint(TRUNCATE)", null).close()
+                checkpointDb.close()
+                DebugLogger.i("Backup", "WAL checkpoint complete — DB consistent for backup")
+            } catch (e: Exception) {
+                DebugLogger.w("Backup", "WAL checkpoint before backup failed: ${e.message}")
+            }
             val destDb = File(tempDir, "database/traveldocs.db")
             destDb.parentFile?.mkdirs()
             dbFile.copyTo(destDb, overwrite = true)

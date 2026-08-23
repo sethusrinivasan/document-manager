@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.SignalWifi4Bar
 import androidx.compose.material.icons.filled.SignalWifiOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -107,6 +108,54 @@ fun DiagnosticsScreen(onBack: () -> Unit, onViewLogs: () -> Unit) {
             Button(onClick = onViewLogs, modifier = Modifier.fillMaxWidth()) { Text("View Debug Logs") }
                 Spacer(Modifier.height(8.dp))
                 OutlinedButton(onClick = { shareLogsAsZip(context) }, modifier = Modifier.fillMaxWidth()) { Text("Share Logs (ZIP)") }
+
+            Spacer(Modifier.height(24.dp))
+            Text("Database Diagnostics", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Spacer(Modifier.height(8.dp))
+            var diagResult by remember { mutableStateOf<String?>(null) }
+            var diagIssues by remember { mutableStateOf<List<String>>(emptyList()) }
+            var repairDone by remember { mutableStateOf(false) }
+
+            Button(onClick = {
+                val result = runDiagnostics(context)
+                diagResult = result.first
+                diagIssues = result.second
+                repairDone = false
+            }, modifier = Modifier.fillMaxWidth()) { Text("Run Diagnostics") }
+
+            if (diagResult != null) {
+                Spacer(Modifier.height(8.dp))
+                Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(
+                    containerColor = if (diagIssues.isEmpty()) Color(0xFFE8F5E9) else Color(0xFFFFF3E0)
+                )) {
+                    Column(Modifier.padding(12.dp)) {
+                        Text(if (diagIssues.isEmpty()) "All checks passed" else "${diagIssues.size} issue(s) found",
+                            fontWeight = FontWeight.SemiBold, fontSize = 14.sp,
+                            color = if (diagIssues.isEmpty()) Color(0xFF2E7D32) else Color(0xFFE65100))
+                        Spacer(Modifier.height(4.dp))
+                        Text(diagResult!!, fontSize = 11.sp, color = Color.Gray)
+                        if (diagIssues.isNotEmpty()) {
+                            Spacer(Modifier.height(8.dp))
+                            diagIssues.forEach { issue ->
+                                Text("• $issue", fontSize = 12.sp, color = Color(0xFFE65100))
+                            }
+                            Spacer(Modifier.height(8.dp))
+                            if (!repairDone) {
+                                Button(onClick = {
+                                    repairDatabase(context)
+                                    repairDone = true
+                                    val recheck = runDiagnostics(context)
+                                    diagResult = recheck.first
+                                    diagIssues = recheck.second
+                                }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF44336)),
+                                    modifier = Modifier.fillMaxWidth()) { Text("Repair") }
+                            } else {
+                                Text("Repair attempted. Re-run diagnostics to verify.", fontSize = 12.sp, color = Color.Gray)
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -157,5 +206,113 @@ private fun shareLogsAsZip(context: android.content.Context) {
         com.app.traveldocs.debug.DebugLogger.i("Diagnostics", "Logs ZIP shared (${zipFile.length() / 1024}KB)")
     } catch (e: Exception) {
         com.app.traveldocs.debug.DebugLogger.e("Diagnostics", "Failed to share logs ZIP", e)
+    }
+}
+
+
+private fun runDiagnostics(context: android.content.Context): Pair<String, List<String>> {
+    val issues = mutableListOf<String>()
+    val report = StringBuilder()
+
+    try {
+        val dbFile = context.getDatabasePath("traveldocs.db")
+        if (!dbFile.exists()) {
+            return Pair("Database file not found", listOf("traveldocs.db does not exist"))
+        }
+        report.appendLine("DB file: ${dbFile.length() / 1024}KB")
+
+        val db = android.database.sqlite.SQLiteDatabase.openDatabase(dbFile.path, null, android.database.sqlite.SQLiteDatabase.OPEN_READONLY)
+
+        // Check required tables exist
+        val requiredTables = listOf("documents", "document_metadata", "document_tags", "family_members", "gps_tracks")
+        val existingTables = mutableListOf<String>()
+        val cursor = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null)
+        while (cursor.moveToNext()) { existingTables.add(cursor.getString(0)) }
+        cursor.close()
+
+        for (table in requiredTables) {
+            if (table !in existingTables) {
+                issues.add("Missing table: $table")
+            }
+        }
+        report.appendLine("Tables: ${existingTables.filter { !it.startsWith("sqlite_") && !it.startsWith("room_") && !it.startsWith("android_") }.joinToString(", ")}")
+
+        // Count records in each table
+        for (table in requiredTables) {
+            if (table in existingTables) {
+                val countCursor = db.rawQuery("SELECT COUNT(*) FROM $table", null)
+                val count = if (countCursor.moveToFirst()) countCursor.getInt(0) else 0
+                countCursor.close()
+                report.appendLine("$table: $count rows")
+            }
+        }
+
+        // Check DB version
+        val vCursor = db.rawQuery("PRAGMA user_version", null)
+        val version = if (vCursor.moveToFirst()) vCursor.getInt(0) else 0
+        vCursor.close()
+        report.appendLine("DB version: $version (app expects: 2)")
+        if (version != 2) {
+            issues.add("DB version mismatch: found $version, expected 2")
+        }
+
+        // Check integrity
+        val intCursor = db.rawQuery("PRAGMA integrity_check", null)
+        val integrity = if (intCursor.moveToFirst()) intCursor.getString(0) else "unknown"
+        intCursor.close()
+        report.appendLine("Integrity: $integrity")
+        if (integrity != "ok") {
+            issues.add("Database integrity check failed: $integrity")
+        }
+
+        // Check for orphaned files (files on disk with no DB entry)
+        val docsDir = java.io.File(context.filesDir, "docs")
+        if (docsDir.exists()) {
+            val fileCount = docsDir.walkTopDown().filter { it.isFile }.count()
+            val docsCursor = db.rawQuery("SELECT COUNT(*) FROM documents", null)
+            val dbCount = if (docsCursor.moveToFirst()) docsCursor.getInt(0) else 0
+            docsCursor.close()
+            report.appendLine("Files on disk: $fileCount, DB entries: $dbCount")
+            if (fileCount != dbCount) {
+                issues.add("File/DB mismatch: $fileCount files on disk, $dbCount in database")
+            }
+        }
+
+        db.close()
+        com.app.traveldocs.debug.DebugLogger.i("Diagnostics", report.toString())
+    } catch (e: Exception) {
+        issues.add("Diagnostics error: ${e.message}")
+        com.app.traveldocs.debug.DebugLogger.e("Diagnostics", "Failed", e)
+    }
+
+    return Pair(report.toString(), issues)
+}
+
+private fun repairDatabase(context: android.content.Context) {
+    com.app.traveldocs.debug.DebugLogger.i("Diagnostics", "=== REPAIR STARTED ===")
+    try {
+        val dbFile = context.getDatabasePath("traveldocs.db")
+        if (!dbFile.exists()) {
+            com.app.traveldocs.debug.DebugLogger.w("Diagnostics", "No DB file — nothing to repair")
+            return
+        }
+
+        val db = android.database.sqlite.SQLiteDatabase.openDatabase(dbFile.path, null, android.database.sqlite.SQLiteDatabase.OPEN_READWRITE)
+
+        // Create missing tables
+        db.execSQL("CREATE TABLE IF NOT EXISTS documents (id TEXT NOT NULL PRIMARY KEY, memberId TEXT NOT NULL, type TEXT NOT NULL, fileId TEXT NOT NULL, format TEXT NOT NULL, originalFileName TEXT, createdAt INTEGER NOT NULL, updatedAt INTEGER NOT NULL, extractionConfidence REAL, requiresManualReview INTEGER NOT NULL DEFAULT 0)")
+        db.execSQL("CREATE TABLE IF NOT EXISTS document_metadata (id INTEGER PRIMARY KEY AUTOINCREMENT, documentId TEXT NOT NULL, field TEXT NOT NULL, value TEXT NOT NULL, confidence REAL NOT NULL)")
+        db.execSQL("CREATE TABLE IF NOT EXISTS document_tags (documentId TEXT NOT NULL, tag TEXT NOT NULL, isAutoGenerated INTEGER NOT NULL, createdAt INTEGER NOT NULL, PRIMARY KEY(documentId, tag))")
+        db.execSQL("CREATE TABLE IF NOT EXISTS family_members (id TEXT NOT NULL PRIMARY KEY, name TEXT NOT NULL, pinHash TEXT NOT NULL, pinSalt TEXT NOT NULL, createdAt INTEGER NOT NULL, failedAttempts INTEGER NOT NULL DEFAULT 0, lockedUntil INTEGER)")
+        db.execSQL("CREATE TABLE IF NOT EXISTS gps_tracks (id INTEGER PRIMARY KEY AUTOINCREMENT, latitude REAL NOT NULL, longitude REAL NOT NULL, accuracy REAL NOT NULL, timestamp INTEGER NOT NULL, provider TEXT NOT NULL)")
+
+        // Ensure correct version
+        db.execSQL("PRAGMA user_version = 2")
+
+        db.close()
+        com.app.traveldocs.debug.DebugLogger.i("Diagnostics", "Repair complete — tables verified/created, version set to 2")
+        com.app.traveldocs.debug.UsageTelemetry.action("Diagnostics", "repair_executed")
+    } catch (e: Exception) {
+        com.app.traveldocs.debug.DebugLogger.e("Diagnostics", "Repair failed", e)
     }
 }
