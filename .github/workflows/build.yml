@@ -34,22 +34,50 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
+    - name: Bump version code
+      run: |
+        BUILD_NUM=${{ github.run_number }}
+        sed -i "s/versionCode = [0-9]*/versionCode = $BUILD_NUM/" app/build.gradle.kts
+        sed -i "s/versionName = \"[^\"]*\"/versionName = \"1.0.$BUILD_NUM\"/" app/build.gradle.kts
+        echo "Version: 1.0.$BUILD_NUM (code: $BUILD_NUM)"
+
     - name: Build Debug APK
       run: ./gradlew assembleDebug
+
+    - name: Build Release APK
+      run: ./gradlew assembleRelease
+
+    - name: Run Unit Tests
+      run: ./gradlew testDebugUnitTest
 
     - name: Upload Debug APK
       uses: actions/upload-artifact@v4
       with:
-        name: app-debug
+        name: app-debug-v1.0.${{ github.run_number }}
         path: app/build/outputs/apk/debug/app-debug.apk
 
-    - name: Build Release APK
-      run: ./gradlew assembleRelease
-      continue-on-error: true  # Release needs signing config
-
     - name: Upload Release APK
-      if: success()
       uses: actions/upload-artifact@v4
       with:
-        name: app-release
-        path: app/build/outputs/apk/release/app-release-unsigned.apk
+        name: app-release-v1.0.${{ github.run_number }}
+        path: app/build/outputs/apk/release/app-release.apk
+      if: success()
+
+    - name: Create Release (on main push)
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: v1.0.${{ github.run_number }}
+        name: Build v1.0.${{ github.run_number }}
+        body: |
+          Automated build from commit ${{ github.sha }}
+          
+          **Debug APK:** Install directly on device for testing
+          **Release APK:** Signed with debug keystore (for dev/testing)
+        files: |
+          app/build/outputs/apk/debug/app-debug.apk
+          app/build/outputs/apk/release/app-release.apk
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
