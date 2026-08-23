@@ -62,8 +62,7 @@ fun SettingsScreen(onBack: () -> Unit) {
                         ToggleRow("Google Drive Support", driveEnabled) { driveEnabled = it; FeatureFlags.setGoogleDrive(context, it) }
                         Spacer(Modifier.height(8.dp))
                         ToggleRow("S3 Compatible Storage", s3Enabled) { s3Enabled = it; FeatureFlags.setS3(context, it) }
-                        Spacer(Modifier.height(8.dp))
-                        ToggleRow("Backup & Restore", backupEnabled) { backupEnabled = it; FeatureFlags.setBackupRestore(context, it) }
+                        // Backup & Restore is now a stable feature (removed from experimental)
                         Spacer(Modifier.height(8.dp))
                         var wifiShareEnabled by remember { mutableStateOf(FeatureFlags.isWifiShareEnabled(context)) }
                         ToggleRow("WiFi Document Sharing (Preview)", wifiShareEnabled) { wifiShareEnabled = it; FeatureFlags.setWifiShare(context, it) }

@@ -4,6 +4,8 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
@@ -12,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,7 +30,7 @@ fun RestoreOnlyScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var state by remember { mutableStateOf("choose") }
-    var resultMessage by remember { mutableStateOf("") }
+    var logLines by remember { mutableStateOf(listOf<String>()) }
     var isError by remember { mutableStateOf(false) }
     var pendingUri by remember { mutableStateOf<Uri?>(null) }
     var restorePin by remember { mutableStateOf("") }
@@ -48,16 +51,21 @@ fun RestoreOnlyScreen(onBack: () -> Unit) {
                     visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation())
             } },
             confirmButton = { TextButton(onClick = {
-                showPinDialog = false; state = "running"
+                showPinDialog = false; state = "running"; logLines = listOf("Starting restore...")
                 val pin = restorePin; restorePin = ""
-                scope.launch { doRestore(context, pendingUri!!, pin) { msg, err -> resultMessage = msg; isError = err; state = "done" } }
+                scope.launch {
+                    doRestoreVerbose(context, pendingUri!!, pin) { line ->
+                        logLines = logLines + line
+                    }
+                    state = "done"
+                }
             }, enabled = restorePin.isNotBlank()) { Text("Restore") } },
             dismissButton = { TextButton(onClick = { showPinDialog = false }) { Text("Cancel") } }
         )
     }
 
     Scaffold(topBar = { TopAppBar(title = { Text("Restore") }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Filled.ArrowBack, "Back") } }) }) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding).padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(Modifier.fillMaxSize().padding(padding).padding(16.dp)) {
             when (state) {
                 "choose" -> {
                     Spacer(Modifier.height(32.dp))
@@ -69,52 +77,100 @@ fun RestoreOnlyScreen(onBack: () -> Unit) {
                     Spacer(Modifier.height(12.dp))
                     Text("You will need the password that was set during backup.", fontSize = 12.sp, color = Color.Gray)
                 }
-                "running" -> {
-                    Spacer(Modifier.height(64.dp))
-                    CircularProgressIndicator(Modifier.size(48.dp))
-                    Spacer(Modifier.height(16.dp))
-                    Text("Restoring...", fontSize = 16.sp)
-                    Text("Inspecting backup and restoring files", fontSize = 13.sp, color = Color.Gray)
-                }
-                "done" -> {
-                    Spacer(Modifier.height(32.dp))
-                    Text(if (isError) "Restore Failed" else "Restore Complete", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = if (isError) Color(0xFFF44336) else Color(0xFF4CAF50))
-                    Spacer(Modifier.height(12.dp))
-                    Text(resultMessage, fontSize = 13.sp, color = Color.Gray)
-                    Spacer(Modifier.height(24.dp))
-                    Button(onClick = onBack, modifier = Modifier.fillMaxWidth()) { Text("Done") }
+                "running", "done" -> {
+                    // Verbose log output
+                    Text(if (state == "running") "Restoring..." else "Restore Complete", fontSize = 18.sp, fontWeight = FontWeight.Bold,
+                        color = if (state == "done" && logLines.any { it.startsWith("ERROR") }) Color(0xFFF44336) else if (state == "done") Color(0xFF4CAF50) else Color.Unspecified)
+                    Spacer(Modifier.height(8.dp))
+
+                    if (state == "running") { LinearProgressIndicator(modifier = Modifier.fillMaxWidth()); Spacer(Modifier.height(8.dp)) }
+
+                    Card(Modifier.fillMaxWidth().weight(1f), colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5))) {
+                        Column(Modifier.padding(12.dp).verticalScroll(rememberScrollState())) {
+                            logLines.forEach { line ->
+                                val color = when {
+                                    line.startsWith("ERROR") || line.startsWith("FAIL") -> Color(0xFFF44336)
+                                    line.startsWith("OK") || line.startsWith("SUCCESS") -> Color(0xFF4CAF50)
+                                    line.startsWith("WARN") -> Color(0xFFE65100)
+                                    else -> Color(0xFF424242)
+                                }
+                                Text(line, fontSize = 11.sp, fontFamily = FontFamily.Monospace, color = color)
+                            }
+                        }
+                    }
+
+                    if (state == "done") {
+                        Spacer(Modifier.height(12.dp))
+                        Text("To see restored documents, restart the app or tap Refresh on home page.", fontSize = 12.sp, color = Color.Gray)
+                        Spacer(Modifier.height(8.dp))
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            OutlinedButton(onClick = onBack, modifier = Modifier.weight(1f)) { Text("Go Back") }
+                            Button(onClick = { android.os.Process.killProcess(android.os.Process.myPid()) }, modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1565C0))) { Text("Restart App") }
+                        }
+                    }
                 }
             }
         }
     }
 }
 
-private suspend fun doRestore(context: android.content.Context, uri: Uri, password: String, done: (String, Boolean) -> Unit) = withContext(Dispatchers.IO) {
+private suspend fun doRestoreVerbose(context: android.content.Context, uri: Uri, password: String, log: (String) -> Unit) = withContext(Dispatchers.IO) {
     try {
-        DebugLogger.i("Restore", "=== RESTORE STARTED ===")
+        log("Reading backup file...")
         val bytes = context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
-        if (bytes == null) { done("Cannot read backup file", true); return@withContext }
+        if (bytes == null) { log("ERROR: Cannot read backup file"); return@withContext }
+        log("OK: Read ${bytes.size / 1024}KB from source")
 
         val tempZip = java.io.File(context.cacheDir, "restore_temp.zip")
         tempZip.writeBytes(bytes)
+        log("Wrote temp file for processing")
 
-        // Inspect first
+        // Step 1: Inspect
+        log("")
+        log("--- STEP 1: Inspecting backup ---")
         val inspection = BackupRestore.inspectBackup(context, tempZip, password)
-        if (!inspection.valid) { tempZip.delete(); done("Invalid backup: ${inspection.errorMessage}", true); return@withContext }
-        DebugLogger.i("Restore", "Inspection: ${inspection.fileCount} files, ${inspection.totalSizeBytes/1024}KB")
+        if (!inspection.valid) {
+            log("ERROR: ${inspection.errorMessage}")
+            tempZip.delete()
+            return@withContext
+        }
+        log("OK: Schema version ${inspection.schemaVersion}")
+        log("OK: Backup timestamp: ${inspection.timestamp}")
+        log("OK: Expected files: ${inspection.fileCount}")
+        log("OK: Total size: ${inspection.totalSizeBytes / 1024}KB")
+        log("OK: PIN-protected docs: ${inspection.pinProtectedCount}")
+        if (inspection.files.isNotEmpty()) {
+            log("Files in backup:")
+            inspection.files.take(20).forEach { f -> log("  ${f.path} (${f.size/1024}KB)${if (f.hasPinProtection) " [PIN]" else ""}") }
+            if (inspection.files.size > 20) log("  ... and ${inspection.files.size - 20} more")
+        }
 
-        // Restore
+        // Step 2: Restore
+        log("")
+        log("--- STEP 2: Restoring ---")
         val result = BackupRestore.restoreFromZip(context, tempZip, password)
         tempZip.delete()
 
-        if (result.success) {
-            val report = "Restored ${result.filesRestored} of ${result.filesProcessed} documents.\nApp will restart to load data."
-            done(report, false)
-            android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-                android.os.Process.killProcess(android.os.Process.myPid())
-            }, 3000)
+        // Step 3: Report
+        log("")
+        log("--- STEP 3: Verification ---")
+        log("Processed: ${result.filesProcessed}")
+        log("Restored: ${result.filesRestored}")
+        log("Failed verification: ${result.filesFailedVerification}")
+        if (result.filesRestored == result.filesProcessed) {
+            log("")
+            log("SUCCESS: All ${result.filesRestored} documents restored")
         } else {
-            done("Failed: ${result.message}", true)
+            log("")
+            log("WARN: ${result.filesProcessed - result.filesRestored} files not restored")
         }
-    } catch (e: Exception) { DebugLogger.e("Restore", "Error", e); done("Error: ${e.message}", true) }
+        log("")
+        log(if (result.success) "STATUS: COMPLETE" else "STATUS: FAILED — ${result.message}")
+
+        DebugLogger.i("Restore", "Verbose restore complete: ${result.filesRestored}/${result.filesProcessed}")
+    } catch (e: Exception) {
+        log("ERROR: ${e.message}")
+        DebugLogger.e("Restore", "Verbose restore failed", e)
+    }
 }

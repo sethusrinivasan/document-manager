@@ -21,7 +21,7 @@ class TravelDocsApplication : Application() {
         DebugLogger.init(this)
         CrashHandler.install(this)
         DebugLogger.i("App", "Document Manager started. Build: ${BuildConfig.VERSION_NAME}")
-        verifyDatabaseTables()
+        // verifyDatabaseTables() — disabled: was deleting restored DBs. Room handles schema itself.
     }
 
     /**
