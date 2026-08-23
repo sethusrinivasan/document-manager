@@ -76,6 +76,70 @@ Pre-built APKs are available from [GitHub Releases](https://github.com/sethusrin
 
 No build tools required — just download and install.
 
+
+## Installing on Your Android Device
+
+Pre-built APKs are available at **[github.com/sethusrinivasan/document-manager/releases](https://github.com/sethusrinivasan/document-manager/releases)**.
+
+### Prerequisites on Your Android Device
+
+1. **Android 8.0 or later** (API 26+)
+2. **Enable "Install unknown apps":**
+   - Go to **Settings → Apps → Special app access → Install unknown apps**
+   - Select your browser or file manager and toggle **Allow from this source**
+   - On older Android: **Settings → Security → Unknown sources** (toggle on)
+
+### Which APK to download?
+
+| APK | Use case |
+|-----|----------|
+| `document-manager-debug.apk` | Development / testing — includes debug logs and diagnostics |
+| `document-manager-release.apk` | Production — optimized, no debug overhead |
+
+For general use, download the **release** APK.
+
+### Option A — Install directly on device (simplest)
+
+1. On your Android phone, open the [Releases page](https://github.com/sethusrinivasan/document-manager/releases) in Chrome
+2. Tap the APK file to download it
+3. When prompted, tap **Open** or find it in your Downloads app
+4. Tap **Install** → **Done**
+
+### Option B — Install via USB from your computer
+
+Requires [Android Platform Tools](https://developer.android.com/tools/releases/platform-tools) (includes `adb`).
+
+```bash
+# Enable Developer Options on phone:
+# Settings → About phone → tap "Build number" 7 times
+
+# Enable USB Debugging:
+# Settings → Developer options → USB debugging → ON
+
+# Connect phone via USB, then:
+adb install document-manager-release.apk
+
+# Or use the deploy script if you cloned the repo:
+./scripts/deploy.sh release
+```
+
+### Option C — Install via ADB wirelessly (Android 11+)
+
+```bash
+# On phone: Settings → Developer options → Wireless debugging → ON
+# Note the IP address and port shown
+adb pair <ip>:<port>          # Enter pairing code from phone
+adb connect <ip>:<port>
+adb install document-manager-release.apk
+```
+
+### After Installing
+
+1. Launch **Document Manager** from your app drawer
+2. Read and accept the End User License Agreement
+3. The app uses your device's **biometric authentication** (fingerprint/face/PIN) — no separate app password needed
+4. Start importing documents via **Import** button on the home screen
+
 ## Quick start
 
 ```bash

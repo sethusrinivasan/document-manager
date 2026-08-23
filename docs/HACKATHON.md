@@ -3,6 +3,17 @@
 **Repository:** https://github.com/sethusrinivasan/document-manager
 **Download APK:** https://github.com/sethusrinivasan/document-manager/releases
 
+
+### Installing the APK
+
+1. Open [Releases](https://github.com/sethusrinivasan/document-manager/releases) on your Android device in Chrome
+2. Download `document-manager-release.apk`
+3. Enable **Install unknown apps** in Settings if prompted
+4. Tap the downloaded file → **Install**
+
+Or via USB: `adb install document-manager-release.apk`
+*(requires [ADB / Android Platform Tools](https://developer.android.com/tools/releases/platform-tools) and USB Debugging enabled on device)*
+
 ## Demo Video
 
 Watch the app in action: [https://youtube.com/shorts/E43BueHc3gQ?feature=share](https://youtube.com/shorts/E43BueHc3gQ?feature=share)
