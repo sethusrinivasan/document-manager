@@ -143,8 +143,8 @@ private fun ImportChooser(onSingleFile: () -> Unit, onLocalFolder: () -> Unit, o
         ImportOptionCard(icon = Icons.Filled.UploadFile, title = "Single File", subtitle = "Pick one PDF, image, or video", onClick = onSingleFile)
         Spacer(Modifier.height(12.dp))
         ImportOptionCard(icon = Icons.Filled.Folder, title = "Local Folder", subtitle = "Import all files from a phone folder", onClick = onLocalFolder)
-        Spacer(Modifier.height(12.dp))
-        ImportOptionCard(icon = Icons.Filled.Cloud, title = "Google Drive Folder", subtitle = "Browse and import from Drive", onClick = onDriveFolder)
+        val ctx = androidx.compose.ui.platform.LocalContext.current
+        if (com.app.traveldocs.data.local.FeatureFlags.isExperimentalEnabled(ctx) && com.app.traveldocs.data.local.FeatureFlags.isGoogleDriveEnabled(ctx)) { ImportOptionCard(icon = Icons.Filled.Cloud, title = "Google Drive Folder", subtitle = "Browse and import from Drive", onClick = onDriveFolder); Spacer(Modifier.height(12.dp)) }
         Spacer(Modifier.height(12.dp))
         ImportOptionCard(icon = Icons.Filled.Cloud, title = "Take Photo", subtitle = "Capture document with camera", onClick = onCamera)
         Spacer(Modifier.height(12.dp))

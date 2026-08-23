@@ -19,7 +19,7 @@ So I built this. It's open source, free to use, and the community is welcome to 
 - **Encrypt** everything with AES-256-GCM, keys in Android KeyStore
 - **Search** by tags and free-text across all documents
 - **Share** via the standard Android share sheet — decrypted on the way out
-- **Backup & Restore** to local folder with password-protected ZIP
+- **Backup & Restore** *(experimental)* — password-protected ZIP to local folder
 - **Per-document PIN** — lock individual sensitive documents with an additional PIN
 - **Folder import** with automatic tagging from subfolder names
 - **Dark theme** — toggle in settings, applies immediately
@@ -62,7 +62,7 @@ The code is real, it compiles, it runs. If you spot something that could be clea
 
 ## Download
 
-Pre-built APKs are available from [GitHub Releases](https://github.com/sethusrinivasan/document-manager/releases/latest).
+Pre-built APKs are available from [GitHub Releases](https://github.com/sethusrinivasan/document-manager/releases).
 
 1. Download `app-debug.apk` from the latest release
 2. Transfer to your Android phone
