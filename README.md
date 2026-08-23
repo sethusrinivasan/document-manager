@@ -14,15 +14,22 @@ So I built this. It's open source, free to use, and the community is welcome to 
 
 ## What it does
 
-- **Import** documents from files, camera, folders, or Google Drive
+- **Import** documents from files, camera, or local folders
 - **OCR** extracts text and classifies docs automatically (passport, visa, ticket, etc.)
-- **Search** by tags, text, or natural language ("find my passport", "flight tickets")
 - **Encrypt** everything with AES-256-GCM, keys in Android KeyStore
+- **Search** by tags and free-text across all documents
 - **Share** via the standard Android share sheet — decrypted on the way out
-- **Backup** to local folder, Google Drive, or any S3-compatible bucket (opt-in)
-- **Audio playback** — MP3/M4A import with in-app player and Android Auto support
-- **GPS tagging** on import (if you want it) and optional background location logging
+- **Backup & Restore** to local folder with password-protected ZIP
+- **Per-document PIN** — lock individual sensitive documents with an additional PIN
 - **Folder import** with automatic tagging from subfolder names
+- **Dark theme** — toggle in settings, applies immediately
+- **Google Drive import** *(experimental)* — import from Drive folders
+- **S3-compatible backup** *(experimental)* — backup to AWS S3, MinIO, Backblaze
+- **Audio playback & Android Auto** *(experimental)* — MP3/M4A import with car head unit support
+- **GPS tagging** *(experimental)* — capture location on import, background tracking
+- **WiFi sharing** *(experimental)* — embedded web server for LAN document management
+- **Import from URL** *(experimental)* — download and import files from any web address
+- **DICOM viewer** *(experimental)* — medical image preview with custom parser
 
 ## Principles
 
