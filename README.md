@@ -223,6 +223,7 @@ Things that would be particularly useful:
 | [.kiro/specs/…/requirements.md](.kiro/specs/travel-document-manager/requirements.md) | 47 requirements with acceptance criteria |
 | [.kiro/specs/…/design.md](.kiro/specs/travel-document-manager/design.md) | Component interfaces, algorithms |
 | [PRIVACY_POLICY.md](docs/PRIVACY_POLICY.md) | Privacy policy (required for Play Store) |
+| [docs/KIRO_GENERATION_PROMPT.md](docs/KIRO_GENERATION_PROMPT.md) | One-shot Kiro prompt to regenerate this app + 10 key design decisions |
 
 ## License
 

@@ -107,3 +107,16 @@ Kotlin 1.9.22 · Jetpack Compose · Material 3 · Hilt · Room 2.6.1 · ML Kit �
 3. **Spec-driven development** — 50 requirements, 70 task groups, component interfaces defined before implementation. Full `.kiro/` trail.
 4. **Production details** — EULA, crash reporting, input sanitization, Android Auto, per-document PIN, Play Store compliance review.
 5. **Built with AI, designed by human** — All processing happens locally. Classification errors documented honestly. Community invited to improve.
+
+---
+
+## Kiro Usage — Regeneration Prompt
+
+The full prompt used to generate this app is documented in [`docs/KIRO_GENERATION_PROMPT.md`](KIRO_GENERATION_PROMPT.md).
+
+It contains:
+- **One-shot prompt** — Complete specification: architecture, security model, all features, database design, CI/CD setup
+- **10 key non-obvious design decisions** discovered through iterative device testing (e.g., separate GPS database to prevent Room destructive migration, WAL checkpoint before DB file operations, why TempFileCleanup must run on onResume not onPause)
+- **Iterative discoveries** — Patterns that can only be found through real-device feedback, now encoded in the prompt
+
+This prompt could be used to regenerate a similar app using Kiro from scratch.
