@@ -280,8 +280,11 @@ class MainActivity : androidx.fragment.app.FragmentActivity() {
 
     private fun resetApp() {
         DebugLogger.w("App", "!!! FACTORY RESET triggered by user")
-        // Clear all databases
+        // Clear all databases + WAL/SHM journals
         deleteDatabase("traveldocs.db")
+        val dbPath = getDatabasePath("traveldocs.db")
+        java.io.File(dbPath.path + "-wal").delete()
+        java.io.File(dbPath.path + "-shm").delete()
         // Clear ALL shared preferences
         val prefsToWipe = listOf("traveldocs_stats", "encryption_consent", "disclaimer_prefs",
             "splash_prefs", "eula_prefs", "location_tracking_prefs", "feature_flags",

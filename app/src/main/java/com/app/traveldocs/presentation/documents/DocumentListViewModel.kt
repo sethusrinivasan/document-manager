@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.traveldocs.debug.DebugLogger
 import com.app.traveldocs.domain.model.Document
+import com.app.traveldocs.data.local.TravelDocsDatabase
 import com.app.traveldocs.domain.repository.DocumentRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -26,6 +27,7 @@ data class BulkDeleteState(
 @HiltViewModel
 class DocumentListViewModel @Inject constructor(
     private val documentRepository: DocumentRepository,
+    private val database: TravelDocsDatabase,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -73,7 +75,9 @@ class DocumentListViewModel @Inject constructor(
      * Use after restore or any operation that replaces the database file.
      */
     fun forceRefresh() {
-        com.app.traveldocs.debug.DebugLogger.i("DocList", "Force refresh triggered")
+        com.app.traveldocs.debug.DebugLogger.i("DocList", "Force refresh triggered — invalidating Room cache")
+        // Invalidate all tables so Room re-reads from disk
+        database.invalidationTracker.refreshVersionsAsync()
         startCollecting()
     }
 
