@@ -29,7 +29,8 @@ data class BatchImportState(
     val importedCount: Int = 0,
     val skippedCount: Int = 0,
     val isComplete: Boolean = false,
-    val isCancelled: Boolean = false
+    val isCancelled: Boolean = false,
+    val failedFiles: List<String> = emptyList()
 )
 
 data class FileToImport(
@@ -85,6 +86,7 @@ class BatchImportViewModel @Inject constructor(
             // Phase 2: Import files one at a time, yielding between each for cancellation
             _state.value = _state.value.copy(totalFiles = files.size)
             var imported = 0; var skipped = 0
+            val failedList = mutableListOf<String>()
             for ((index, file) in files.withIndex()) {
                 // Check cancellation before each file
                 if (!isActive) break
@@ -93,7 +95,7 @@ class BatchImportViewModel @Inject constructor(
 
                 try {
                     val bytes = context.contentResolver.openInputStream(file.uri)?.use { it.readBytes() }
-                    if (bytes == null || bytes.isEmpty()) { skipped++; continue }
+                    if (bytes == null || bytes.isEmpty()) { skipped++; failedList.add("${file.name} (empty/unreadable)"); continue }
                     val format = mimeToFormat(file.mimeType)
                     val doc = ImportedDocument(rawBytes = bytes, format = format, originalFileName = file.name)
                     val result = importUseCase.importAndProcess(doc, "default-member")
@@ -105,10 +107,11 @@ class BatchImportViewModel @Inject constructor(
                             }
                         }
                     }
-                    if (result.isSuccess) imported++ else skipped++
+                    if (result.isSuccess) imported++ else { skipped++; failedList.add("${file.name} (import pipeline failed)") }
                 } catch (e: Exception) {
                     DebugLogger.e("BatchImport", "Failed: ${file.name}", e)
                     skipped++
+                    failedList.add("${file.name} (${e.message?.take(50) ?: "error"})")
                 }
 
                 // Yield briefly to keep coroutine cancellable and allow state observation
@@ -117,7 +120,7 @@ class BatchImportViewModel @Inject constructor(
 
             _state.value = _state.value.copy(
                 isRunning = false, isComplete = true,
-                processedCount = files.size, importedCount = imported, skippedCount = skipped
+                processedCount = files.size, importedCount = imported, skippedCount = skipped, failedFiles = failedList
             )
             com.app.traveldocs.debug.UsageTelemetry.funnelComplete("batch_import")
             DebugLogger.i("BatchImport", "Complete: $imported imported, $skipped skipped")
@@ -145,11 +148,12 @@ class BatchImportViewModel @Inject constructor(
         _state.value = BatchImportState(isIdle = false, isRunning = true, totalFiles = files.size)
         importJob = viewModelScope.launch(kotlinx.coroutines.Dispatchers.IO) {
             var imported = 0; var skipped = 0
+            val failedList = mutableListOf<String>()
             for ((index, file) in files.withIndex()) {
                 _state.value = _state.value.copy(processedCount = index, currentFileName = file.name)
                 try {
                     val bytes = context.contentResolver.openInputStream(file.uri)?.use { it.readBytes() }
-                    if (bytes == null || bytes.isEmpty()) { skipped++; continue }
+                    if (bytes == null || bytes.isEmpty()) { skipped++; failedList.add("${file.name} (empty/unreadable)"); continue }
                     val format = mimeToFormat(file.mimeType)
                     val doc = ImportedDocument(rawBytes = bytes, format = format, originalFileName = file.name)
                     val result = importUseCase.importAndProcess(doc, "default-member")
@@ -167,13 +171,14 @@ class BatchImportViewModel @Inject constructor(
                             DebugLogger.d("BatchImport", "Auto-tagged '${file.name}' with folder tags: ${file.folderTags}")
                         }
                     }
-                    if (result.isSuccess) imported++ else skipped++
+                    if (result.isSuccess) imported++ else { skipped++; failedList.add("${file.name} (import pipeline failed)") }
                 } catch (e: Exception) {
                     DebugLogger.e("BatchImport", "Failed: ${file.name}", e)
                     skipped++
+                    failedList.add("${file.name} (${e.message?.take(50) ?: "error"})")
                 }
             }
-            _state.value = _state.value.copy(isRunning = false, isComplete = true, processedCount = files.size, importedCount = imported, skippedCount = skipped)
+            _state.value = _state.value.copy(isRunning = false, isComplete = true, processedCount = files.size, importedCount = imported, skippedCount = skipped, failedFiles = failedList)
             com.app.traveldocs.debug.UsageTelemetry.funnelComplete("batch_import")
             DebugLogger.i("BatchImport", "Complete: $imported imported, $skipped skipped")
         }

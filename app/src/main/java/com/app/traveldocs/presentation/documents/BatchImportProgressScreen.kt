@@ -59,9 +59,19 @@ fun BatchImportProgressScreen(viewModel: BatchImportViewModel, onDone: () -> Uni
                 }
             }
             state.isComplete || state.isCancelled -> {
-                Icon(Icons.Filled.CheckCircle, null, tint = if (state.isCancelled) Color(0xFFFFC107) else Color(0xFF4CAF50), modifier = Modifier.size(64.dp))
+                Icon(Icons.Filled.CheckCircle, null, tint = when {
+                    state.isCancelled -> Color(0xFFFFC107)
+                    state.importedCount == 0 && state.skippedCount > 0 -> Color(0xFFF44336)
+                    state.skippedCount > 0 -> Color(0xFFFFC107)
+                    else -> Color(0xFF4CAF50)
+                }, modifier = Modifier.size(64.dp))
                 Spacer(Modifier.height(16.dp))
-                Text(if (state.isCancelled) "Import Cancelled" else "Import Complete!", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Text(when {
+                    state.isCancelled -> "Import Cancelled"
+                    state.importedCount == 0 && state.skippedCount > 0 -> "Import Failed"
+                    state.skippedCount > 0 -> "Import Partial"
+                    else -> "Import Complete!"
+                }, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 Spacer(Modifier.height(16.dp))
                 Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp), colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5))) {
                     Column(modifier = Modifier.padding(16.dp)) {
@@ -70,6 +80,21 @@ fun BatchImportProgressScreen(viewModel: BatchImportViewModel, onDone: () -> Uni
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) { Text("Skipped / Failed"); Text("${state.skippedCount}", fontWeight = FontWeight.Bold, color = if (state.skippedCount > 0) Color(0xFFF44336) else Color.Gray) }
                         Spacer(Modifier.height(4.dp))
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) { Text("Total"); Text("${state.totalFiles}") }
+                    }
+                }
+                if (state.failedFiles.isNotEmpty()) {
+                    Spacer(Modifier.height(12.dp))
+                    Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp), colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF3E0))) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text("Failed files:", fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = Color(0xFFE65100))
+                            Spacer(Modifier.height(4.dp))
+                            state.failedFiles.take(20).forEach { name ->
+                                Text("• $name", fontSize = 11.sp, color = Color(0xFF795548))
+                            }
+                            if (state.failedFiles.size > 20) {
+                                Text("... and ${state.failedFiles.size - 20} more", fontSize = 11.sp, color = Color.Gray)
+                            }
+                        }
                     }
                 }
                 Spacer(Modifier.height(24.dp))

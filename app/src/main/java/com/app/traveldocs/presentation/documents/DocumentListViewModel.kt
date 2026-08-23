@@ -57,8 +57,13 @@ class DocumentListViewModel @Inject constructor(
     private fun startCollecting() {
         collectJob?.cancel()
         collectJob = viewModelScope.launch {
-            documentRepository.getAll("default-member").collect { docs ->
-                _documents.value = docs.sortedByDescending { it.createdAt }
+            try {
+                documentRepository.getAll("default-member").collect { docs ->
+                    _documents.value = docs.sortedByDescending { it.createdAt }
+                }
+            } catch (e: Exception) {
+                com.app.traveldocs.debug.DebugLogger.e("DocList", "Database query failed (may need app restart after failed restore)", e)
+                _documents.value = emptyList()
             }
         }
     }

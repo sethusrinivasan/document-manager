@@ -106,22 +106,22 @@ fun BackupScreen(onBack: () -> Unit) {
             onDismissRequest = { showRestorePinDialog = false; pendingRestoreUri = null },
             title = { androidx.compose.material3.Text("Backup Password") },
             text = { Column {
-                androidx.compose.material3.Text("If this backup was created with a password, enter it below.", fontSize = 13.sp, color = Color.Gray)
+                androidx.compose.material3.Text("Enter the backup password to restore.", fontSize = 13.sp, color = Color.Gray)
                 Spacer(Modifier.height(4.dp))
-                androidx.compose.material3.Text("Leave blank if no password was set.", fontSize = 12.sp, color = Color.Gray)
+                androidx.compose.material3.Text("All backups are password-protected. This is required.", fontSize = 12.sp, color = Color(0xFFF44336))
                 Spacer(Modifier.height(12.dp))
-                androidx.compose.material3.OutlinedTextField(value = restorePin, onValueChange = { restorePin = it }, label = { androidx.compose.material3.Text("Password (optional)") }, singleLine = true, modifier = Modifier.fillMaxWidth(),
+                androidx.compose.material3.OutlinedTextField(value = restorePin, onValueChange = { restorePin = it }, label = { androidx.compose.material3.Text("Backup Password (required)") }, singleLine = true, modifier = Modifier.fillMaxWidth(),
                     visualTransformation = if (restorePin.isNotEmpty()) androidx.compose.ui.text.input.PasswordVisualTransformation() else androidx.compose.ui.text.input.VisualTransformation.None)
             } },
             confirmButton = { androidx.compose.material3.TextButton(onClick = {
                 showRestorePinDialog = false
-                val pin = restorePin.ifBlank { null }
+                val pin = restorePin
                 val uri = pendingRestoreUri!!
                 restorePin = ""
                 pendingRestoreUri = null
                 screenState = "running"
                 scope.launch { doRestore(context, uri, pin) { msg, err -> resultMessage = msg; resultIsError = err; screenState = "done" } }
-            }) { androidx.compose.material3.Text("Restore") } },
+            }, enabled = restorePin.isNotBlank()) { androidx.compose.material3.Text("Restore") } },
             dismissButton = { androidx.compose.material3.TextButton(onClick = { showRestorePinDialog = false; pendingRestoreUri = null; restorePin = "" }) { androidx.compose.material3.Text("Cancel") } }
         )
     }
@@ -352,9 +352,9 @@ private suspend fun doRestore(context: Context, uri: Uri, password: String?, don
             appendLine("Restored: ${result.filesRestored}")
             appendLine("Failed: ${result.filesFailedVerification}")
             appendLine("Status: ${if (result.success) "SUCCESS" else "FAILED"}")
-            if (result.filesRestored < inspection.fileCount) {
+            if (result.filesRestored < result.filesProcessed) {
                 appendLine("")
-                appendLine("WARNING: ${inspection.fileCount - result.filesRestored} files not restored")
+                appendLine("WARNING: ${result.filesProcessed - result.filesRestored} of ${result.filesProcessed} document files not restored")
             }
             appendLine("")
             appendLine("Tap Refresh on home page to see restored documents.")
