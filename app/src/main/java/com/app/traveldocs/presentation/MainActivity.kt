@@ -243,7 +243,13 @@ class MainActivity : androidx.fragment.app.FragmentActivity() {
                     screen == "eula_view" -> com.app.traveldocs.presentation.onboarding.EulaViewScreen(onBack = { screen = "main" })
                     screen == "review" -> com.app.traveldocs.presentation.review.ReviewScreen(onBack = { screen = "main" })
                     screen == "webshare" -> com.app.traveldocs.presentation.webshare.WebShareScreen(onBack = { screen = "main" })
-                    screen == "feedback" -> com.app.traveldocs.presentation.feedback.FeedbackScreen(onBack = { screen = "main" })
+                    screen == "feedback" -> {
+                        // Launch GitHub Issues in browser for feedback
+                        val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://github.com/sethusrinivasan/document-manager/issues"))
+                        intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                        try { this@MainActivity.startActivity(intent) } catch (_: Exception) {}
+                        screen = "main"
+                    }
                     screen == "backup" -> com.app.traveldocs.presentation.backup.BackupScreen(onBack = { screen = "main" })
                     screen == "restore" -> com.app.traveldocs.presentation.backup.BackupScreen(onBack = { screen = "main" })
                     screen == "diagnostics" -> DiagnosticsScreen(onBack = { screen = "main" }, onViewLogs = { showDebugLogs = true })
@@ -257,7 +263,6 @@ class MainActivity : androidx.fragment.app.FragmentActivity() {
                         onBackup = { screen = "backup" },
                         onRestore = { screen = "restore" },
                         onAbout = { screen = "about" },
-                        onEula = { screen = "eula_view" },
                         onFeedback = { screen = "feedback" },
                         onReview = { screen = "review" },
                         onWebShare = { screen = "webshare" },
@@ -300,7 +305,7 @@ class MainActivity : androidx.fragment.app.FragmentActivity() {
 @Composable
 fun MainScreen(
     onImport: () -> Unit, onAllDocs: () -> Unit, onSearch: () -> Unit,
-    onTags: () -> Unit, onSettings: () -> Unit, onDiagnostics: () -> Unit, onBackup: () -> Unit, onRestore: () -> Unit, onAbout: () -> Unit, onEula: () -> Unit, onFeedback: () -> Unit, onReview: () -> Unit, onWebShare: () -> Unit,
+    onTags: () -> Unit, onSettings: () -> Unit, onDiagnostics: () -> Unit, onBackup: () -> Unit, onRestore: () -> Unit, onAbout: () -> Unit, onFeedback: () -> Unit, onReview: () -> Unit, onWebShare: () -> Unit,
     onDocClick: (Document) -> Unit, onReset: () -> Unit
 ) {
     val viewModel: DocumentListViewModel = hiltViewModel()
@@ -357,7 +362,6 @@ fun MainScreen(
                         DropdownMenu(expanded = showGearMenu, onDismissRequest = { showGearMenu = false }) {
                             DropdownMenuItem(text = { Text("About") }, onClick = { showGearMenu = false; onAbout() })
                             DropdownMenuItem(text = { Text("Feedback") }, onClick = { showGearMenu = false; onFeedback() })
-                            DropdownMenuItem(text = { Text("License Agreement") }, onClick = { showGearMenu = false; onEula() })
                             DropdownMenuItem(text = { Text("Backup") }, onClick = { showGearMenu = false; onBackup() })
                             if (BuildConfig.DEBUG || com.app.traveldocs.data.local.FeatureFlags.isExperimentalEnabled(context)) DropdownMenuItem(text = { Text("Diagnostics") }, onClick = { showGearMenu = false; onDiagnostics() })
                             DropdownMenuItem(text = { Text("Restore") }, onClick = { showGearMenu = false; onRestore() })

@@ -162,9 +162,12 @@ object BackupRestore {
             reportLines.add("--- Files ---")
 
             if (docsDir.exists()) {
-                docsDir.walkTopDown().filter { it.isFile }.forEach { plainFile ->
+                val allFiles = docsDir.walkTopDown().filter { it.isFile }.toList()
+                DebugLogger.i("Restore", "Found ${allFiles.size} document files to restore")
+                allFiles.forEach { plainFile ->
                     filesProcessed++
                     val relativePath = plainFile.relativeTo(docsDir).path
+                    DebugLogger.d("Restore", "Processing [$filesProcessed]: $relativePath")
                     val lookupPath = "docs/$relativePath"
                     val expectedEntry = expectedFiles[lookupPath]
 

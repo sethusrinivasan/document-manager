@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,6 +79,9 @@ fun AboutScreen(onBack: () -> Unit) {
             Text("Apache License 2.0", fontSize = 13.sp, fontWeight = FontWeight.Medium)
             Spacer(Modifier.height(4.dp))
             Text("Copyright 2026 Document Manager Contributors. Licensed under the Apache License, Version 2.0. You may obtain a copy at http://www.apache.org/licenses/LICENSE-2.0", fontSize = 11.sp, color = Color.Gray)
+                Spacer(Modifier.height(8.dp))
+                val ctx = LocalContext.current
+                OutlinedButton(onClick = { val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://github.com/sethusrinivasan/document-manager/blob/main/LICENSE")); ctx.startActivity(intent) }, modifier = Modifier.fillMaxWidth()) { Text("View Full License Agreement", fontSize = 13.sp) }
             Spacer(Modifier.height(16.dp))
 
             SectionTitle("Permissions Required")
