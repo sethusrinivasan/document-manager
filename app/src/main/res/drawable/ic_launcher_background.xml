@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Deep blue gradient background -->
+    <path
+        android:fillColor="#0D47A1"
+        android:pathData="M0,0 L108,0 L108,108 L0,108 Z"/>
+
+    <!-- Subtle lighter accent in center for depth -->
+    <path
+        android:fillColor="#1565C0"
+        android:pathData="M20,20 L88,20 L88,88 L20,88 Z"/>
+
+    <!-- Even lighter center area -->
+    <path
+        android:fillColor="#1976D2"
+        android:pathData="M30,30 L78,30 L78,78 L30,78 Z"/>
+</vector>

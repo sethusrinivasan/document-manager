@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Document Manager</string>
+
+    <!-- Main Screen -->
+    <string name="main_title">Travel Documents</string>
+    <string name="btn_import">Import</string>
+    <string name="btn_all_docs">All Docs</string>
+    <string name="btn_search">Search</string>
+    <string name="documents_managed">%d documents managed</string>
+    <string name="no_documents_title">No documents yet</string>
+    <string name="no_documents_subtitle">Tap Import to add your first document</string>
+
+    <!-- Import Screen -->
+    <string name="import_title">Import</string>
+    <string name="import_choose_method">Choose Import Method</string>
+    <string name="import_single_file">Single File</string>
+    <string name="import_single_file_desc">Pick one PDF, image, or video</string>
+    <string name="import_local_folder">Local Folder</string>
+    <string name="import_local_folder_desc">Import all files from a phone folder</string>
+    <string name="import_drive_folder">Google Drive Folder</string>
+    <string name="import_drive_folder_desc">Browse and import from Drive</string>
+    <string name="import_camera">Take Photo</string>
+    <string name="import_camera_desc">Scan document with camera</string>
+    <string name="importing">Importing document…</string>
+    <string name="running_ocr">Running OCR extraction</string>
+    <string name="import_success">Document Imported!</string>
+    <string name="import_failed">Import Failed</string>
+    <string name="btn_done">Done</string>
+    <string name="btn_try_again">Try Again</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_replace">Replace</string>
+
+    <!-- Duplicate Dialog -->
+    <string name="duplicate_title">Duplicate Document</string>
+    <string name="duplicate_message">A document with this name already exists. Replace or cancel?</string>
+
+    <!-- Document List -->
+    <string name="my_documents">My Documents</string>
+    <string name="recycle_bin">Recycle Bin</string>
+    <string name="recycle_bin_empty">Recycle bin is empty</string>
+    <string name="long_press_hint">Long-press to select multiple</string>
+    <string name="selected_count">%d selected</string>
+    <string name="delete_confirm_title">Delete %d documents?</string>
+    <string name="delete_confirm_message">Selected documents will be moved to the recycle bin.</string>
+    <string name="btn_delete_all">Delete All</string>
+    <string name="deleting">Deleting…</string>
+    <string name="moved_to_trash">%d documents moved to recycle bin.</string>
+
+    <!-- Document Viewer -->
+    <string name="document_details">Document Details</string>
+    <string name="properties">Properties</string>
+    <string name="extracted_fields">Extracted Fields</string>
+    <string name="open_external">Open with External App</string>
+    <string name="open_pdf_viewer">Open in PDF Viewer</string>
+    <string name="play_video">Play Video</string>
+    <string name="file_not_available">File not available</string>
+    <string name="rename_document">Rename Document</string>
+    <string name="add_tag">Add Tag</string>
+    <string name="tags">Tags</string>
+    <string name="no_tags">No tags. Tap + to add.</string>
+
+    <!-- Search -->
+    <string name="search_title">Search Documents</string>
+    <string name="search_hint">Search by tag, name, or ask a question…</string>
+    <string name="no_results">No results found</string>
+    <string name="search_suggestion">Try: \"passport\" or \"flight tickets\"</string>
+    <string name="travel_checklist">Travel Checklist</string>
+    <string name="need_more_details">Need more details</string>
+
+    <!-- Tag Management -->
+    <string name="manage_tags">Manage Tags</string>
+    <string name="no_tags_title">No tags yet</string>
+    <string name="no_tags_subtitle">Tags are created when you import documents or add them manually</string>
+    <string name="create_tag">Create Tag</string>
+    <string name="rename_tag">Rename Tag</string>
+    <string name="delete_tag">Delete Tag?</string>
+    <string name="tag_in_use_warning">This tag is used by %d document(s). It will be removed from all of them before deletion.</string>
+    <string name="tag_not_in_use">This tag is not assigned to any documents.</string>
+    <string name="btn_delete">Delete</string>
+    <string name="btn_rename">Rename</string>
+    <string name="btn_create">Create</string>
+    <string name="auto_generated">Auto-generated</string>
+    <string name="custom">Custom</string>
+
+    <!-- Settings -->
+    <string name="settings">Settings</string>
+    <string name="security_alerts">Security Alerts</string>
+    <string name="recovery_phone">Recovery Phone Number</string>
+    <string name="recovery_email">Recovery Email</string>
+    <string name="sms_alerts_toggle">SMS alerts on PIN lockout</string>
+    <string name="btn_save">Save</string>
+    <string name="saved">Saved!</string>
+    <string name="last_alert_sent">Last alert sent: %s</string>
+    <string name="about">About</string>
+
+    <!-- Diagnostics -->
+    <string name="diagnostics">Diagnostics</string>
+    <string name="system_status">System Status</string>
+    <string name="battery">Battery</string>
+    <string name="gps_location">GPS</string>
+    <string name="network">Network</string>
+    <string name="charging">Charging</string>
+    <string name="discharging">Discharging</string>
+    <string name="connected">Connected</string>
+    <string name="offline">Offline</string>
+    <string name="gps_tracking">GPS Tracking</string>
+    <string name="debug_logs">Debug Logs</string>
+    <string name="view_debug_logs">View Debug Logs</string>
+
+    <!-- Consent / Onboarding -->
+    <string name="welcome">Welcome</string>
+    <string name="welcome_subtitle">Document Manager</string>
+    <string name="encryption_explanation">Your documents will be encrypted with AES-256 and protected by a PIN. All data stays on this device. No cloud, no servers.</string>
+    <string name="create_pin">Create your PIN</string>
+    <string name="pin_label">PIN (4–8 digits)</string>
+    <string name="confirm_pin">Confirm PIN</string>
+    <string name="pins_no_match">PINs do not match</string>
+    <string name="recovery_contacts_title">Recovery contacts (for security alerts)</string>
+    <string name="phone_placeholder">+1234567890</string>
+    <string name="email_placeholder">you@example.com</string>
+    <string name="pin_warning_title">WARNING</string>
+    <string name="pin_warning_body">If you forget your PIN, your documents CANNOT be recovered. There is no reset option. Please write down your PIN and store it securely.</string>
+    <string name="pin_ack_checkbox">I understand my PIN cannot be recovered</string>
+    <string name="encryption_ack_checkbox">I agree to use encrypted storage</string>
+    <string name="btn_setup_continue">Set Up &amp; Continue</string>
+
+    <!-- PIN Entry -->
+    <string name="enter_pin">Enter PIN</string>
+    <string name="unlock_documents">Unlock your documents</string>
+    <string name="btn_unlock">Unlock</string>
+    <string name="account_locked">Account locked</string>
+    <string name="try_again_in">Try again in %ds</string>
+    <string name="incorrect_pin">Incorrect PIN</string>
+
+    <!-- Gear Menu -->
+    <string name="menu_tags">Tags</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_diagnostics">Diagnostics</string>
+    <string name="menu_reset">Reset App</string>
+    <string name="reset_title">Reset App?</string>
+    <string name="reset_message">This will delete ALL documents, settings, and logs. The app will restart as if freshly installed. This cannot be undone.</string>
+    <string name="btn_reset_everything">Reset Everything</string>
+
+    <!-- Batch Import -->
+    <string name="batch_importing">Importing Documents…</string>
+    <string name="batch_of">%1$d of %2$d</string>
+    <string name="import_complete">Import Complete!</string>
+    <string name="import_cancelled">Import Cancelled</string>
+    <string name="imported_count">Imported</string>
+    <string name="skipped_count">Skipped / Failed</string>
+    <string name="total">Total</string>
+
+    <!-- Privacy & Crash Feedback (Play Store compliance) -->
+    <string name="privacy_policy_title">Privacy Policy</string>
+    <string name="privacy_policy_url">https://documentmanager.app/privacy</string>
+    <string name="send_crash_report">Send Crash Report</string>
+    <string name="crash_report_sent">Crash report ready to send</string>
+    <string name="no_crash_report">No crash reports available</string>
+    <string name="share_document">Share</string>
+    <string name="subfolder_dialog_title">Scan Subfolders?</string>
+    <string name="subfolder_dialog_message">Should we scan subfolders recursively? Each subfolder name will be added as a tag to imported documents.</string>
+    <string name="yes_include_subfolders">Yes, include subfolders</string>
+    <string name="no_root_only">No, root only</string>
+
+    <!-- Privacy & Crash Feedback (Play Store compliance) -->
+</resources>

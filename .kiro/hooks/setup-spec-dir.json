@@ -1,0 +1,14 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Setup Spec Directory",
+      "trigger": "SessionStart",
+      "description": "Create spec directory for travel document manager",
+      "action": {
+        "type": "command",
+        "command": "mkdir -p .kiro/specs/travel-document-manager"
+      }
+    }
+  ]
+}

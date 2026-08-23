@@ -1,0 +1,25 @@
+# Gradle
+.gradle/
+build/
+app/build/
+
+# IDE
+.idea/
+*.iml
+local.properties
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+*.keystore
+*.jks
+google-services.json
+
+# Debug output
+app/src/main/java/com/app/traveldocs/debug/debug_logs/
+
+# Build artifacts
+build_output.txt
+logs/
