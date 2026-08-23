@@ -171,6 +171,9 @@ private suspend fun doRestoreVerbose(context: android.content.Context, uri: Uri,
             if (dbFile.exists()) {
                 val db = android.database.sqlite.SQLiteDatabase.openDatabase(dbFile.path, null, android.database.sqlite.SQLiteDatabase.OPEN_READONLY)
 
+                // Check tables exist before querying
+                val tableCheck = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='documents'", null)
+                if (tableCheck.count == 0) { tableCheck.close(); db.close(); log("ERROR: documents table not found in restored DB — backup DB may be empty/corrupted"); log("Solution: Restart the app (Room will initialize tables from the restored file)") } else { tableCheck.close()
                 // Count documents table
                 val docCursor = db.rawQuery("SELECT COUNT(*) FROM documents", null)
                 val docCount = if (docCursor.moveToFirst()) docCursor.getInt(0) else -1
@@ -216,6 +219,7 @@ private suspend fun doRestoreVerbose(context: android.content.Context, uri: Uri,
                 if (ver != 2) log("WARN: Version mismatch may trigger schema migration on next Room access")
 
                 db.close()
+                } // end table exists check
             } else {
                 log("ERROR: Database file not found after restore")
             }

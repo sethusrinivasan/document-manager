@@ -33,7 +33,7 @@ android {
         create("release") {
             // For development/testing: uses debug keystore
             // Replace with proper keystore before Play Store publishing
-            storeFile = file(System.getProperty("user.home") + "/.android/debug.keystore")
+            storeFile = file(System.getenv("HOME") + "/.android/debug.keystore")
             storePassword = "android"
             keyAlias = "androiddebugkey"
             keyPassword = "android"

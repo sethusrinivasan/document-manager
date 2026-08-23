@@ -103,7 +103,7 @@ object BackupRestore {
     /**
      * Restore from ZIP with full verification and reporting.
      */
-    fun restoreFromZip(context: Context, zipFile: File, password: String? = null, restoreTag: String = "Restored"): RestoreResult {
+    fun restoreFromZip(context: Context, zipFile: File, password: String? = null, restoreTag: String = "Restored", onProgress: ((String) -> Unit)? = null): RestoreResult {
         DebugLogger.i("Restore", "Starting restore: ${zipFile.name} (${zipFile.length()/1024}KB), tag='$restoreTag'")
         val extractDir = File(context.cacheDir, "restore_staging_${System.currentTimeMillis()}")
         extractDir.mkdirs()
@@ -168,6 +168,7 @@ object BackupRestore {
                     filesProcessed++
                     val relativePath = plainFile.relativeTo(docsDir).path
                     DebugLogger.d("Restore", "Processing [$filesProcessed]: $relativePath")
+                    onProgress?.invoke("Restoring: $relativePath")
                     val lookupPath = "docs/$relativePath"
                     val expectedEntry = expectedFiles[lookupPath]
 
