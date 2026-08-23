@@ -250,8 +250,8 @@ class MainActivity : androidx.fragment.app.FragmentActivity() {
                         try { this@MainActivity.startActivity(intent) } catch (_: Exception) {}
                         screen = "main"
                     }
-                    screen == "backup" -> com.app.traveldocs.presentation.backup.BackupScreen(onBack = { screen = "main" })
-                    screen == "restore" -> com.app.traveldocs.presentation.backup.BackupScreen(onBack = { screen = "main" })
+                    screen == "backup" -> com.app.traveldocs.presentation.backup.BackupOnlyScreen(onBack = { screen = "main" })
+                    screen == "restore" -> com.app.traveldocs.presentation.backup.RestoreOnlyScreen(onBack = { screen = "main" })
                     screen == "diagnostics" -> DiagnosticsScreen(onBack = { screen = "main" }, onViewLogs = { showDebugLogs = true })
                     else -> MainScreen(
                         onImport = { com.app.traveldocs.debug.UsageTelemetry.action("Main", "tap_import"); screen = "import" },

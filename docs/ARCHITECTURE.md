@@ -261,7 +261,8 @@ Main Screen (document-focused)
     ├─ [All Docs] → DocumentListScreen → DocumentViewerScreen
     ├─ [Search] → SearchScreen → DocumentViewerScreen
     └─ [⚙️ Gear Menu]
-         ├─ Backup (if enabled) → BackupScreen
+         ├─ Backup → BackupOnlyScreen (choose folder → PIN → create ZIP)
+         ├─ Restore → RestoreOnlyScreen (choose file → PIN → inspect → restore)
          ├─ Tags → TagManagementScreen
          ├─ Settings → SettingsScreen (+ experimental toggles)
          ├─ Diagnostics → DiagnosticsScreen

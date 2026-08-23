@@ -691,3 +691,17 @@ A mobile application for families to securely store, organize, and manage travel
 2. WHEN a document is shared to the app, THE import pipeline SHALL run automatically
 3. THE user SHALL see import progress and result (success/failure)
 4. BIOMETRIC authentication SHALL be required before the import proceeds
+
+
+### Requirement 50: Backup and Restore Separation
+
+**User Story:** As a user, I want Backup and Restore to be separate menu items with focused UIs, so that I don't accidentally trigger the wrong action.
+
+#### Acceptance Criteria
+
+1. THE gear menu SHALL have separate "Backup" and "Restore" items
+2. TAPPING "Backup" SHALL navigate to a backup-only screen (folder picker → PIN → create ZIP)
+3. TAPPING "Restore" SHALL navigate to a restore-only screen (file picker → PIN → inspect → restore)
+4. NEITHER screen SHALL show controls for the other operation
+5. BACKUP SHALL require a password (min 4 chars) and report: files backed up, total size
+6. RESTORE SHALL prompt for password, inspect manifest before restoring, and report results

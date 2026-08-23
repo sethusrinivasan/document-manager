@@ -74,11 +74,11 @@ import com.google.api.services.drive.model.File as DriveFile
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BackupScreen(onBack: () -> Unit) {
+fun BackupScreen(onBack: () -> Unit, mode: String = "backup") {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val backupManager = remember { BackupManager() }
-    var screenState by remember { mutableStateOf("choose") }
+    var screenState by remember { mutableStateOf(if (mode == "restore") "restore_pick" else "choose") }
     var resultMessage by remember { mutableStateOf("") }
     var resultIsError by remember { mutableStateOf(false) }
     var showS3Dialog by remember { mutableStateOf(false) }
@@ -205,7 +205,7 @@ fun BackupScreen(onBack: () -> Unit) {
             }
         }) { Text("Upload") } }, dismissButton = { TextButton(onClick = { showS3Dialog = false }) { Text("Cancel") } })
     }
-    Scaffold(topBar = { TopAppBar(title = { Text("Backup & Restore") }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Filled.ArrowBack, "Back") } }) }) { padding ->
+    Scaffold(topBar = { TopAppBar(title = { Text(if (mode == "restore") "Restore" else "Backup") }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Filled.ArrowBack, "Back") } }) }) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp)) {
             when (screenState) {
                 "choose" -> {
