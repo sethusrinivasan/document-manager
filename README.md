@@ -203,3 +203,4 @@ Apache 2.0. See [LICENSE](LICENSE).
 - [Material Icons](https://fonts.google.com/icons) — Icon set (Apache 2.0)
 - [Kotest](https://kotest.io/) — Property-based testing
 - [Zip4j](https://github.com/srikanth-lingala/zip4j) — Password-protected ZIP archives
+# document-manager
