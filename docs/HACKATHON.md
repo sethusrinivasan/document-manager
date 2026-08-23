@@ -3,6 +3,10 @@
 **Repository:** https://github.com/sethusrinivasan/document-manager
 **Download APK:** https://github.com/sethusrinivasan/document-manager/releases
 
+## Demo Video
+
+Watch the app in action: [https://youtube.com/shorts/E43BueHc3gQ?feature=share](https://youtube.com/shorts/E43BueHc3gQ?feature=share)
+
 ## What is this?
 
 A privacy-first Android document manager. Encrypts documents on-device, organizes them with on-device OCR, and runs completely offline with no backend server. No cloud, no accounts, no compromises.

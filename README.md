@@ -33,6 +33,12 @@ So I built this. It's open source, free to use, and the community is welcome to 
 
 
 
+## Demo
+
+[![Document Manager Demo](https://youtube.com/shorts/E43BueHc3gQ?feature=share)](https://youtube.com/shorts/E43BueHc3gQ?feature=share)
+
+Watch the demo: https://youtube.com/shorts/E43BueHc3gQ?feature=share
+
 ## Screenshots
 
 | | | |
