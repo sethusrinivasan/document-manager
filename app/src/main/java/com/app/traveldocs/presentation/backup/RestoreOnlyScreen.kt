@@ -101,13 +101,12 @@ fun RestoreOnlyScreen(onBack: () -> Unit) {
 
                     if (state == "done") {
                         Spacer(Modifier.height(12.dp))
-                        Text("To see restored documents, restart the app or tap Refresh on home page.", fontSize = 12.sp, color = Color.Gray)
+                        Text("Restart required: The app must restart to load restored documents. This is a technical requirement — the database connection must be re-established.", fontSize = 12.sp, color = Color(0xFFF44336), fontWeight = FontWeight.SemiBold)
                         Spacer(Modifier.height(8.dp))
-                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            OutlinedButton(onClick = onBack, modifier = Modifier.weight(1f)) { Text("Go Back") }
-                            Button(onClick = { android.os.Process.killProcess(android.os.Process.myPid()) }, modifier = Modifier.weight(1f),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1565C0))) { Text("Restart App") }
-                        }
+                        Button(onClick = { android.os.Process.killProcess(android.os.Process.myPid()) }, modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))) { Text("Restart App Now") }
+                        Spacer(Modifier.height(8.dp))
+                        OutlinedButton(onClick = onBack, modifier = Modifier.fillMaxWidth()) { Text("Go Back (documents won't show until restart)") }
                     }
                 }
             }
@@ -154,17 +153,76 @@ private suspend fun doRestoreVerbose(context: android.content.Context, uri: Uri,
 
         // Step 3: Report
         log("")
-        log("--- STEP 3: Verification ---")
+        log("--- STEP 3: File Verification ---")
         log("Processed: ${result.filesProcessed}")
         log("Restored: ${result.filesRestored}")
         log("Failed verification: ${result.filesFailedVerification}")
         if (result.filesRestored == result.filesProcessed) {
-            log("")
-            log("SUCCESS: All ${result.filesRestored} documents restored")
+            log("OK: All ${result.filesRestored} document files restored")
         } else {
-            log("")
             log("WARN: ${result.filesProcessed - result.filesRestored} files not restored")
         }
+
+        // Step 4: Metadata consistency check
+        log("")
+        log("--- STEP 4: Metadata Consistency ---")
+        try {
+            val dbFile = context.getDatabasePath("traveldocs.db")
+            if (dbFile.exists()) {
+                val db = android.database.sqlite.SQLiteDatabase.openDatabase(dbFile.path, null, android.database.sqlite.SQLiteDatabase.OPEN_READONLY)
+
+                // Count documents table
+                val docCursor = db.rawQuery("SELECT COUNT(*) FROM documents", null)
+                val docCount = if (docCursor.moveToFirst()) docCursor.getInt(0) else -1
+                docCursor.close()
+                log("documents table: $docCount entries")
+
+                // Count metadata entries
+                val metaCursor = db.rawQuery("SELECT COUNT(*) FROM document_metadata", null)
+                val metaCount = if (metaCursor.moveToFirst()) metaCursor.getInt(0) else -1
+                metaCursor.close()
+                log("document_metadata table: $metaCount entries")
+
+                // Count tags
+                val tagCursor = db.rawQuery("SELECT COUNT(*) FROM document_tags", null)
+                val tagCount = if (tagCursor.moveToFirst()) tagCursor.getInt(0) else -1
+                tagCursor.close()
+                log("document_tags table: $tagCount entries")
+
+                // Check docs with no metadata (potential issue)
+                val orphanCursor = db.rawQuery("SELECT COUNT(*) FROM documents d WHERE NOT EXISTS (SELECT 1 FROM document_metadata m WHERE m.documentId = d.id)", null)
+                val orphanCount = if (orphanCursor.moveToFirst()) orphanCursor.getInt(0) else 0
+                orphanCursor.close()
+                if (orphanCount > 0) log("WARN: $orphanCount documents have no metadata entries")
+                else log("OK: All documents have metadata")
+
+                // Check that encrypted files on disk match DB entries
+                val docsDir = java.io.File(context.filesDir, "docs")
+                val diskFileCount = if (docsDir.exists()) docsDir.walkTopDown().filter { it.isFile }.count() else 0
+                log("Encrypted files on disk: $diskFileCount")
+                if (diskFileCount == docCount) {
+                    log("OK: File count matches DB entries")
+                } else if (diskFileCount > docCount) {
+                    log("WARN: ${diskFileCount - docCount} orphan files on disk (no DB entry)")
+                } else {
+                    log("WARN: ${docCount - diskFileCount} DB entries missing files on disk")
+                }
+
+                // DB version
+                val vCursor = db.rawQuery("PRAGMA user_version", null)
+                val ver = if (vCursor.moveToFirst()) vCursor.getInt(0) else 0
+                vCursor.close()
+                log("DB version: $ver (app expects: 2)")
+                if (ver != 2) log("WARN: Version mismatch may trigger schema migration on next Room access")
+
+                db.close()
+            } else {
+                log("ERROR: Database file not found after restore")
+            }
+        } catch (e: Exception) {
+            log("ERROR: Metadata check failed — ${e.message}")
+        }
+
         log("")
         log(if (result.success) "STATUS: COMPLETE" else "STATUS: FAILED — ${result.message}")
 

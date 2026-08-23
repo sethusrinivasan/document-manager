@@ -77,6 +77,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -266,8 +267,8 @@ class MainActivity : androidx.fragment.app.FragmentActivity() {
                         onFeedback = { screen = "feedback" },
                         onReview = { screen = "review" },
                         onWebShare = { screen = "webshare" },
+                        onReset = { resetApp() },
                         onDocClick = { doc -> selectedDoc = doc; screen = "viewer" },
-                        onReset = { resetApp() }
                     )
                 }
             }
@@ -278,12 +279,23 @@ class MainActivity : androidx.fragment.app.FragmentActivity() {
     override fun onPause() { super.onPause(); com.app.traveldocs.debug.UsageTelemetry.emitSessionSummary() }
     override fun onDestroy() { super.onDestroy(); telemetry.stopLocationPolling() }
 
-    private fun resetApp() {
+    private fun resetApp(): String {
         DebugLogger.w("App", "!!! FACTORY RESET triggered by user")
-        // Archive old database (keep last 10 versions), then create fresh
+        val report = StringBuilder()
+
+        // Checkpoint WAL before any operations
         val dbPath = getDatabasePath("traveldocs.db")
+        try {
+            if (dbPath.exists()) {
+                val flushDb = android.database.sqlite.SQLiteDatabase.openDatabase(dbPath.path, null, android.database.sqlite.SQLiteDatabase.OPEN_READWRITE)
+                flushDb.rawQuery("PRAGMA wal_checkpoint(TRUNCATE)", null).close()
+                flushDb.close()
+                report.appendLine("WAL checkpoint: done")
+            }
+        } catch (e: Exception) { report.appendLine("WAL checkpoint: skipped (${e.message})") }
+
+        // Archive old database
         if (dbPath.exists()) {
-            // Rotate archives: .010 -> delete, .009 -> .010, ... .001 -> .002, current -> .001
             val archiveDir = java.io.File(filesDir, "db_archive")
             archiveDir.mkdirs()
             for (i in 10 downTo 2) {
@@ -291,41 +303,50 @@ class MainActivity : androidx.fragment.app.FragmentActivity() {
                 val newer = java.io.File(archiveDir, "traveldocs.db.${String.format("%03d", i)}")
                 if (older.exists()) older.renameTo(newer)
             }
-            val archive001 = java.io.File(archiveDir, "traveldocs.db.001")
-            dbPath.copyTo(archive001, overwrite = true)
-            DebugLogger.i("Reset", "Archived DB as ${archive001.name} (${archive001.length()/1024}KB)")
+            val archive = java.io.File(archiveDir, "traveldocs.db.001")
+            dbPath.copyTo(archive, overwrite = true)
+            report.appendLine("DB archived: ${archive.name} (${archive.length()/1024}KB)")
         }
-        // Checkpoint WAL → flush all pending transactions into main DB before archiving
-        try {
-            val flushDb = android.database.sqlite.SQLiteDatabase.openDatabase(dbPath.path, null, android.database.sqlite.SQLiteDatabase.OPEN_READWRITE)
-            flushDb.rawQuery("PRAGMA wal_checkpoint(TRUNCATE)", null).close()
-            flushDb.close()
-            DebugLogger.i("Reset", "WAL checkpoint complete — all transactions flushed to main DB")
-        } catch (e: Exception) {
-            DebugLogger.w("Reset", "WAL checkpoint failed (DB may already be deleted): ${e.message}")
-        }
-        // Now safe to delete — no uncommitted data in WAL
+
+        // Delete database + journals
         deleteDatabase("traveldocs.db")
         java.io.File(dbPath.path + "-wal").delete()
         java.io.File(dbPath.path + "-shm").delete()
-        // Also archive GPS DB
+        report.appendLine("Database deleted: traveldocs.db + WAL/SHM")
+
+        // Delete GPS database
         val gpsDb = getDatabasePath("gps_tracks.db")
-        if (gpsDb.exists()) gpsDb.delete()
-        // Clear ALL shared preferences
+        if (gpsDb.exists()) { gpsDb.delete(); report.appendLine("GPS database deleted") }
+
+        // Clear preferences
         val prefsToWipe = listOf("traveldocs_stats", "encryption_consent", "disclaimer_prefs",
             "splash_prefs", "eula_prefs", "location_tracking_prefs", "feature_flags",
             "app_settings", "tag_colors", "secure_doc_pins", "security_alert_prefs")
         prefsToWipe.forEach { getSharedPreferences(it, MODE_PRIVATE).edit().clear().commit() }
-        // Delete all document files
-        java.io.File(filesDir, "docs").deleteRecursively()
+        report.appendLine("Preferences cleared: ${prefsToWipe.size} stores")
+
+        // Delete document files
+        val docsDir = java.io.File(filesDir, "docs")
+        val docCount = if (docsDir.exists()) docsDir.walkTopDown().filter { it.isFile }.count() else 0
+        docsDir.deleteRecursively()
+        report.appendLine("Document files deleted: $docCount files")
+
         // Delete debug logs
-        java.io.File(filesDir, "debug_logs").deleteRecursively()
-        // Delete crash reports
+        val logsDir = java.io.File(filesDir, "debug_logs")
+        logsDir.deleteRecursively()
+        report.appendLine("Debug logs deleted")
+
+        // Delete crash report
         java.io.File(filesDir, "last_crash_report.txt").delete()
+        report.appendLine("Crash report deleted")
+
         // Delete cache
         cacheDir.deleteRecursively()
-        DebugLogger.w("App", "Reset complete. Killing process.")
-        android.os.Process.killProcess(android.os.Process.myPid())
+        report.appendLine("Cache cleared")
+
+        report.appendLine("")
+        report.appendLine("Reset complete. App needs restart to initialize fresh.")
+        return report.toString()
     }
 }
 
@@ -345,14 +366,21 @@ fun MainScreen(
     var showGearMenu by remember { mutableStateOf(false) }
     var showResetDialog by remember { mutableStateOf(false) }
 
-    var resetStep by remember { mutableIntStateOf(0) } // 0=hidden, 1=first warning, 2=final confirm
+    var resetStep by remember { mutableIntStateOf(0) }
+    
     if (showResetDialog) {
         AlertDialog(
             onDismissRequest = { showResetDialog = false; resetStep = 0 },
             icon = { Icon(Icons.Filled.RestartAlt, null, tint = Color(0xFFF44336)) },
             title = { Text(if (resetStep < 2) "Reset App?" else "ARE YOU SURE?") },
             text = { Column {
-                if (resetStep < 2) {
+                if (resetStep == 3) {
+                    Text("Reset complete. Details:", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                    Spacer(Modifier.height(8.dp))
+                    Text("", fontSize = 11.sp, fontFamily = FontFamily.Monospace, color = Color.Gray)
+                    Spacer(Modifier.height(12.dp))
+                    Text("Tap 'Restart App' to start fresh.", fontSize = 13.sp)
+                } else if (resetStep < 2) {
                     Text("This will PERMANENTLY DELETE:", fontWeight = FontWeight.Bold, fontSize = 14.sp)
                     Spacer(Modifier.height(8.dp))
                     Text("• All imported documents (encrypted files)", fontSize = 13.sp)
@@ -372,8 +400,10 @@ fun MainScreen(
             confirmButton = {
                 if (resetStep < 2) {
                     TextButton(onClick = { resetStep = 2 }) { Text("I understand, continue", color = Color(0xFFF44336)) }
+                } else if (resetStep == 2) {
+                    TextButton(onClick = { onReset(); resetStep = 3 }) { Text("DELETE EVERYTHING", color = Color(0xFFF44336), fontWeight = FontWeight.Bold) }
                 } else {
-                    TextButton(onClick = { showResetDialog = false; resetStep = 0; onReset() }) { Text("DELETE EVERYTHING", color = Color(0xFFF44336), fontWeight = FontWeight.Bold) }
+                    TextButton(onClick = { android.os.Process.killProcess(android.os.Process.myPid()) }) { Text("Restart App") }
                 }
             },
             dismissButton = { TextButton(onClick = { showResetDialog = false; resetStep = 0 }) { Text("Cancel") } }

@@ -61,7 +61,7 @@ object DatabaseModule {
             context,
             TravelDocsDatabase::class.java,
             "traveldocs.db"
-        ).fallbackToDestructiveMigration().build()
+        ).build()
     }
 
     @Provides fun provideDocumentDao(db: TravelDocsDatabase): DocumentDao = db.documentDao()
