@@ -251,8 +251,9 @@ CREATE TABLE family_members (
 ```
 App Launch
     │
-    ├─ disclaimerAccepted? NO → DisclaimerScreen → ConsentScreen → Main
-    ├─ hasConsented? NO → ConsentScreen → Main
+    ├─ eulaAccepted? NO → EulaScreen → SplashScreen → DisclaimerScreen → BiometricAuth → Main
+    ├─ splashSkipped? NO → SplashScreen → DisclaimerScreen → BiometricAuth → Main
+    ├─ disclaimerAccepted? NO → DisclaimerScreen → BiometricAuth → Main
     └─ YES → BiometricAuth → Main
 
 Main Screen (document-focused)

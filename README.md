@@ -210,7 +210,7 @@ Things that would be particularly useful:
 |-----|-------------|
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | System overview, layer architecture, data flows, security model, DB schema |
 | [docs/wireframes.md](docs/wireframes.md) | ASCII wireframes for all screens |
-| [.kiro/specs/…/requirements.md](.kiro/specs/travel-document-manager/requirements.md) | 40 requirements with acceptance criteria |
+| [.kiro/specs/…/requirements.md](.kiro/specs/travel-document-manager/requirements.md) | 47 requirements with acceptance criteria |
 | [.kiro/specs/…/design.md](.kiro/specs/travel-document-manager/design.md) | Component interfaces, algorithms |
 | [PRIVACY_POLICY.md](docs/PRIVACY_POLICY.md) | Privacy policy (required for Play Store) |
 

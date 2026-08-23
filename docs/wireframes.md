@@ -14,9 +14,10 @@
         ┌──────────────┼──────────────┐
         ▼                             ▼
 ┌───────────────┐              ┌───────────────┐
-│ CONSENT &     │              │  PIN ENTRY    │
-│ ONBOARDING    │              │  SCREEN       │
-└───────┬───────┘              └───────┬───────┘
+│ EULA          │              │  BIOMETRIC    │
+│ → SPLASH      │              │  AUTH         │
+│ → DISCLAIMER  │              └───────┬───────┘
+└───────┬───────┘                      │
         │                              │
         ▼                              ▼
 ┌─────────────────────────────────────────────────────┐
@@ -91,7 +92,7 @@
 
 ---
 
-## Screen 2: PIN Entry (Every Launch)
+## Screen 2: Biometric Auth (Every Launch)
 
 ```
 ┌─────────────────────────────────┐
@@ -99,8 +100,8 @@
 │                                 │
 │           🔒                    │
 │                                 │
-│        Enter PIN                │
-│     Unlock your documents       │
+│        Authenticate                │
+│     Use fingerprint or face to unlock       │
 │                                 │
 │                                 │
 │     ┌───────────────────┐       │
