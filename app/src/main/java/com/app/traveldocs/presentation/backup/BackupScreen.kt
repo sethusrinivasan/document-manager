@@ -218,12 +218,40 @@ fun BackupScreen(onBack: () -> Unit) {
 private suspend fun localBackup(context: Context, mgr: BackupManager, uri: Uri, pin: String, done: (String, Boolean) -> Unit) = withContext(Dispatchers.IO) {
     try {
         UsageTelemetry.funnelStart("backup_local")
-        val r = mgr.createBackupZip(context)
+        DebugLogger.i("Backup", "=== LOCAL BACKUP STARTED ===")
+        DebugLogger.i("Backup", "Target folder URI: $uri")
+        DebugLogger.i("Backup", "PIN protected: ${pin.isNotEmpty()}")
+
+        val r = mgr.createBackupZip(context, if (pin.isNotEmpty()) pin else null)
+        DebugLogger.i("Backup", "ZIP created: ${r.fileCount} files, ${r.totalBytes/1024}KB")
+
         val folder = DocumentFile.fromTreeUri(context, uri)
-        val out = folder?.createFile("application/zip", mgr.suggestedFileName())
-        if (out != null) { context.contentResolver.openOutputStream(out.uri)?.use { os -> r.zipFile.inputStream().use { it.copyTo(os) } }; r.zipFile.delete(); UsageTelemetry.funnelComplete("backup_local"); done("${r.fileCount} files, ${r.totalBytes/1024}KB backed up", false) }
-        else done("Failed to create file in folder", true)
-    } catch (e: Exception) { done("Error: ${e.message}", true) }
+        val fileName = mgr.suggestedFileName()
+        val out = folder?.createFile("application/zip", fileName)
+        if (out != null) {
+            context.contentResolver.openOutputStream(out.uri)?.use { os -> r.zipFile.inputStream().use { it.copyTo(os) } }
+            r.zipFile.delete()
+            UsageTelemetry.funnelComplete("backup_local")
+
+            val report = buildString {
+                appendLine("=== Backup Report ===")
+                appendLine("File: $fileName")
+                appendLine("Documents: ${r.fileCount}")
+                appendLine("Total size: ${r.totalBytes / 1024}KB")
+                appendLine("Protected: ${if (pin.isNotEmpty()) "Yes (PIN-encrypted ZIP)" else "No"}")
+                appendLine("Location: ${folder.name}/")
+                appendLine("Completed: ${java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US).format(java.util.Date())}")
+            }
+            DebugLogger.i("Backup", report)
+            done(report, false)
+        } else {
+            DebugLogger.e("Backup", "Failed to create file in target folder")
+            done("Failed to create file in folder", true)
+        }
+    } catch (e: Exception) {
+        DebugLogger.e("Backup", "Backup failed", e)
+        done("Backup error: ${e.message}", true)
+    }
 }
 
 private suspend fun driveBackup(context: Context, mgr: BackupManager, done: (String, Boolean) -> Unit) = withContext(Dispatchers.IO) {
@@ -256,22 +284,63 @@ private suspend fun s3Backup(context: Context, mgr: BackupManager, config: S3Con
 
 private suspend fun doRestore(context: Context, uri: Uri, password: String?, done: (String, Boolean) -> Unit) = withContext(Dispatchers.IO) {
     try {
-        DebugLogger.i("Restore", "Starting restore from $uri (password=${if (password != null) "yes" else "no"})")
+        DebugLogger.i("Restore", "=== RESTORE STARTED ===")
+        DebugLogger.i("Restore", "Source URI: $uri")
+        DebugLogger.i("Restore", "Password provided: ${password != null}")
+
         val bytes = context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
-        if (bytes == null) { done("Cannot read backup file", true); return@withContext }
-        // Write to temp file for Zip4j processing
+        if (bytes == null) { DebugLogger.e("Restore", "Cannot read backup file from URI"); done("Cannot read backup file", true); return@withContext }
+        DebugLogger.i("Restore", "Read ${bytes.size / 1024}KB from source")
+
         val tempZip = java.io.File(context.cacheDir, "restore_temp.zip")
         tempZip.writeBytes(bytes)
+
+        // Step 1: Inspect manifest BEFORE restoring
+        DebugLogger.i("Restore", "--- Step 1: Inspecting backup ---")
+        val inspection = BackupRestore.inspectBackup(context, tempZip, password)
+        if (!inspection.valid) {
+            tempZip.delete()
+            DebugLogger.e("Restore", "Inspection failed: ${inspection.errorMessage}")
+            done("Invalid backup: ${inspection.errorMessage}", true)
+            return@withContext
+        }
+        DebugLogger.i("Restore", "Inspection OK: schema=${inspection.schemaVersion}, files=${inspection.fileCount}, size=${inspection.totalSizeBytes/1024}KB, pinProtected=${inspection.pinProtectedCount}")
+
+        // Step 2: Execute restore
+        DebugLogger.i("Restore", "--- Step 2: Restoring files ---")
         val result = BackupRestore.restoreFromZip(context, tempZip, password)
         tempZip.delete()
-        if (result.success) {
-            // Room will pick up the new database because we deleted WAL/SHM before overwriting.
-            // The existing Room connection will see the fresh DB on next query.
-            done(result.message, false)
-        } else {
-            done(result.message, true)
+
+        // Step 3: Report
+        DebugLogger.i("Restore", "--- Step 3: Report ---")
+        val report = buildString {
+            appendLine("=== Restore Report ===")
+            appendLine("Backup: schema v${inspection.schemaVersion}, from ${inspection.timestamp}")
+            appendLine("Expected: ${inspection.fileCount} documents (${inspection.totalSizeBytes/1024}KB)")
+            appendLine("PIN-protected docs: ${inspection.pinProtectedCount}")
+            appendLine("")
+            appendLine("Processed: ${result.filesProcessed}")
+            appendLine("Restored: ${result.filesRestored}")
+            appendLine("Failed: ${result.filesFailedVerification}")
+            appendLine("Status: ${if (result.success) "SUCCESS" else "FAILED"}")
+            if (result.filesRestored < inspection.fileCount) {
+                appendLine("")
+                appendLine("WARNING: ${inspection.fileCount - result.filesRestored} files not restored")
+            }
+            appendLine("")
+            appendLine("Tap Refresh on home page to see restored documents.")
         }
-    } catch (e: Exception) { done("Restore error: ${e.message}", true) }
+        DebugLogger.i("Restore", report)
+
+        if (result.success) {
+            done(report, false)
+        } else {
+            done("Restore failed: ${result.message}", true)
+        }
+    } catch (e: Exception) {
+        DebugLogger.e("Restore", "Restore exception: ${e.message}", e)
+        done("Restore error: ${e.message}", true)
+    }
 }
 
 private suspend fun presignedUpload(context: android.content.Context, mgr: com.app.traveldocs.data.backup.BackupManager, presignedUrl: String, done: (String, Boolean) -> Unit) = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
