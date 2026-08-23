@@ -89,6 +89,7 @@ class AutoTagGenerationPropertyTest {
             DocumentFormat.PDF -> ".pdf"
             DocumentFormat.JPG -> ".jpg"
             DocumentFormat.PNG -> ".png"
+                else -> ".bin"
         }
         ImportedDocument(rawBytes = rawBytes, format = format, originalFileName = fileName)
     }

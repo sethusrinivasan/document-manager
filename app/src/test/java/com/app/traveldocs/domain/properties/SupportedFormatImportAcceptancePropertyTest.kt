@@ -90,6 +90,8 @@ class SupportedFormatImportAcceptancePropertyTest {
             DocumentFormat.PDF -> PDF_MAGIC
             DocumentFormat.JPG -> JPEG_MAGIC
             DocumentFormat.PNG -> PNG_MAGIC
+            else -> ByteArray(100)
+                
         }
     }
 

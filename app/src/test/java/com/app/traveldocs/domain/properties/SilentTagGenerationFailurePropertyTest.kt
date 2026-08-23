@@ -16,6 +16,7 @@ import io.kotest.property.checkAll
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Tag as JUnitTag
@@ -106,7 +107,7 @@ class SilentTagGenerationFailurePropertyTest {
                 generator.generateTags(docType, metadata)
             }
             // Result must always be a list (possibly empty)
-            assertTrue(result is List<String>, "generateTags must return a List<String>")
+            assertNotNull(result, "generateTags must return a List<String>")
         }
     }
 
@@ -117,7 +118,7 @@ class SilentTagGenerationFailurePropertyTest {
             val result = assertDoesNotThrow {
                 generator.generateTags(docType, emptyMap())
             }
-            assertTrue(result is List<String>, "generateTags must return a List<String> even with empty metadata")
+            assertNotNull(result, "generateTags must return a List<String> even with empty metadata")
         }
     }
 
@@ -130,7 +131,7 @@ class SilentTagGenerationFailurePropertyTest {
             val result = assertDoesNotThrow {
                 generator.generateTags(docType, metadata)
             }
-            assertTrue(result is List<String>, "generateTags must return a List<String> even with very long values")
+            assertNotNull(result, "generateTags must return a List<String> even with very long values")
         }
     }
 
@@ -160,7 +161,7 @@ class SilentTagGenerationFailurePropertyTest {
             val result = assertDoesNotThrow {
                 generator.generateTags(docType, metadata)
             }
-            assertTrue(result is List<String>, "generateTags must return a List<String> with special characters")
+            assertNotNull(result, "generateTags must return a non-null list with special characters")
         }
     }
 
@@ -196,7 +197,7 @@ class SilentTagGenerationFailurePropertyTest {
             val result = assertDoesNotThrow {
                 generator.generateTags(docType, metadata)
             }
-            assertTrue(result is List<String>, "generateTags must return a List<String> with corrupt dates")
+            assertNotNull(result, "generateTags must return a non-null list with corrupt dates")
         }
     }
 }
