@@ -1,10 +1,10 @@
-# Document Manager
+# DocVault
 
-Private, encrypted document storage for Android. No cloud, no accounts, no compromises.
+Private, encrypted document vault for Android. No cloud, no accounts, no compromises.
 
 ## Why this exists
 
-I needed a place to keep passport scans, insurance docs, and travel papers on my phone where:
+I needed a secure place to keep passport scans, insurance docs, and travel papers on my phone where:
 - They're encrypted and locked behind biometrics
 - Nothing gets uploaded anywhere without me explicitly doing it
 - I can find stuff fast with tags and search
@@ -76,6 +76,9 @@ Pre-built APKs are available from [GitHub Releases](https://github.com/sethusrin
 
 No build tools required — just download and install.
 
+### App Name
+This app is called **DocVault** — a secure vault for your important documents.
+
 
 ## Installing on Your Android Device
 
@@ -104,6 +107,11 @@ For general use, download the **release** APK.
 2. Tap the APK file to download it
 3. When prompted, tap **Open** or find it in your Downloads app
 4. Tap **Install** → **Done**
+
+### Notes
+- **App Name:** This app is called **DocVault**
+- **Package Name:** `com.app.traveldocs`
+- When installing, you'll see it as "DocVault" on your app drawer
 
 ### Option B — Install via USB from your computer
 
@@ -135,7 +143,7 @@ adb install document-manager-release.apk
 
 ### After Installing
 
-1. Launch **Document Manager** from your app drawer
+1. Launch **DocVault** from your app drawer
 2. Read and accept the End User License Agreement
 3. The app uses your device's **biometric authentication** (fingerprint/face/PIN) — no separate app password needed
 4. Start importing documents via **Import** button on the home screen
@@ -143,7 +151,7 @@ adb install document-manager-release.apk
 ## Quick start
 
 ```bash
-# You need JDK 17 and Android SDK (API 34)
+# You need JDK 17 and Android SDK (API 36 for Play Store compliance)
 
 # On Ubuntu/Linux, run the setup script
 bash scripts/setup.sh
@@ -195,6 +203,10 @@ The domain layer has zero Android imports. Data implements domain interfaces. Pr
 | Regex NLP (not LLM) | For travel queries. Predictable, testable, no model downloads. Handles the constrained vocab fine. |
 | Hilt | Standard Android DI. ViewModels get auto-scoped. |
 | Kotest property tests | Domain invariants verified with random inputs, not just cherry-picked examples |
+
+## App Name: DocVault
+
+This app is called **DocVault** — a secure vault for your important documents. The name reflects its purpose as an encrypted storage location for sensitive documents.
 
 ## Feature flags
 
@@ -250,6 +262,34 @@ export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home
 export ANDROID_HOME=$HOME/android-dev-tools/android-sdk
 echo "sdk.dir=$ANDROID_HOME" > local.properties
 ```
+
+### Build & Deploy
+
+```bash
+# Build only
+./gradlew assembleDebug       # debug APK
+./gradlew assembleRelease     # release APK (unsigned)
+
+# Build both APK and AAB for Play Store
+./scripts/build-release.sh
+
+# One-command build + deploy (default: release)
+./scripts/deploy.sh
+
+# Or specify variant
+./scripts/deploy.sh release   # production build (minified, no debug logs)
+./scripts/deploy.sh debug     # development build (debug logs, diagnostics)
+```
+
+### App Signing for Play Store
+
+Before publishing to Google Play Store, you need to generate a release keystore:
+
+```bash
+./scripts/release_keystore.sh
+```
+
+This creates `~/release.keystore` used for signing release builds.
 
 ### Build & deploy
 

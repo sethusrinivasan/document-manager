@@ -115,7 +115,7 @@ class CrashHandler(
     }
 
     companion object {
-        private const val DEVELOPER_EMAIL = "developer@documentmanager.app"
+        private const val DEVELOPER_EMAIL = "support@docvault.app"
 
         fun install(context: Context) {
             val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()

@@ -153,7 +153,7 @@
 
     <!-- Privacy & Crash Feedback (Play Store compliance) -->
     <string name="privacy_policy_title">Privacy Policy</string>
-    <string name="privacy_policy_url">https://documentmanager.app/privacy</string>
+    <string name="privacy_policy_url">https://github.com/sethusrinivasan/document-manager/blob/main/docs/PRIVACY_POLICY.md</string>
     <string name="send_crash_report">Send Crash Report</string>
     <string name="crash_report_sent">Crash report ready to send</string>
     <string name="no_crash_report">No crash reports available</string>
