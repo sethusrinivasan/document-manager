@@ -5,61 +5,25 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- Passport body -->
+    <!-- Document shape with rounded corners -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M34,28 L74,28 C76.2,28 78,29.8 78,32 L78,76 C78,78.2 76.2,80 74,80 L34,80 C31.8,80 30,78.2 30,76 L30,32 C30,29.8 31.8,28 34,28 Z"/>
+        android:pathData="M24,22 L84,22 C85.7,22 87,23.3 87,25 L87,83 C87,84.7 85.7,86 84,86 L24,86 C22.3,86 21,84.7 21,83 L21,25 C21,23.3 22.3,22 24,22 Z"/>
 
-    <!-- Passport spine line -->
-    <path
-        android:fillColor="#B3E5FC"
-        android:pathData="M30,28 L36,28 L36,80 L30,80 Z"/>
-
-    <!-- Circle emblem on passport -->
+    <!-- Document page lines (simplified) -->
     <path
         android:fillColor="#1565C0"
-        android:pathData="M54,46 m-10,0 a10,10 0 1,1 20,0 a10,10 0 1,1 -20,0"/>
-
-    <!-- Globe lines inside circle (horizontal) -->
-    <path
-        android:strokeColor="#B3E5FC"
-        android:strokeWidth="0.8"
-        android:fillColor="#00000000"
-        android:pathData="M44.5,44 L63.5,44"/>
-    <path
-        android:strokeColor="#B3E5FC"
-        android:strokeWidth="0.8"
-        android:fillColor="#00000000"
-        android:pathData="M44.5,48 L63.5,48"/>
-
-    <!-- Globe lines inside circle (vertical arc) -->
-    <path
-        android:strokeColor="#B3E5FC"
-        android:strokeWidth="0.8"
-        android:fillColor="#00000000"
-        android:pathData="M54,36 C50,40 50,52 54,56"/>
-    <path
-        android:strokeColor="#B3E5FC"
-        android:strokeWidth="0.8"
-        android:fillColor="#00000000"
-        android:pathData="M54,36 C58,40 58,52 54,56"/>
-
-    <!-- Text lines (representing document text) -->
-    <path
-        android:fillColor="#90CAF9"
-        android:pathData="M40,62 L68,62 C68.6,62 69,62.4 69,63 L69,64 C69,64.6 68.6,65 68,65 L40,65 C39.4,65 39,64.6 39,64 L39,63 C39,62.4 39.4,62 40,62 Z"/>
-    <path
-        android:fillColor="#90CAF9"
-        android:pathData="M40,68 L60,68 C60.6,68 61,68.4 61,69 L61,70 C61,70.6 60.6,71 60,71 L40,71 C39.4,71 39,70.6 39,70 L39,69 C39,68.4 39.4,68 40,68 Z"/>
-
-    <!-- Small shield/lock icon (bottom-right) representing security -->
+        android:pathData="M32,36 L76,36 L76,38 L32,38 Z"/>
     <path
         android:fillColor="#1565C0"
-        android:pathData="M68,72 L68,68 C68,66.3 69.3,65 71,65 C72.7,65 74,66.3 74,68 L74,72 L68,72 Z"/>
-    <path
-        android:fillColor="#FFD600"
-        android:pathData="M66,72 L76,72 L76,79 L71,81 L66,79 Z"/>
+        android:pathData="M32,46 L76,46 L76,48 L32,48 Z"/>
     <path
         android:fillColor="#1565C0"
-        android:pathData="M70,75 L72,75 L72,77 L70,77 Z"/>
+        android:pathData="M32,56 L76,56 L76,58 L32,58 Z"/>
+
+    <!-- Security lock icon (bottom-right, simple) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M66,68 L72,68 L72,72 L66,72 Z M66,73 L72,73 L72,80 L69,82 L66,80 Z M66,70 C66,69.4 66.4,69 67,69 L71,69 C71.6,69 72,69.4 72,70 L72,73 L66,73 Z"/>
+
 </vector>

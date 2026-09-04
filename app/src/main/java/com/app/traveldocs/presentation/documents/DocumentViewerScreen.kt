@@ -191,14 +191,32 @@ fun DocumentViewerScreen(
                         } else { CircularProgressIndicator(Modifier.size(36.dp)) }
                     }
                     fileBytes != null && document.format == DocumentFormat.PDF -> {
-                        val pdfInfoState = produceState<Triple<File, android.os.ParcelFileDescriptor, android.graphics.pdf.PdfRenderer>?>(null, fileBytes) { value = withContext(Dispatchers.IO) { try { val f = File.createTempFile("p", ".pdf", context.cacheDir); f.writeBytes(fileBytes!!); val fd = android.os.ParcelFileDescriptor.open(f, android.os.ParcelFileDescriptor.MODE_READ_ONLY); Triple(f, fd, android.graphics.pdf.PdfRenderer(fd)) } catch (e: Exception) { null } } }
+                        val pdfInfoState = produceState<Triple<File, android.os.ParcelFileDescriptor, android.graphics.pdf.PdfRenderer>?>(null, fileBytes) { value = withContext(Dispatchers.IO) { 
+                            try { 
+                                val f = File.createTempFile("p", ".pdf", context.cacheDir); f.writeBytes(fileBytes!!); val fd = android.os.ParcelFileDescriptor.open(f, android.os.ParcelFileDescriptor.MODE_READ_ONLY); Triple(f, fd, android.graphics.pdf.PdfRenderer(fd)) 
+                            } catch (e: Exception) { 
+                                DebugLogger.e("PDF", "PDFRenderer creation failed: ${e.message}", e); null 
+                            } 
+                        } }
                         val pdfInfo = pdfInfoState.value
-                        if (pdfInfo != null) { val (_, _, renderer) = pdfInfo; val pageCount = renderer.pageCount; val pdfDispatcher = remember { Executors.newSingleThreadExecutor().asCoroutineDispatcher() }; var pdfScale by remember { mutableFloatStateOf(1f) }; var ox by remember { mutableFloatStateOf(0f) }; var oy by remember { mutableFloatStateOf(0f) }
+                        if (pdfInfo != null) { val (pdfFile, fd, renderer) = pdfInfo; val pageCount = renderer.pageCount; val pdfDispatcher = remember { Executors.newSingleThreadExecutor().asCoroutineDispatcher() }; var pdfScale by remember { mutableFloatStateOf(1f) }; var ox by remember { mutableFloatStateOf(0f) }; var oy by remember { mutableFloatStateOf(0f) }
                             Box(Modifier.fillMaxSize().pointerInput(Unit) { detectTransformGestures { _, pan, zoom, _ -> pdfScale = (pdfScale * zoom).coerceIn(1f, 5f); if (pdfScale > 1f) { ox += pan.x; oy += pan.y } else { ox = 0f; oy = 0f } } }) {
                                 LazyColumn(Modifier.fillMaxSize().background(Color.White).graphicsLayer(scaleX = pdfScale, scaleY = pdfScale, translationX = ox, translationY = oy)) {
-                                    items(pageCount) { idx -> val bmpState = produceState<Bitmap?>(null, idx) { value = withContext(pdfDispatcher) { try { val page = renderer.openPage(idx); val bmp = Bitmap.createBitmap(page.width * 2, page.height * 2, Bitmap.Config.ARGB_8888); bmp.eraseColor(android.graphics.Color.WHITE); page.render(bmp, null, null, android.graphics.pdf.PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY); page.close(); bmp } catch (e: Exception) { null } } }
-                                        val bmp = bmpState.value; if (bmp != null) { Image(bitmap = bmp.asImageBitmap(), contentDescription = "Page ${idx+1}", modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp), contentScale = ContentScale.FillWidth) } else { Box(Modifier.fillMaxWidth().height(300.dp).background(Color(0xFFF5F5F5)), contentAlignment = Alignment.Center) { CircularProgressIndicator(Modifier.size(24.dp)) } } } } }
-                        } else { Column(horizontalAlignment = Alignment.CenterHorizontally) { Icon(Icons.Filled.PictureAsPdf, null, tint = Color(0xFFF44336), modifier = Modifier.size(64.dp)); Text("PDF preview failed", color = Color.Gray) } }
+                                    items(pageCount) { idx -> 
+                                        val bmpState = produceState<Bitmap?>(null, idx) { 
+                                            value = withContext(pdfDispatcher) { 
+                                                try { 
+                                                    val page = renderer.openPage(idx); val bmp = Bitmap.createBitmap(page.width * 2, page.height * 2, Bitmap.Config.ARGB_8888); bmp.eraseColor(android.graphics.Color.WHITE); page.render(bmp, null, null, android.graphics.pdf.PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY); page.close(); bmp 
+                                                } catch (e: Exception) { 
+                                                    DebugLogger.e("PDF", "Page render failed: idx=$idx, err=${e.message}", e); null 
+                                                } 
+                                            } 
+                                        }
+                                        val bmp = bmpState.value; if (bmp != null) { Image(bitmap = bmp.asImageBitmap(), contentDescription = "Page ${idx+1}", modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp), contentScale = ContentScale.FillWidth) } else { Box(Modifier.fillMaxWidth().height(300.dp).background(Color(0xFFF5F5F5)), contentAlignment = Alignment.Center) { Column { CircularProgressIndicator(Modifier.size(24.dp)); Text("Page ${idx+1} loading", fontSize = 11.sp, color = Color.Gray) } } } 
+                                    } 
+                                }
+                            }
+                        } else { Column(horizontalAlignment = Alignment.CenterHorizontally) { Icon(Icons.Filled.PictureAsPdf, null, tint = Color(0xFFF44336), modifier = Modifier.size(64.dp)); Spacer(Modifier.height(8.dp)); Text("PDF preview failed", fontSize = 13.sp, color = Color.Gray); Text("File may be corrupted or not a valid PDF", fontSize = 11.sp, color = Color(0xFF9E9E9E)) } }
                     }
                     fileBytes != null && (document.format == DocumentFormat.VIDEO || document.format == DocumentFormat.AUDIO) -> { Column(horizontalAlignment = Alignment.CenterHorizontally) { Icon(Icons.Filled.OpenInNew, null, tint = Color(0xFF2196F3), modifier = Modifier.size(64.dp)); Spacer(Modifier.height(12.dp)); Text(if (document.format == DocumentFormat.AUDIO) "Audio" else "Video", fontSize = 16.sp); Text("${fileBytes!!.size / 1024} KB", color = Color.Gray, fontSize = 13.sp); Spacer(Modifier.height(16.dp)); Button(onClick = {
                             val mime = if (document.format == DocumentFormat.AUDIO) "audio/mpeg" else "video/mp4"

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Document Manager</string>
+    <string name="app_name">DocVault</string>
 
     <!-- Main Screen -->
     <string name="main_title">Travel Documents</string>
@@ -110,7 +110,7 @@
 
     <!-- Consent / Onboarding -->
     <string name="welcome">Welcome</string>
-    <string name="welcome_subtitle">Document Manager</string>
+    <string name="welcome_subtitle">DocVault</string>
     <string name="encryption_explanation">Your documents will be encrypted with AES-256 and protected by a PIN. All data stays on this device. No cloud, no servers.</string>
     <string name="create_pin">Create your PIN</string>
     <string name="pin_label">PIN (4–8 digits)</string>
