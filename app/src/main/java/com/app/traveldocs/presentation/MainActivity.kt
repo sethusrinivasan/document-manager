@@ -422,7 +422,7 @@ fun MainScreen(
                             DropdownMenuItem(text = { Text("About") }, onClick = { showGearMenu = false; onAbout() })
                             DropdownMenuItem(text = { Text("Feedback") }, onClick = { showGearMenu = false; onFeedback() })
                             if (com.app.traveldocs.data.local.FeatureFlags.isExperimentalEnabled(context) && com.app.traveldocs.data.local.FeatureFlags.isBackupRestoreEnabled(context)) DropdownMenuItem(text = { Text("Backup (Preview)") }, onClick = { showGearMenu = false; onBackup() })
-                            if (BuildConfig.DEBUG || com.app.traveldocs.data.local.FeatureFlags.isExperimentalEnabled(context)) DropdownMenuItem(text = { Text("Diagnostics") }, onClick = { showGearMenu = false; onDiagnostics() })
+                            if (com.app.traveldocs.data.local.FeatureFlags.isExperimentalEnabled(context)) DropdownMenuItem(text = { Text("Diagnostics") }, onClick = { showGearMenu = false; onDiagnostics() })
                             if (com.app.traveldocs.data.local.FeatureFlags.isExperimentalEnabled(context) && com.app.traveldocs.data.local.FeatureFlags.isBackupRestoreEnabled(context)) DropdownMenuItem(text = { Text("Restore (Preview)") }, onClick = { showGearMenu = false; onRestore() })
                             DropdownMenuItem(text = { Text("Review & Classify") }, onClick = { showGearMenu = false; onReview() })
                             if (com.app.traveldocs.data.local.FeatureFlags.isExperimentalEnabled(context) && com.app.traveldocs.data.local.FeatureFlags.isWifiShareEnabled(context)) DropdownMenuItem(text = { Text("WiFi Share") }, onClick = { showGearMenu = false; onWebShare() })

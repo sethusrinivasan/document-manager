@@ -16,8 +16,8 @@ android {
             abiFilters += listOf("arm64-v8a")
         }
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -31,12 +31,12 @@ android {
 
     signingConfigs {
         create("release") {
-            // For development/testing: uses debug keystore
-            // Replace with proper keystore before Play Store publishing
-            storeFile = file(System.getenv("HOME") + "/.android/debug.keystore")
-            storePassword = "android"
-            keyAlias = "androiddebugkey"
-            keyPassword = "android"
+            // Release keystore - replace with your own before Play Store publishing
+            // Generate with: ./scripts/release_keystore.sh
+            storeFile = file(System.getenv("HOME") + "/release.keystore")
+            storePassword = "documentmanager2024"
+            keyAlias = "upload_key"
+            keyPassword = "documentmanager2024"
         }
     }
 
@@ -131,8 +131,8 @@ dependencies {
     // ML Kit Text Recognition v2
     implementation("com.google.mlkit:text-recognition:16.0.0")
 
-    // ML Kit Document Scanner
-    implementation("com.google.android.gms:play-services-mlkit-document-scanner:16.0.0-beta1")
+    // ML Kit Document Scanner (stable version)
+    implementation("com.google.android.gms:play-services-mlkit-document-scanner:16.0.0")
 
     // Google Drive API
     implementation("com.google.api-client:google-api-client-android:2.2.0")

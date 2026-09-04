@@ -144,8 +144,14 @@ adb install document-manager-release.apk
 
 ```bash
 # You need JDK 17 and Android SDK (API 34)
-source scripts/setup-env.sh   # or set JAVA_HOME and ANDROID_HOME manually
 
+# On Ubuntu/Linux, run the setup script
+bash scripts/setup.sh
+
+# On macOS, run the setup script
+bash scripts/setup.sh
+
+# Then build
 ./gradlew assembleDebug
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
@@ -217,15 +223,31 @@ Yeah, there's a DICOM viewer. Built from scratch — no library. Parses the tag-
 
 ### Prerequisites
 
-- **JDK 17** — Azul Zulu works well: `brew install --cask zulu17`
+- **JDK 17** — Azul Zulu or Temurin work well
 - **Android SDK** — API 34, Build Tools 34.0.0
 - **A phone or emulator** — Tested on Pixel 10a (arm64)
 
 ### Environment
 
+For **Ubuntu/Linux**:
 ```bash
-export JAVA_HOME=~/android-dev-tools/zulu17.54.21-ca-jdk17.0.13-macosx_x64
-export ANDROID_HOME=~/android-dev-tools/android-sdk
+# Run the setup script to install all dependencies
+bash scripts/setup.sh
+
+# Or manually configure environment
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+export ANDROID_HOME=$HOME/android-dev-tools/android-sdk
+echo "sdk.dir=$ANDROID_HOME" > local.properties
+```
+
+For **macOS**:
+```bash
+# Run the setup script to install all dependencies
+bash scripts/setup.sh
+
+# Or manually configure environment
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home
+export ANDROID_HOME=$HOME/android-dev-tools/android-sdk
 echo "sdk.dir=$ANDROID_HOME" > local.properties
 ```
 

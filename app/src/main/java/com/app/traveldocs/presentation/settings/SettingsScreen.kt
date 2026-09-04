@@ -52,9 +52,9 @@ fun SettingsScreen(onBack: () -> Unit) {
         Column(modifier = Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp)) {
             Text("Experimental Features", fontWeight = FontWeight.Bold, fontSize = 16.sp)
             Spacer(Modifier.height(4.dp))
-            Text("Enable features that are in development. May be unstable.", fontSize = 12.sp, color = Color.Gray)
+            Text("Enable features that are in development. May be unstable.", fontSize = 12.sp)
             Spacer(Modifier.height(12.dp))
-            Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = Color(0xFFF3E5F5))) {
+            Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     ToggleRow("Enable Experimental Features", experimental) { experimental = it; FeatureFlags.setExperimental(context, it) }
                     if (experimental) {
@@ -162,7 +162,7 @@ private fun ToggleRow(label: String, checked: Boolean, onChanged: (Boolean) -> U
 @Composable
 private fun SubToggleRow(label: String, checked: Boolean, onChanged: (Boolean) -> Unit) {
     Row(modifier = Modifier.fillMaxWidth().padding(start = 24.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(label, modifier = Modifier.weight(1f), fontSize = 13.sp, color = Color(0xFF616161))
+        Text(label, modifier = Modifier.weight(1f), fontSize = 13.sp)
         Switch(checked = checked, onCheckedChange = onChanged)
     }
 }

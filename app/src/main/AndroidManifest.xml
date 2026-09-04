@@ -94,8 +94,7 @@
         <!-- Audio playback service for Android Auto + system media controls -->
         <service
             android:name=".media.AudioPlaybackService"
-            android:exported="true"
-            tools:ignore="ExportedService">
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
