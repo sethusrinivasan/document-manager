@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.app.traveldocs"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.app.traveldocs"
@@ -15,7 +15,7 @@ android {
         ndk {
             abiFilters += listOf("arm64-v8a")
         }
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 2
         versionName = "1.0.1"
 

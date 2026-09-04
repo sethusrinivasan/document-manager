@@ -58,4 +58,4 @@ We may update this policy. Changes will be noted in the app's About section.
 
 ## Contact
 
-For questions about this privacy policy, contact: developer@documentmanager.app
+For questions about this privacy policy, contact via: https://github.com/sethusrinivasan/document-manager/issues

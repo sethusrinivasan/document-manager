@@ -20,7 +20,7 @@ if [ "$VARIANT" = "debug" ]; then
     APK="$PROJECT_DIR/app/build/outputs/apk/debug/app-debug.apk"
 else
     "$PROJECT_DIR/gradlew" -p "$PROJECT_DIR" assembleRelease --no-daemon
-    APK="$PROJECT_DIR/app/build/outputs/apk/release/app-release-unsigned.apk"
+    APK="$PROJECT_DIR/app/build/outputs/apk/release/app-release.apk"
 fi
 
 if [ ! -f "$APK" ]; then
