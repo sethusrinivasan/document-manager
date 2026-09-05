@@ -140,7 +140,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:21.1.0")
 
     // BouncyCastle (Argon2id)
-    implementation("org.bouncycastle:bcprov-jdk18on:1.77")
+    implementation("org.bouncycastle:bcprov-jdk18on:1.84")
 
     // Security / AndroidKeyStore
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
