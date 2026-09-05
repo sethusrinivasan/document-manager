@@ -24,8 +24,7 @@ import kotlin.test.assertTrue
  *
  * **Validates: Requirements 8.7**
  */
-@DisplayName("Property 21: Family size scaling")
-@Tag("Feature: travel-document-manager, Property 21: Family size scaling")
+@DisplayName("Property Test")
 class FamilySizeScalingPropertyTest {
 
     private lateinit var generator: BasicDocumentChecklistGenerator

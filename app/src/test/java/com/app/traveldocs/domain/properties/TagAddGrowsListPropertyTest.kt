@@ -14,7 +14,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Tag as JUnitTag
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -27,8 +26,8 @@ import kotlin.test.assertTrue
  *
  * **Validates: Requirements 6.2**
  */
-@DisplayName("Property 13: Adding a tag grows the tag list")
-@JUnitTag("Feature: travel-document-manager, Property 13: Adding a tag grows the tag list")
+@DisplayName("Property Test")
+// Removed JUnitTag - invalid syntax
 class TagAddGrowsListPropertyTest {
 
     private lateinit var documentTagDao: DocumentTagDao
