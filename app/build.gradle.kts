@@ -111,7 +111,7 @@ dependencies {
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.biometric:biometric:1.1.0")
 
-    implementation("androidx.documentfile:documentfile:1.0.1")
+    implementation("androidx.documentfile:documentfile:1.1.0")
     implementation("net.lingala.zip4j:zip4j:2.11.5")
     implementation("org.nanohttpd:nanohttpd:2.3.1")
     implementation("androidx.media:media:1.7.0")  // MediaBrowserService for Android Auto
