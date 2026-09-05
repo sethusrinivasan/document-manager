@@ -89,7 +89,7 @@ android {
 
 dependencies {
     // Kotlin
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
 
     // Jetpack Compose + Material 3
     val composeBom = platform("androidx.compose:compose-bom:2024.09.00")
@@ -164,7 +164,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.9.22")
 
     // Coroutines Test
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")
 
     // Android Instrumentation Tests
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
