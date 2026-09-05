@@ -15,7 +15,6 @@ import io.kotest.property.checkAll
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Tag as JUnitTag
 import org.junit.jupiter.api.Test
 import java.time.Instant
 import kotlin.test.assertEquals
@@ -29,8 +28,8 @@ import kotlin.test.assertTrue
  *
  * **Validates: Requirements 9.5, 9.6, 9.7**
  */
-@DisplayName("Property 21: Missing document detection")
-@JUnitTag("Feature: travel-document-manager, Property 21: Missing document detection")
+@DisplayName("Property Test")
+// Removed JUnitTag - invalid syntax
 class MissingDocumentDetectionPropertyTest {
 
     private lateinit var generator: BasicDocumentChecklistGenerator

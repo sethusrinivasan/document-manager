@@ -32,8 +32,7 @@ import org.junit.jupiter.api.Test
  *
  * **Validates: Requirements 5.2, 5.3, 5.4, 5.5, 5.6**
  */
-@DisplayName("Property 9: Document type to tag mapping")
-@Tag("Feature: travel-document-manager, Property 9: Document type to tag mapping")
+@DisplayName("Property Test")
 class DocumentTypeToTagMappingPropertyTest {
 
     private lateinit var autoTagGenerator: AutoTagGeneratorImpl

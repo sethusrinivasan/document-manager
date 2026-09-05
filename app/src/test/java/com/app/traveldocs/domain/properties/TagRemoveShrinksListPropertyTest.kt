@@ -15,7 +15,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Tag as JUnitTag
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -29,8 +28,8 @@ import kotlin.test.assertTrue
  *
  * **Validates: Requirements 6.3**
  */
-@DisplayName("Property 14: Removing a tag shrinks the tag list")
-@JUnitTag("Feature: travel-document-manager, Property 14: Removing a tag shrinks the tag list")
+@DisplayName("Property Test")
+// Removed JUnitTag - invalid syntax
 class TagRemoveShrinksListPropertyTest {
 
     private lateinit var documentTagDao: DocumentTagDao

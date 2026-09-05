@@ -16,7 +16,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Tag as JUnitTag
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -29,8 +28,8 @@ import kotlin.test.assertTrue
  *
  * **Validates: Requirements 6.4**
  */
-@DisplayName("Property 15: Tag deduplication (idempotence)")
-@JUnitTag("Feature: travel-document-manager, Property 15: Tag deduplication (idempotence)")
+@DisplayName("Property Test")
+// Removed JUnitTag - invalid syntax
 class TagDeduplicationPropertyTest {
 
     private lateinit var documentTagDao: DocumentTagDao

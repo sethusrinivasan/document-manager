@@ -28,8 +28,7 @@ import org.junit.jupiter.api.Test
  *
  * **Validates: Requirements 5.7**
  */
-@DisplayName("Property 10: Destination tag generation")
-@Tag("Feature: travel-document-manager, Property 10: Destination tag generation")
+@DisplayName("Property Test")
 class DestinationTagPropertyTest {
 
     private lateinit var generator: AutoTagGeneratorImpl

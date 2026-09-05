@@ -25,8 +25,7 @@ import org.junit.jupiter.api.Test
  *
  * **Validates: Requirements 5.8**
  */
-@DisplayName("Property 11: Date-range tag generation")
-@Tag("Feature: travel-document-manager, Property 11: Date-range tag generation")
+@DisplayName("Property Test")
 class DateRangeTagPropertyTest {
 
     private lateinit var generator: AutoTagGeneratorImpl
