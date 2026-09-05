@@ -129,7 +129,7 @@ dependencies {
     ksp("androidx.room:room-compiler:$roomVersion")
 
     // ML Kit Text Recognition v2
-    implementation("com.google.mlkit:text-recognition:16.0.0")
+    implementation("com.google.mlkit:text-recognition:16.0.1")
 
     // ML Kit Document Scanner (stable version)
     implementation("com.google.android.gms:play-services-mlkit-document-scanner:16.0.0")
