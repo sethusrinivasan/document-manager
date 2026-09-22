@@ -2,7 +2,7 @@
 # Lifecycle 2.11, Navigation 2.10, Hilt Navigation 1.4, Compose BOM 2026.08+
 # require AGP 9 + compileSdk 37.
 [versions]
-agp = "8.13.2"
+agp = "9.4.1"
 kotlin = "2.2.21"
 ksp = "2.2.21-2.0.5"
 hilt = "2.58"
