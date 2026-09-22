@@ -16,37 +16,26 @@ Keep a copy of your family travel papers on this device. Encrypted. No account. 
 
 ## Why this exists
 
-A place to keep passport scans, visas, tickets, and insurance on the phone where:
-
-- They are encrypted and unlocked with the device's fingerprint, face, or screen lock
-- Nothing is uploaded unless you share a file or export an archive
-- You can find a page with tags and on-device OCR
-- Large PDFs do not hang the app
-
-Paperstow is open source (Apache 2.0). Issues and PRs are welcome.
+Paperstow keeps a family's travel papers — passports, visas, tickets, hotel bookings, insurance — on this phone so they stay searchable at the gate. Files are encrypted on the device. Unlock uses the phone's fingerprint, face, or screen lock. The app works in airplane mode.
 
 ## What it does
 
-- **Import** a file, the on-device document scanner / camera, or a local folder (subfolder names become tags). Other apps can also share PDFs, images, and text into Paperstow.
-- **OCR** (bundled ML Kit Latin) reads photos and PDF pages, suggests a type (passport, visa, ticket, and similar), and stores extracted text for search.
+- **Import** a PDF or photo, scan a page with the on-device document scanner, or pull in a folder (subfolder names become tags). Other apps can share a file into Paperstow.
+- **Read the page** with bundled ML Kit Latin OCR. The app may suggest a type (passport, visa, ticket, and similar) and keep extracted text so Search can find words from the page.
 - **Encrypt** each file with AES-256-GCM. Keys stay in Android KeyStore.
-- **Notes and checklists** you write on the phone, with tags.
-- **Search** by filename, tags, and extracted page text. Settings can rebuild the index with progress.
-- **Share** through Android's share sheet.
-- **Archive and restore** a ZIP to a folder you pick. Password is optional (blank = unencrypted ZIP). Restore asks for a password only if the archive is protected. Restore verifies the backup database before swapping it in.
-- **My Trail** (optional) keeps unique places from the last 24 hours on this phone, with battery at each save. You can include it in a backup as GPX. Locations are not uploaded.
-- **Dark theme**, show/hide home tips, and **Reset App** (Settings → Danger zone).
-- **About** shows version, package name, and the CycloneDX SBOM generated every build and packaged in the APK.
+- **Organize** with tags, folder art on Home, notes, and checklists.
+- **Search** by filename, tag, or text from the page. Settings can rebuild that index on the phone.
+- **Share** a copy through Android's share sheet when someone needs it.
+- **Archive and restore** a ZIP to a folder you pick when you change phones. A password is optional. Restore checks the backup database before swapping it in.
+- **My Trail** (optional) keeps unique places from the last 24 hours on this phone, with battery at each save, and can add them to a backup as GPX.
+- **Settings** cover dark theme, home tips, optional on-device usage counts, search rebuild, and Reset App.
+- **About** shows version, package name (`com.app.paperstow`), and the CycloneDX SBOM built into that APK.
 
-There is **no** Google Drive, S3, Wi-Fi share, Android Auto, URL import, or experimental-feature master switch. Those were removed from the Play build. Leftover `FeatureFlags` readers return off / backup-always-on so old preference files do not crash.
+A member can hold up to 100 documents, 20 tags each. Folder import takes up to 500 files.
 
-Limits that still apply: 100 documents per family member, 20 tags per document, 500 files per folder import.
+## How it stays on the device
 
-## Principles
-
-1. Documents never leave the phone unless you share or export them.
-2. No telemetry without an explicit opt-in. Counts stay on the device.
-3. Core use works offline. Internet is only for an optional ML Kit / scanner model refresh.
+Papers stay on this phone unless you share a file or export an archive. Optional telemetry is off until you turn it on; counts never leave the device by themselves. Everyday use works offline. The only network the app may use is an ML Kit / scanner model refresh from Play services.
 
 ## Built with AI
 
@@ -138,7 +127,7 @@ app/src/main/java/com/app/paperstow/
 │   ├── usecase/
 │   └── safety/          # My Trail uniqueness + GPX
 ├── data/
-│   ├── local/           # Room (traveldocs.db v4), crypto, search index, feature-flag stubs
+│   ├── local/           # Room (traveldocs.db v4), crypto, search index
 │   ├── importer/        # File / folder import
 │   ├── scanner/         # ML Kit OCR + document scanner
 │   ├── nlp/             # Regex travel parser + checklist generator
@@ -153,19 +142,19 @@ app/src/main/java/com/app/paperstow/
 └── debug/               # Logger, crash handler, optional local telemetry
 ```
 
-`data/dicom`, `data/drive`, `data/webserver`, and `media` still exist as leftover source. They are not offered in the UI. Room database filename stays `traveldocs.db` so older backups can restore.
+Room still uses the filename `traveldocs.db` so older backups can restore.
 
 ## Tech choices
 
 | Choice | Why |
 |--------|-----|
 | Compose + Material 3 | Single-activity UI |
-| Room without SQLCipher | Each file is encrypted. The DB holds metadata, OCR text, tags, and My Trail points. SQLCipher added size and alignment cost. |
+| Room (metadata only) | Each file is encrypted separately. The DB holds names, OCR text, tags, and My Trail points. |
 | AES-256-GCM per file | KeyStore-backed. Losing one file does not expose others. |
 | Transportable backup ZIP | Archive decrypts files into the ZIP so another phone can restore. Optional Zip4j AES password. |
-| BiometricPrompt | Device fingerprint / face / screen lock. No separate app PIN. |
-| Bundled ML Kit Latin | Offline OCR for photos and the first four PDF pages (rendered on a white bitmap). |
-| Regex NLP | Constrained travel queries. No on-device LLM. |
+| BiometricPrompt | Unlock with this phone's fingerprint, face, or screen lock. |
+| Bundled ML Kit Latin | OCR for photos and the first four PDF pages (rendered on a white bitmap). |
+| Regex NLP | Constrained travel queries (for example, what to pack for a trip). |
 | Hilt | Standard Android DI |
 | Kotest property tests | Domain invariants with random inputs |
 | CycloneDX SBOM | Generated per variant into assets; About can show it |
@@ -174,9 +163,9 @@ app/src/main/java/com/app/paperstow/
 
 - PDF pages render one at a time (`PdfRenderer` thread affinity).
 - HEIC import needs API 28+.
-- The NLP parser is regex. It will not answer open-ended questions.
+- Travel queries use a small regex parser.
 - Folder import over SAF is slow on very large trees (Binder per file); work runs on `Dispatchers.IO`.
-- A leftover `com.app.traveldocs` install is a separate app. Data and KeyStore keys do not migrate automatically.
+- Installing `com.app.paperstow` sits beside an older `com.app.traveldocs` install if one is still on the phone.
 
 Library-level notes: [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md).
 
@@ -219,7 +208,7 @@ CI (`.github/workflows/build.yml`) uses `android-actions/setup-android@v4` with 
 
 Fork, branch from `main`, open a PR. Keep commits focused.
 
-Useful work: compressed DICOM (not in the current UI), a better on-device parser, UI polish, accessibility, and instrumentation tests with real fixtures.
+Useful work: a stronger on-device parser, UI polish, accessibility, and instrumentation tests with real fixtures.
 
 ## Security
 
@@ -246,7 +235,7 @@ How to report a vulnerability: [SECURITY.md](SECURITY.md).
 | [LICENSE](LICENSE) / [NOTICE](NOTICE) | Apache 2.0 + attribution |
 | [docs/demo/paperstow-emulator-demo.mp4](docs/demo/paperstow-emulator-demo.mp4) | Emulator demo (sample trip) |
 | [docs/KIRO_GENERATION_PROMPT.md](docs/KIRO_GENERATION_PROMPT.md) | Historical generation prompt |
-| [.kiro/specs/…](.kiro/specs/travel-document-manager/requirements.md) | Original spec (not the shipping feature set) |
+| [.kiro/specs/…](.kiro/specs/travel-document-manager/requirements.md) | Original Kiro spec |
 
 ## License
 
