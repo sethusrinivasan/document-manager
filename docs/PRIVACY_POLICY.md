@@ -1,61 +1,48 @@
-# Privacy Policy — Document Manager
+# Privacy Policy — Paperstow
 
-**Last updated:** 2025-01-01
+**Last updated:** 2026-09-21
 
 ## Overview
 
-Document Manager ("the App") is a document storage and organization app for Android. We respect your privacy and are committed to protecting your personal data.
+Paperstow ("the App") is a local vault for travel papers on Android. Passports, visas, tickets, and similar files stay on your device. The App has no backend server and does not create an account.
 
-## Data Collection
+## Data collection
 
-### What we collect (with your consent)
-- **Anonymous usage telemetry**: Feature usage counts (e.g., "import used 5 times") to improve the app. No document content is collected. This is opt-in only.
+### Optional, on-device only
+- **Usage telemetry** (opt-in): anonymous feature-use counts such as "import used 5 times." No document content, file names, or personal identifiers. Stored locally. Nothing is sent unless you choose to share a report.
 
-### What we do NOT collect
+### What we do not collect
 - Document content or files
 - Personal identification information
-- Location history (GPS data stays on-device only)
-- Photos or camera data
+- Location or GPS history
 - Contacts or phone numbers
+- Photos except those you explicitly import
 
-## Data Storage
+## Data storage
 
-All documents, metadata, and settings are stored **locally on your device only**. The App does not have a backend server and does not transmit your documents anywhere unless you explicitly use the Share, Backup, or Export features.
+All documents, metadata, and settings are stored **locally on your device**. Files are encrypted with AES-256-GCM using keys in Android KeyStore. The App does not transmit documents unless you use Android's share sheet or export a password-protected archive to a folder you choose.
 
 ## Permissions
 
-| Permission | Purpose | When Requested |
+| Permission | Purpose | When requested |
 |-----------|---------|----------------|
-| Camera | Scan documents using phone camera | When you tap "Take Photo" |
-| Location | Tag documents with import location; GPS tracking (opt-in) | When you first import a document |
-| Internet | Google Drive backup/restore, S3 backup (opt-in) | When you configure cloud backup |
-| Notifications | GPS tracking indicator, crash report notification | When GPS tracking is enabled |
+| Camera | Scan a document | When you tap Take Photo |
+| Internet | Optional first-run download of the on-device ML Kit OCR model | Not prompted; used only if the model is not already present |
 
-All permissions are requested at the time of use, not on first launch. Denying any permission does not break core app functionality.
+Denying camera permission does not break file or folder import, viewing, search, or share.
 
-## Third-Party Services
+## Third-party libraries
 
-- **Google Drive API** (optional): Used only when you choose to backup/restore via Google Drive. Only accesses files created by this app.
-- **ML Kit** (on-device): Text recognition runs entirely on your device. No data is sent to Google servers.
+- **ML Kit Text Recognition** (on-device): OCR runs on your device. Google's ML Kit may download its recognition model on first use. Document images are not uploaded to a Paperstow server.
 
-## Data Sharing
+## Data sharing
 
-We do not sell, trade, or share your data with any third parties. When you use the Share feature, data is shared only with the app you choose (email, WhatsApp, etc.) via Android's standard share mechanism.
+We do not sell or share your data. If you use Share or Archive, you choose the destination app or folder. That destination is then subject to its own policies.
 
-## Security
+## Children's privacy
 
-- Documents are encrypted with AES-256-GCM using keys stored in Android KeyStore (hardware-backed)
-- Biometric authentication protects access to the app
-- Temporary shared files are cleaned up automatically
-
-## Children's Privacy
-
-This app is not directed at children under 13 and does not knowingly collect data from children.
-
-## Changes
-
-We may update this policy. Changes will be noted in the app's About section.
+This App is not directed at children under 13 and does not knowingly collect data from children.
 
 ## Contact
 
-For questions about this privacy policy, contact via: https://github.com/sethusrinivasan/document-manager/issues
+https://github.com/sethusrinivasan/document-manager/issues

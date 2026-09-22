@@ -18,7 +18,7 @@ Thumbs.db
 google-services.json
 
 # Debug output
-app/src/main/java/com/app/traveldocs/debug/debug_logs/
+app/src/main/java/com/app/paperstow/debug/debug_logs/
 
 # Build artifacts
 build_output.txt

@@ -17,7 +17,7 @@ A privacy-first, offline-first document management app. No backend server. No cl
 - Domain layer: pure Kotlin, zero Android imports except android.net.Uri
 - Data layer: Room, ML Kit, AES-256-GCM file encryption, Hilt DI
 - Presentation: Jetpack Compose + Material 3, single Activity, state-driven navigation
-- Package: com.app.traveldocs
+- Package: com.app.paperstow
 - Min SDK: 26, Target SDK: 34, ABI: arm64-v8a only
 - JDK 17 (Zulu), Gradle 8.5, AGP 8.2.2
 
@@ -25,9 +25,8 @@ A privacy-first, offline-first document management app. No backend server. No cl
 - AES-256-GCM per-file encryption with Android KeyStore (alias: "travel_docs_file_encryption_key")
 - File format: [12-byte IV][AES-GCM ciphertext] stored as {fileId}.enc
 - Biometric authentication on every launch (BiometricPrompt, BIOMETRIC_STRONG | DEVICE_CREDENTIAL)
-- Per-document optional PIN using PBKDF2-SHA256 (10K iterations) — non-recoverable by design
 - Input sanitization: tags max 50 chars [a-zA-Z0-9 _-], filenames strip /\:*?"<>|
-- No global PIN or password — biometrics only for app access
+- No per-document PIN and no app PIN — biometrics / device lock only for app access
 - FileProvider for all file sharing (never file:// URIs)
 - DebugLogger writes to background thread (never blocks main thread)
 
@@ -47,7 +46,7 @@ EULA → Splash → Disclaimer (telemetry consent defaults ON) → Biometric Aut
 ### Home Screen
 - Title: "My Private Documents" (user-customizable in Settings)
 - Folders organized by tags (3-column grid)
-- Special folders: "Protected" (lock icon, listed first for __PIN_PROTECTED docs), "Untagged"
+- Special folders: "Untagged"
 - Pull-to-refresh with explicit Refresh button in top bar
 - Gear menu: About, Feedback (opens GitHub Issues in browser), Review & Classify, Settings, Tags, Reset App
 - Experimental menu items gated by feature flags
@@ -67,7 +66,6 @@ EULA → Splash → Disclaimer (telemetry consent defaults ON) → Biometric Aut
 - Images: async decode with subsampling >4096px, pinch-to-zoom + pan
 - Properties collapsed by default ("Show Properties" button at bottom)
 - Share button in top bar: ACTION_SEND with grantUriPermission to all resolvers
-- PIN lock: shows lock icon until correct PIN entered
 - Swipe up/down for next/previous doc in current folder
 
 ### Settings Screen
@@ -90,10 +88,8 @@ EULA → Splash → Disclaimer (telemetry consent defaults ON) → Biometric Aut
 4. Tag-based organization with color picker (12-color palette)
 5. Free-text and tag-based search
 6. Biometric auth
-7. Per-document PIN lock/unlock/change (3-step change flow with consent)
-8. Document sharing via Android share sheet
-9. "Protected" folder for PIN-locked docs
-10. Dark theme
+7. Document sharing via Android share sheet
+8. Dark theme
 11. EULA with legal sections: warranties, liability, indemnification, pricing discretion, AI usage disclosure
 12. Feedback → opens https://github.com/[owner]/document-manager/issues
 13. Review & Classify: batch tag untagged docs, mark OCR review complete
@@ -115,7 +111,6 @@ EULA → Splash → Disclaimer (telemetry consent defaults ON) → Biometric Aut
 9. Import from URL: GitHub blob→raw URL conversion, auto-format detection
 
 ## System Tags (__ prefix — hidden from UI, non-removable by user)
-- __PIN_PROTECTED: document has per-document PIN set
 - __AUDIO: audio file (MP3/M4A/etc)
 - __UNSUPPORTED: unknown/unsupported file format
 - Store these in document_tags table but filter from tag manager and tag chips display
@@ -126,8 +121,6 @@ Each needs extension mapping, MIME type mapping, viewer handling, and share hand
 
 ## EULA Requirements
 14+ sections covering: acceptance, license grant, warranty disclaimer (AS-IS), liability cap ($0), user responsibility and compliance, data/privacy, encryption notice (non-recoverable keys), indemnification, prohibited uses, termination, modifications without notice, pricing discretion, AI usage disclosure, governing law.
-Per-document PIN section must state: non-recoverable, developer cannot decrypt, user must comply with laws, app developer has zero control.
-
 ## Debug & Telemetry
 - DebugLogger: async file writes via single-thread executor, 3 destinations (logcat, memory buffer, file)
 - File: files/debug_logs/traveldocs_debug.log (5MB rotation)

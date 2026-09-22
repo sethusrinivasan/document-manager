@@ -1,8 +1,7 @@
-# Dependabot configuration for version updates
+# Dependabot: weekly bumps for Gradle (including version catalog) and Actions.
 
 version: 2
 updates:
-  # Gradle dependencies
   - package-ecosystem: "gradle"
     directory: "/"
     schedule:
@@ -16,8 +15,31 @@ updates:
     commit-message:
       prefix: "deps:"
       include: "scope"
+    groups:
+      androidx:
+        patterns:
+          - "androidx*"
+          - "com.google.android.gms*"
+          - "com.google.mlkit*"
+      kotlin-toolchain:
+        patterns:
+          - "org.jetbrains.kotlin*"
+          - "org.jetbrains.kotlinx*"
+          - "com.google.devtools.ksp*"
+      testing:
+        patterns:
+          - "org.junit*"
+          - "io.kotest*"
+          - "io.mockk*"
+          - "androidx.test*"
+      di-and-crypto:
+        patterns:
+          - "com.google.dagger*"
+          - "org.bouncycastle*"
+          - "net.lingala.zip4j*"
+          - "androidx.security*"
+          - "com.google.code.gson*"
 
-  # GitHub Actions dependencies
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

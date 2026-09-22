@@ -1,35 +1,27 @@
-# DocVault
+# Paperstow
 
-Private, encrypted document vault for Android. No cloud, no accounts, no compromises.
+Keep a copy of your family travel papers on this device. Encrypted. No account. No cloud.
 
 ## Why this exists
 
-I needed a secure place to keep passport scans, insurance docs, and travel papers on my phone where:
-- They're encrypted and locked behind biometrics
-- Nothing gets uploaded anywhere without me explicitly doing it
-- I can find stuff fast with tags and search
+I needed a place to keep passport scans, visas, tickets, and insurance on the phone where:
+- They're encrypted and unlocked with the device's fingerprint, face, or screen lock
+- Nothing gets uploaded unless I share or archive it
+- I can find a page fast with tags and on-device OCR
 - Large PDFs don't hang the app
 
-So I built this. It's open source, free to use, and the community is welcome to improve it.
+So I built Paperstow. It's open source, free, and the community is welcome to improve it.
 
 ## What it does
 
-- **Import** documents from files, camera, or local folders
-- **OCR** extracts text and classifies docs automatically (passport, visa, ticket, etc.)
-- **Encrypt** everything with AES-256-GCM, keys in Android KeyStore
-- **Search** by tags and free-text across all documents
-- **Share** via the standard Android share sheet — decrypted on the way out
-- **Backup & Restore** *(experimental)* — password-protected ZIP to local folder
-- **Per-document PIN** — lock individual sensitive documents with an additional PIN
-- **Folder import** with automatic tagging from subfolder names
-- **Dark theme** — toggle in settings, applies immediately
-- **Google Drive import** *(experimental)* — import from Drive folders
-- **S3-compatible backup** *(experimental)* — backup to AWS S3, MinIO, Backblaze
-- **Audio playback & Android Auto** *(experimental)* — MP3/M4A import with car head unit support
-- **GPS tagging** *(experimental)* — capture location on import, background tracking
-- **WiFi sharing** *(experimental)* — embedded web server for LAN document management
-- **Import from URL** *(experimental)* — download and import files from any web address
-- **DICOM viewer** *(experimental)* — medical image preview with custom parser
+- **Import** from files, camera, or a local folder
+- **OCR** extracts text and classifies travel papers (passport, visa, ticket, and similar)
+- **Encrypt** with AES-256-GCM; keys stay in Android KeyStore
+- **Search** by tags and text from the page
+- **Share** through Android's share sheet when a family member needs a copy
+- **Archive & restore** — password-protected ZIP to a folder you pick
+- **Folder import** — subfolder names become tags
+- **Dark theme** — toggle in settings
 
 
 
@@ -54,11 +46,9 @@ Watch the demo: https://youtube.com/shorts/E43BueHc3gQ?feature=share
 
 ## Principles
 
-1. Your documents never leave your phone unless YOU share/backup them
+1. Your documents never leave the phone unless YOU share or archive them
 2. No telemetry without explicit opt-in consent
-3. GPS tracking is off by default, behind a feature flag
-4. Experimental features are hidden until you turn them on
-5. The app works fully offline — network is only for optional cloud backup
+3. The app works fully offline — internet is only for an optional OCR model refresh
 
 ## Built with AI
 
@@ -77,7 +67,7 @@ Pre-built APKs are available from [GitHub Releases](https://github.com/sethusrin
 No build tools required — just download and install.
 
 ### App Name
-This app is called **DocVault** — a secure vault for your important documents.
+This app is called **Paperstow** — a place to stow the family's travel papers on the phone.
 
 
 ## Installing on Your Android Device
@@ -109,9 +99,9 @@ For general use, download the **release** APK.
 4. Tap **Install** → **Done**
 
 ### Notes
-- **App Name:** This app is called **DocVault**
-- **Package Name:** `com.app.traveldocs`
-- When installing, you'll see it as "DocVault" on your app drawer
+- **App Name:** Paperstow
+- **Package Name:** `com.app.paperstow`
+- When installing, you'll see it as "Paperstow" on your app drawer
 
 ### Option B — Install via USB from your computer
 
@@ -143,7 +133,7 @@ adb install document-manager-release.apk
 
 ### After Installing
 
-1. Launch **DocVault** from your app drawer
+1. Launch **Paperstow** from your app drawer
 2. Read and accept the End User License Agreement
 3. The app uses your device's **biometric authentication** (fingerprint/face/PIN) — no separate app password needed
 4. Start importing documents via **Import** button on the home screen
@@ -169,7 +159,7 @@ See the [full setup guide](#development-setup) below if you need to install the 
 ## Project layout
 
 ```
-app/src/main/java/com/app/traveldocs/
+app/src/main/java/com/app/paperstow/
 ├── domain/            # Business logic. Pure Kotlin. No Android deps.
 │   ├── model/         # Document, Tag, SearchResult, etc.
 │   ├── repository/    # Interfaces only
@@ -204,9 +194,9 @@ The domain layer has zero Android imports. Data implements domain interfaces. Pr
 | Hilt | Standard Android DI. ViewModels get auto-scoped. |
 | Kotest property tests | Domain invariants verified with random inputs, not just cherry-picked examples |
 
-## App Name: DocVault
+## App Name: Paperstow
 
-This app is called **DocVault** — a secure vault for your important documents. The name reflects its purpose as an encrypted storage location for sensitive documents.
+This app is called **Paperstow**. The listing title is unique; the Android package remains `com.app.paperstow`.
 
 ## Feature flags
 
@@ -236,8 +226,8 @@ Yeah, there's a DICOM viewer. Built from scratch — no library. Parses the tag-
 ### Prerequisites
 
 - **JDK 17** — Azul Zulu or Temurin work well
-- **Android SDK** — API 34, Build Tools 34.0.0
-- **A phone or emulator** — Tested on Pixel 10a (arm64)
+- **Android SDK** — API 36, Build Tools 35.0.0
+- **A phone or local emulator** — `scripts/setup.sh` installs AVD `Paperstow_API36` (Play Store image) if it is not already present
 
 ### Environment
 
@@ -273,8 +263,8 @@ echo "sdk.dir=$ANDROID_HOME" > local.properties
 # Build both APK and AAB for Play Store
 ./scripts/build-release.sh
 
-# One-command build + deploy (default: release)
-./scripts/deploy.sh
+# One-command build + deploy (default: debug; starts Paperstow_API36 if needed)
+./scripts/deploy.sh debug
 
 # Or specify variant
 ./scripts/deploy.sh release   # production build (minified, no debug logs)
@@ -294,8 +284,8 @@ This creates `~/release.keystore` used for signing release builds.
 ### Build & deploy
 
 ```bash
-# One-command build + deploy (default: release)
-./scripts/deploy.sh
+# One-command build + deploy (default: debug; starts Paperstow_API36 if needed)
+./scripts/deploy.sh debug
 
 # Or specify variant
 ./scripts/deploy.sh release   # production build (minified, no debug logs)
@@ -321,7 +311,7 @@ This creates `~/release.keystore` used for signing release builds.
 
 # Live logcat
 adb logcat -s TravelDocs                   # live logs
-adb shell run-as com.app.traveldocs cat files/debug_logs/traveldocs_debug.log
+adb shell run-as com.app.paperstow cat files/debug_logs/traveldocs_debug.log
 ```
 
 Or just tap the 🐛 icon in the app — there's a full log viewer built in.
@@ -355,17 +345,22 @@ Things that would be particularly useful:
 | [.kiro/specs/…/requirements.md](.kiro/specs/travel-document-manager/requirements.md) | 47 requirements with acceptance criteria |
 | [.kiro/specs/…/design.md](.kiro/specs/travel-document-manager/design.md) | Component interfaces, algorithms |
 | [PRIVACY_POLICY.md](docs/PRIVACY_POLICY.md) | Privacy policy (required for Play Store) |
+| [LICENSE](LICENSE) / [NOTICE](NOTICE) | Apache 2.0 plus third-party attribution |
+| [docs/THIRD_PARTY_LICENSES.md](docs/THIRD_PARTY_LICENSES.md) | Dependency license inventory |
 | [docs/KIRO_GENERATION_PROMPT.md](docs/KIRO_GENERATION_PROMPT.md) | One-shot Kiro prompt to regenerate this app + 10 key design decisions |
 
 ## License
 
-Apache 2.0. See [LICENSE](LICENSE).
+Paperstow source is **Apache License 2.0**. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
+
+Third-party components keep their own terms (Apache 2.0, Bouncy Castle MIT-style, Google ML Kit / Play services, and EPL-2.0 JUnit on the test classpath). Inventory: [docs/THIRD_PARTY_LICENSES.md](docs/THIRD_PARTY_LICENSES.md).
 
 ## Acknowledgments
 
-- [ML Kit](https://developers.google.com/ml-kit) — OCR engine
-- [BouncyCastle](https://www.bouncycastle.org/) — Argon2id hashing
-- [Material Icons](https://fonts.google.com/icons) — Icon set (Apache 2.0)
-- [Kotest](https://kotest.io/) — Property-based testing
-- [Zip4j](https://github.com/srikanth-lingala/zip4j) — Password-protected ZIP archives
-# document-manager
+- [AndroidX](https://developer.android.com/jetpack/androidx) / [Jetpack Compose](https://developer.android.com/jetpack/compose) — UI and platform (Apache 2.0)
+- [ML Kit](https://developers.google.com/ml-kit) — on-device OCR and document scanner ([ML Kit Terms](https://developers.google.com/ml-kit/terms))
+- [Bouncy Castle](https://www.bouncycastle.org/) — Argon2id / HKDF (Bouncy Castle Licence)
+- [Zip4j](https://github.com/srikanth-lingala/zip4j) — password-protected ZIP archives (Apache 2.0)
+- [Hilt](https://dagger.dev/hilt/) — dependency injection (Apache 2.0)
+- [Material Icons](https://fonts.google.com/icons) — icon set (Apache 2.0)
+- [Kotest](https://kotest.io/) — property-based testing (Apache 2.0)

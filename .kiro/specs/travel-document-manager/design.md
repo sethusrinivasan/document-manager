@@ -376,7 +376,7 @@ The `device_key` is a 256-bit key generated once and stored in AndroidKeyStore. 
 ### File Storage Layout
 
 ```
-/data/data/com.app.traveldocs/
+/data/data/com.app.paperstow/
 ├── databases/
 │   ├── member_{id}.db          # SQLCipher-encrypted Room DB per member
 │   └── app_meta.db             # Unencrypted: member list, app config
@@ -722,7 +722,7 @@ app/src/androidTest/       # Integration + UI tests (device/emulator)
 
 **Component**: `DebugLogger` (debug/)
 - Singleton with 3 outputs: Logcat (tag: TravelDocs), ring buffer (500), file
-- File at: `/data/data/com.app.traveldocs/files/debug_logs/traveldocs_debug.log`
+- File at: `/data/data/com.app.paperstow/files/debug_logs/traveldocs_debug.log`
 - Auto-rotates at 5MB
 
 **Component**: `DebugLogScreen` + `DebugFloatingButton` (debug/)

@@ -2,27 +2,30 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Core permissions -->
+    <!-- Bundled ML Kit OCR may still contact Google to refresh its on-device model. -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
-    <!-- Document features (optional) -->
+    <!-- Optional: Take Photo. Requested only when the user taps that action. -->
     <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Optional My Trail. Requested only when the user starts it. -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
-    <!-- Background GPS tracking (only when user opts in) -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <!-- Optional features declared as not required (for broader device compatibility) -->
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
     <uses-feature android:name="android.hardware.location" android:required="false" />
     <uses-feature android:name="android.hardware.location.gps" android:required="false" />
-    <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
+
+    <!-- Strip leftover capabilities from libraries / older releases. Reviewers see the merged manifest. -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" tools:node="remove" />
+    <uses-feature android:name="android.hardware.bluetooth" android:required="false" tools:node="remove" />
+    <uses-feature android:name="android.hardware.type.automotive" android:required="false" tools:node="remove" />
 
     <application
         android:name=".TravelDocsApplication"
@@ -46,7 +49,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- Receive shared documents from other apps (share target) -->
+            <!-- Receive shared PDFs, images, and text from other apps. -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -60,7 +63,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="video/*" />
+                <data android:mimeType="text/plain" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEND_MULTIPLE" />
@@ -73,7 +76,6 @@
                 <data android:mimeType="application/pdf" />
             </intent-filter>
 
-            <!-- Open documents directly (open with) -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -83,27 +85,24 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="image/*" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
 
         <service
-            android:name=".debug.LocationTrackingService"
+            android:name=".data.safety.SafetyTrailService"
+            android:exported="false"
             android:foregroundServiceType="location"
-            android:exported="false" />
+            android:stopWithTask="false" />
 
-        <!-- Audio playback service for Android Auto + system media controls -->
-        <service
-            android:name=".media.AudioPlaybackService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.media.browse.MediaBrowserService" />
-            </intent-filter>
-        </service>
-
-        <!-- Android Auto descriptor -->
+        <!-- Exclude this app from Android Auto on every merged APK/AAB. -->
         <meta-data
             android:name="com.google.android.gms.car.application"
-            android:resource="@xml/automotive_app_desc" />
+            tools:node="remove" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

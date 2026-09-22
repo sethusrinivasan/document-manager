@@ -50,7 +50,7 @@ The `.kiro/` directory contains the full spec trail.
 | Document Import | Single file, camera scan, local folders with recursive subfolder tagging |
 | On-device OCR | ML Kit text recognition for automatic document classification |
 | Encrypted Storage | AES-256-GCM per-file, keys in Android KeyStore, biometric auth |
-| Per-Document PIN | Additional PBKDF2-derived encryption per document (non-recoverable) |
+| Device lock | Fingerprint, face, or screen lock — no per-document PIN |
 | Tag Organization | Auto-tagging from OCR + folder structure, color-coded, folder view on home |
 | Search | Free-text search across all documents |
 | Sharing | Android share sheet with proper URI permission grants |
@@ -120,7 +120,7 @@ Kotlin 1.9.22 · Jetpack Compose · Material 3 · Hilt · Room 2.6.1 · ML Kit �
 1. **Privacy as architecture** — Encryption is the default state. No network calls for core functionality. Zero data leaves the device without explicit user action.
 2. **DICOM from scratch** — Custom medical image parser (all existing Android DICOM libs are GPL incompatible).
 3. **Spec-driven development** — 50 requirements, 70 task groups, component interfaces defined before implementation. Full `.kiro/` trail.
-4. **Production details** — EULA, crash reporting, input sanitization, Android Auto, per-document PIN, Play Store compliance review.
+4. **Production details** — EULA, crash reporting, input sanitization, Play Store compliance review.
 5. **Built with AI, designed by human** — All processing happens locally. Classification errors documented honestly. Community invited to improve.
 
 ---

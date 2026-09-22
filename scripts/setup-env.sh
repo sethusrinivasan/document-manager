@@ -2,6 +2,10 @@
 # Source this file before building: source setup-env.sh
 # This script works on both Ubuntu (Linux) and macOS
 
+command_exists() {
+    command -v "$1" &> /dev/null
+}
+
 # Detect OS
 OS_NAME=""
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
@@ -46,8 +50,18 @@ if [ -z "$JAVA_HOME" ]; then
     fi
 fi
 
+# cmdline-tools/latest is required so avdmanager resolves the SDK root correctly.
+if [ -d "$ANDROID_HOME/cmdline-tools/bin" ] && [ ! -x "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" ]; then
+    mkdir -p "$ANDROID_HOME/cmdline-tools/latest"
+    for item in "$ANDROID_HOME/cmdline-tools"/*; do
+        name=$(basename "$item")
+        [ "$name" = "latest" ] && continue
+        mv "$item" "$ANDROID_HOME/cmdline-tools/latest/"
+    done
+fi
+
 # Update PATH with Java and Android tools
-export PATH="$JAVA_HOME/bin:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
+export PATH="$JAVA_HOME/bin:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH"
 
 # Print environment configuration
 echo "Environment configured for $OS_NAME:"

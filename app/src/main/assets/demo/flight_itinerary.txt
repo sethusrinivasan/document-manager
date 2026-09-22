@@ -1,0 +1,11 @@
+Itinerary — Doe family (sample)
+==============================
+
+01 Jun  PS101  RVT 09:15 → LKS 11:05
+01–08 Jun  Lakeside Inn, Room 214
+08 Jun  PS102  LKS 16:40 → RVT 18:30
+
+Seats: 12C / 12A
+Booking: ABC123
+
+Fictional itinerary for Paperstow demos.

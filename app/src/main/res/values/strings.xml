@@ -1,29 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">DocVault</string>
+    <string name="app_name">Paperstow</string>
 
     <!-- Main Screen -->
-    <string name="main_title">Travel Documents</string>
+    <string name="main_title">Paperstow</string>
     <string name="btn_import">Import</string>
     <string name="btn_all_docs">All Docs</string>
     <string name="btn_search">Search</string>
     <string name="documents_managed">%d documents managed</string>
-    <string name="no_documents_title">No documents yet</string>
-    <string name="no_documents_subtitle">Tap Import to add your first document</string>
+    <string name="no_documents_title">Nothing stowed yet</string>
+    <string name="no_documents_subtitle">Import a passport, visa, or ticket to get started</string>
 
     <!-- Import Screen -->
     <string name="import_title">Import</string>
     <string name="import_choose_method">Choose Import Method</string>
     <string name="import_single_file">Single File</string>
-    <string name="import_single_file_desc">Pick one PDF, image, or video</string>
+    <string name="import_single_file_desc">Pick a PDF, image, or text file</string>
     <string name="import_local_folder">Local Folder</string>
     <string name="import_local_folder_desc">Import all files from a phone folder</string>
-    <string name="import_drive_folder">Google Drive Folder</string>
-    <string name="import_drive_folder_desc">Browse and import from Drive</string>
-    <string name="import_camera">Take Photo</string>
-    <string name="import_camera_desc">Scan document with camera</string>
+    <string name="import_camera">Scan document</string>
+    <string name="import_camera_desc">On-device edge detect, crop, and enhance</string>
     <string name="importing">Importing document…</string>
-    <string name="running_ocr">Running OCR extraction</string>
+    <string name="running_ocr">Trying to read the page</string>
     <string name="import_success">Document Imported!</string>
     <string name="import_failed">Import Failed</string>
     <string name="btn_done">Done</string>
@@ -88,7 +86,7 @@
     <string name="security_alerts">Security Alerts</string>
     <string name="recovery_phone">Recovery Phone Number</string>
     <string name="recovery_email">Recovery Email</string>
-    <string name="sms_alerts_toggle">SMS alerts on PIN lockout</string>
+    <string name="sms_alerts_toggle">SMS alerts on lockout</string>
     <string name="btn_save">Save</string>
     <string name="saved">Saved!</string>
     <string name="last_alert_sent">Last alert sent: %s</string>
@@ -104,34 +102,19 @@
     <string name="discharging">Discharging</string>
     <string name="connected">Connected</string>
     <string name="offline">Offline</string>
-    <string name="gps_tracking">GPS Tracking</string>
     <string name="debug_logs">Debug Logs</string>
     <string name="view_debug_logs">View Debug Logs</string>
 
     <!-- Consent / Onboarding -->
     <string name="welcome">Welcome</string>
-    <string name="welcome_subtitle">DocVault</string>
-    <string name="encryption_explanation">Your documents will be encrypted with AES-256 and protected by a PIN. All data stays on this device. No cloud, no servers.</string>
-    <string name="create_pin">Create your PIN</string>
-    <string name="pin_label">PIN (4–8 digits)</string>
-    <string name="confirm_pin">Confirm PIN</string>
-    <string name="pins_no_match">PINs do not match</string>
+    <string name="welcome_subtitle">Paperstow</string>
+    <string name="splash_tagline">Keep a copy of your family travel papers on this device.</string>
+    <string name="encryption_explanation">Your papers stay encrypted on this phone. Only you can open them, with your fingerprint, face, or screen lock.</string>
     <string name="recovery_contacts_title">Recovery contacts (for security alerts)</string>
     <string name="phone_placeholder">+1234567890</string>
     <string name="email_placeholder">you@example.com</string>
-    <string name="pin_warning_title">WARNING</string>
-    <string name="pin_warning_body">If you forget your PIN, your documents CANNOT be recovered. There is no reset option. Please write down your PIN and store it securely.</string>
-    <string name="pin_ack_checkbox">I understand my PIN cannot be recovered</string>
     <string name="encryption_ack_checkbox">I agree to use encrypted storage</string>
     <string name="btn_setup_continue">Set Up &amp; Continue</string>
-
-    <!-- PIN Entry -->
-    <string name="enter_pin">Enter PIN</string>
-    <string name="unlock_documents">Unlock your documents</string>
-    <string name="btn_unlock">Unlock</string>
-    <string name="account_locked">Account locked</string>
-    <string name="try_again_in">Try again in %ds</string>
-    <string name="incorrect_pin">Incorrect PIN</string>
 
     <!-- Gear Menu -->
     <string name="menu_tags">Tags</string>
@@ -153,7 +136,7 @@
 
     <!-- Privacy & Crash Feedback (Play Store compliance) -->
     <string name="privacy_policy_title">Privacy Policy</string>
-    <string name="privacy_policy_url">https://github.com/sethusrinivasan/document-manager/blob/main/docs/PRIVACY_POLICY.md</string>
+    <string name="privacy_policy_url">https://sethusrinivasan.github.io/document-manager/privacy.html</string>
     <string name="send_crash_report">Send Crash Report</string>
     <string name="crash_report_sent">Crash report ready to send</string>
     <string name="no_crash_report">No crash reports available</string>
@@ -162,6 +145,35 @@
     <string name="subfolder_dialog_message">Should we scan subfolders recursively? Each subfolder name will be added as a tag to imported documents.</string>
     <string name="yes_include_subfolders">Yes, include subfolders</string>
     <string name="no_root_only">No, root only</string>
+    <string name="btn_back">Back</string>
 
-    <!-- Privacy & Crash Feedback (Play Store compliance) -->
+    <!-- My Trail -->
+    <string name="safety_title">My Trail</string>
+    <string name="safety_intro">Places stay only on this phone. A notification stays visible while the trail is on. To stop later: menu → My Trail → Stop trail.</string>
+    <string name="safety_disclosure_title">Use location for My Trail?</string>
+    <string name="safety_disclosure_body">Paperstow will record unique places while you travel, keep them on this phone for 24 hours with the battery level at each save, and show a notification the whole time. Locations are not sent to Paperstow. You can share Maps links yourself when you need to.</string>
+    <string name="safety_allow_location">Allow location</string>
+    <string name="safety_start">Start trail</string>
+    <string name="safety_stop">Stop trail</string>
+    <string name="safety_status_on">Trail is recording</string>
+    <string name="safety_status_off">Trail is off</string>
+    <string name="safety_status_on_hint">Unique places from the last 24 hours stay on this phone. Stops if you reboot until you start it again.</string>
+    <string name="safety_status_off_hint">Start it when you want a last-known place. Location is used only while this is on.</string>
+    <string name="safety_permission_denied">Location permission is needed for the trail. You can grant it in system settings.</string>
+    <string name="safety_open_settings">Open settings</string>
+    <string name="safety_share_last">Share last known</string>
+    <string name="safety_share_all">Share all</string>
+    <string name="safety_share_subject">Paperstow My Trail</string>
+    <string name="safety_list_title">Unique places (%d)</string>
+    <string name="safety_empty">No unique places in the last 24 hours.</string>
+    <string name="safety_last_known">Last known</string>
+    <string name="safety_earlier_place">Earlier</string>
+    <string name="safety_open_maps">Open in Maps</string>
+    <string name="safety_clear">Clear</string>
+    <string name="safety_clear_title">Clear places?</string>
+    <string name="safety_clear_body">This removes unique places stored on this phone. It does not stop the trail.</string>
+    <string name="safety_notification_channel">My Trail</string>
+    <string name="safety_notification_channel_desc">Shown while Paperstow records unique places on this phone</string>
+    <string name="safety_notification_title">My Trail is on</string>
+    <string name="safety_notification_text">Recording unique places on this phone. Tap Stop to end.</string>
 </resources>

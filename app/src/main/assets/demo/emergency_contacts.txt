@@ -1,0 +1,14 @@
+Emergency contacts (sample)
+============================
+
+John Doe  +1 555 0101
+Jane Doe  +1 555 0102
+Family — Alex Doe  +1 555 0103
+Travel insurer 24h  +1 555 0199
+Hotel front desk  +1 555 0100
+
+Blood type (John): O+
+Blood type (Jane): A+
+Allergies: none listed
+
+Fictional contacts for Paperstow demos. Replace with your own.

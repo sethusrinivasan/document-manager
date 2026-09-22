@@ -7,7 +7,7 @@ set -e
 
 OUTPUT_DIR="${1:-./logs}"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-PKG="com.app.traveldocs"
+PKG="com.app.paperstow"
 
 echo "=== Document Manager — Pull Logs ==="
 echo "Output: $OUTPUT_DIR"

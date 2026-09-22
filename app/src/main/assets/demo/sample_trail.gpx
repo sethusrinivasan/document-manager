@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Paperstow" xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata>
+    <name>Sample trail</name>
+  </metadata>
+  <trk>
+    <name>Sample trail</name>
+    <trkseg>
+      <trkpt lat="41.50000" lon="-72.50000">
+        <time>2026-06-01T13:10:00Z</time>
+        <cmt>battery 84%</cmt>
+      </trkpt>
+      <trkpt lat="41.50140" lon="-72.49820">
+        <time>2026-06-01T14:05:00Z</time>
+        <cmt>battery 81%</cmt>
+      </trkpt>
+      <trkpt lat="41.50310" lon="-72.49640">
+        <time>2026-06-01T15:40:00Z</time>
+        <cmt>battery 76%</cmt>
+      </trkpt>
+    </trkseg>
+  </trk>
+</gpx>
