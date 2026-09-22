@@ -24,7 +24,7 @@ Nothing below copylefts the app. Apache 2.0 and MIT are compatible. Google ML Ki
 | AndroidX Security Crypto | 1.1.0 | Apache-2.0 | |
 | Dagger Hilt | 2.58 | Apache-2.0 | |
 | kotlinx.coroutines | 1.11.0 | Apache-2.0 | |
-| Zip4j | 2.11.6 | Apache-2.0 | Password ZIP archive |
+| Zip4j | 2.11.6 | Apache-2.0 | Optional AES ZIP archive |
 | Gson | 2.14.0 | Apache-2.0 | Forced over Tink’s 2.8.9 |
 | Tink Android | 1.8.0 (transitive) | Apache-2.0 | Via security-crypto |
 | JSpecify | 1.0.0 (transitive) | Apache-2.0 | |

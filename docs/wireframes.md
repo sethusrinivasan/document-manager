@@ -1,6 +1,31 @@
-# Document Manager — UI Wireframes
+# Paperstow — UI map
 
-## Screen Map (Navigation Flow)
+**Current product (1.1):** Paperstow, package `com.app.paperstow`.
+
+ASCII frames below this notice are from the original Document Manager design. Treat them as history. They still mention Drive, S3, experimental flags, Android Auto, and PIN auth. None of those are in the shipping UI.
+
+## Current screen map
+
+```
+Launch → EULA? → Splash (unless skipped) → Disclaimer? → Biometric → Home
+
+Home: Import | All Docs | Search | Note | Checklist
+Overflow: Tags | Review & Classify | My Trail | Backup | Restore |
+          Sample trip | Settings | Feedback | About
+
+Import: single file | local folder | on-device scan / camera
+        (no Drive, no URL)
+
+Settings: home title, telemetry, dark theme, tips, rebuild index,
+          Reset App (danger zone)
+
+Backup / Restore: ZIP, password optional
+About: version, package, SBOM
+```
+
+## Historical ASCII (original Document Manager)
+
+The following frames start at first-launch consent and still say "Document Manager".
 
 ```
 ┌─────────────────────────────────────────────────────┐

@@ -13,7 +13,7 @@ import java.util.Locale
 import java.util.concurrent.ConcurrentLinkedDeque
 
 /**
- * Centralized debug logger for the Document Manager.
+ * Centralized debug logger for Paperstow.
  *
  * Captures logs to:
  * 1. Android Logcat (standard, filtered by tag "TravelDocs")

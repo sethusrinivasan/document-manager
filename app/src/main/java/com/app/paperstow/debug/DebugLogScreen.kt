@@ -227,7 +227,7 @@ private fun shareDebugLogs(context: android.content.Context) {
         val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
             type = "text/plain"
             putExtra(android.content.Intent.EXTRA_STREAM, uri)
-            putExtra(android.content.Intent.EXTRA_SUBJECT, "Document Manager Debug Logs")
+            putExtra(android.content.Intent.EXTRA_SUBJECT, "Paperstow Debug Logs")
             addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
         val resInfoList = context.packageManager.queryIntentActivities(intent, android.content.pm.PackageManager.MATCH_DEFAULT_ONLY)

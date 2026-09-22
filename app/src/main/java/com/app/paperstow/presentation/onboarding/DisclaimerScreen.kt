@@ -51,7 +51,7 @@ fun DisclaimerScreen(onAccepted: (telemetryConsent: Boolean) -> Unit) {
             Column(Modifier.padding(14.dp)) {
                 Text("Your Data, Your Responsibility", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
                 Spacer(Modifier.height(4.dp))
-                Text("Sharing a document or exporting a password-protected backup can move files off this phone to another app or folder you choose. Once data leaves this device, it is subject to that destination's policies.", fontSize = 12.sp, color = Color(0xFF1A237E))
+                Text("Sharing a document or exporting a backup ZIP (password optional) can move files off this phone to another app or folder you choose. An unprotected ZIP contains readable document bytes. Once data leaves this device, it is subject to that destination's policies.", fontSize = 12.sp, color = Color(0xFF1A237E))
             }
         }
 

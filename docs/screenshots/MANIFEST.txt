@@ -1,0 +1,22 @@
+Paperstow 1.1 emulator captures (API 36, com.app.paperstow)
+Sample trip loaded before feature shots.
+
+1.jpg   Splash
+2.jpg   Home with sample trip folders
+3.jpg   Health tag folder
+4.jpg   Document preview (sample vaccination PDF)
+5.jpg   All documents
+6.jpg   Import (file / folder / on-device scan)
+7.jpg   Search for “John”
+8.jpg   Write a note
+9.jpg   Checklist
+10.jpg  Manage tags
+11.jpg  Backup (password optional)
+12.jpg  Restore
+13.jpg  Settings
+14.jpg  About (package com.app.paperstow)
+15.jpg  Bundled CycloneDX SBOM
+16.jpg  My Trail
+
+Extras: eula.jpg, disclaimer.jpg, home-empty.jpg
+Video: docs/demo/paperstow-emulator-demo.mp4

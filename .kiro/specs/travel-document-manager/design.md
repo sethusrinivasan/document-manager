@@ -1,5 +1,7 @@
 # Design Document: Document Manager
 
+> **Historical spec.** Original Kiro design (SQLCipher, Drive/S3, feature flags). Shipping app: Paperstow `com.app.paperstow`, Room without SQLCipher, no cloud backup. See [docs/ARCHITECTURE.md](../../../docs/ARCHITECTURE.md).
+
 ## Overview
 
 The Document Manager is a native Android application built with Kotlin and Jetpack Compose that enables families to securely store, organize, and manage travel documents entirely on-device. The app follows Clean Architecture with MVVM presentation pattern, ensuring separation of concerns and testability.

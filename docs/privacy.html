@@ -14,22 +14,29 @@
 </head>
 <body>
   <h1>Privacy Policy — Paperstow</h1>
-  <p><strong>Last updated:</strong> 21 September 2026</p>
-  <p>Paperstow ("the App") is a local vault for travel papers on Android. Passports, visas, tickets, and similar files stay on your device. The App has no backend server and does not create an account.</p>
+  <p><strong>Last updated:</strong> 22 September 2026</p>
+  <p>Paperstow ("the App") is a local vault for travel papers on Android. Package name: <code>com.app.paperstow</code>. Passports, visas, tickets, notes, and similar files stay on your device. The App has no backend server and does not create an account.</p>
   <h2>Data collection</h2>
-  <p><strong>Optional, on-device only:</strong> usage telemetry (opt-in) stores anonymous feature-use counts locally. No document content, file names, or personal identifiers. Nothing is sent unless you choose to share a report.</p>
-  <p>The App does not collect document content, personal identification information, location or GPS history, contacts, or phone numbers. Photos are imported only when you choose them.</p>
+  <p><strong>Optional, on-device only:</strong></p>
+  <ul>
+    <li><strong>Usage telemetry</strong> (opt-in, off by default) stores anonymous feature-use counts locally. No document content, file names, or personal identifiers. Nothing is sent unless you choose to share a report.</li>
+    <li><strong>My Trail</strong> (opt-in): if you start it, unique places from about the last 24 hours and battery level at each save stay on this device. Paperstow does not upload those points. You may share a Maps link yourself.</li>
+  </ul>
+  <p>The App does not collect document content unless you share or export it, does not create an account, and does not read contacts. Photos are imported only when you choose them. Location is used only if you start My Trail.</p>
   <h2>Data storage</h2>
-  <p>Documents, metadata, and settings are stored locally. Files are encrypted with AES-256-GCM using Android KeyStore. The App does not transmit documents unless you use Android's share sheet or export a password-protected archive to a folder you choose.</p>
+  <p>Documents, metadata, tags, settings, and My Trail points are stored locally. Document files are encrypted with AES-256-GCM using Android KeyStore. The App does not transmit documents unless you use Android's share sheet or export a ZIP archive to a folder you choose. A backup password is optional; an unprotected ZIP contains readable document bytes.</p>
   <h2>Permissions</h2>
   <table>
     <tr><th>Permission</th><th>Purpose</th><th>When requested</th></tr>
-    <tr><td>Camera</td><td>Scan a document</td><td>When you tap Take Photo</td></tr>
-    <tr><td>Internet</td><td>Optional first-run download of the on-device ML Kit OCR model</td><td>Used only if the model is not already present</td></tr>
+    <tr><td>Camera</td><td>Fallback photo / scan if the on-device scanner is unavailable</td><td>When you use that action</td></tr>
+    <tr><td>Internet</td><td>Optional refresh of the on-device ML Kit OCR or scanner model</td><td>Documents are not uploaded</td></tr>
+    <tr><td>Location (fine / coarse)</td><td>Optional My Trail</td><td>When you start My Trail</td></tr>
+    <tr><td>Notifications</td><td>Shown while My Trail is recording</td><td>When you start My Trail (Android 13+)</td></tr>
+    <tr><td>Foreground location service</td><td>Keeps My Trail running while you have started it</td><td>Same as My Trail</td></tr>
   </table>
-  <p>Denying camera permission does not break file or folder import, viewing, search, or share.</p>
+  <p>Denying camera does not break file or folder import, viewing, search, or share. Denying location only disables My Trail.</p>
   <h2>Third-party libraries</h2>
-  <p>ML Kit Text Recognition runs on your device. Google's ML Kit may download its recognition model on first use. Document images are not uploaded to a Paperstow server.</p>
+  <p>ML Kit Text Recognition (Latin, bundled) and ML Kit Document Scanner run on your device. Google Play services may download or refresh a model. Document images are not uploaded to a Paperstow server.</p>
   <h2>Data sharing</h2>
   <p>We do not sell or share your data. If you use Share or Archive, you choose the destination.</p>
   <h2>Children's privacy</h2>

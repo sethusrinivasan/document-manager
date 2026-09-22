@@ -1,47 +1,41 @@
-# Known Issues & Library Behaviors
+# Known issues and library behaviors
 
-## Room Database — WAL Mode and File Replacement
+Current pins: Room 2.8.5, Zip4j 2.11.6, ML Kit text recognition 16.0.1. Package `com.app.paperstow`. Room file is still `traveldocs.db`.
 
-**Library:** `androidx.room:room-runtime:2.6.1`
-**Behavior:** Room uses WAL (Write-Ahead Logging) mode by default. When you overwrite `traveldocs.db` directly on disk while Room has an active connection, Room continues reading from its in-memory cache and the WAL file — ignoring the new database content.
+## Room — WAL and file replacement
 
-**Our fix:** Before overwriting the `.db` file during restore, we:
-1. Call `db.close()` on the Room instance (triggers WAL checkpoint and releases file handles)
-2. Delete `.db-wal` and `.db-shm` files
-3. Write the new database file
+**Library:** `androidx.room:room-runtime`
 
-After this, Room's next DAO query opens a fresh connection to the restored database.
+Room uses WAL. Overwriting `traveldocs.db` while Room is open leaves the process on the old WAL/cache.
 
-**Potential upstream improvement:** Room could provide an API like `invalidateAndReopen()` that safely checkpoints, closes, and reopens the database from the current file on disk. Today this requires manual connection management.
+**What we do:** restore checkpoints and closes Room, deletes `.db-wal` / `.db-shm`, inspects the backup for a `documents` table, then writes the new file. The next DAO call opens a fresh connection.
 
-## PdfRenderer — Single Page Open Constraint
+## PdfRenderer — one page at a time
 
-**Library:** `android.graphics.pdf.PdfRenderer` (Android framework, API 21+)
-**Behavior:** `PdfRenderer` can only have one page open at a time. Calling `openPage(n)` while another page is still open throws `IllegalStateException`. This is a fundamental limitation of the underlying PDFium library.
+**Library:** `android.graphics.pdf.PdfRenderer`
 
-**Our fix:** All page rendering runs on a dedicated `newSingleThreadExecutor` coroutine dispatcher. Pages are opened, rendered, and closed sequentially — never concurrently.
+Only one page may be open. Concurrent `openPage` throws.
 
-**Impact:** PDF scrolling through large documents renders pages one at a time. Users may see placeholder shimmer for pages not yet rendered. This is acceptable UX for the security benefit of not caching all pages in memory.
+**What we do:** render on a single-thread dispatcher. For OCR, the first four pages are drawn onto a **white** bitmap (`eraseColor(WHITE)`). A transparent bitmap renders as a black JPEG and ML Kit returns no text.
 
-## DocumentFile — Slow IPC for Large Folders
+## DocumentFile — slow large folders
 
-**Library:** `androidx.documentfile:documentfile` (SAF/Storage Access Framework)
-**Behavior:** `DocumentFile.listFiles()` issues one Binder IPC call per file. For folders with 500+ files, this takes several seconds and blocks the calling thread.
+**Library:** `androidx.documentfile:documentfile`
 
-**Our fix:** All folder enumeration runs on `Dispatchers.IO`. The UI shows "Scanning folder..." with an indeterminate progress indicator while enumeration happens in the background.
+`listFiles()` is one Binder call per child.
 
-**Potential upstream improvement:** A batch `listFiles()` API that returns all children in a single IPC call would eliminate this bottleneck.
+**What we do:** enumerate on `Dispatchers.IO` with a 500-file cap. UI shows folder-scan progress.
 
-## Zip4j — Password Validation Timing
+## Zip4j — optional password
 
-**Library:** `net.lingala.zip4j:zip4j:2.11.5`
-**Behavior:** Zip4j only validates the password when actually extracting file content. `ZipFile.isEncrypted` returns true for password-protected ZIPs, but passing a wrong password may not throw until bytes are read.
+**Library:** `net.lingala.zip4j:zip4j:2.11.6`
 
-**Our fix:** We detect `isEncrypted` early and prompt for password before extraction. If extraction fails with a wrong password, we catch the exception and report "Incorrect password" to the user.
+Blank password → unencrypted ZIP. Non-blank (min 4 chars) → AES-256. `isEncrypted` is true for protected archives; a wrong password may only fail when entries are read.
 
-## ML Kit — Model Download on First Use
+**What we do:** restore prompts only if the archive is encrypted. Wrong password is reported to the user. The ZIP contains **decrypted** document bytes so another phone can restore.
 
-**Library:** `com.google.mlkit:text-recognition:16.0.0`
-**Behavior:** ML Kit downloads its OCR model on first use (~20MB). If the device is offline during the first import, OCR silently fails and the document is stored without metadata.
+## ML Kit — Latin OCR
 
-**Our fix:** Graceful degradation — if OCR fails for any reason, the document is still stored and tagged as `requiresManualReview = true`. Users can classify it later via the Review & Classify screen.
+**Library:** `com.google.mlkit:text-recognition:16.0.1` with `TextRecognizerOptions.DEFAULT_OPTIONS` (Latin).
+
+The Latin model is bundled. Play services may still refresh it, which needs network. If recognition fails, the file is stored and `requiresManualReview` is set. Settings → Rebuild search index retries extraction. Raw PDF bytes are not passed to ML Kit.

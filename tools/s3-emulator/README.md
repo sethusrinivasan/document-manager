@@ -1,6 +1,8 @@
-# S3 Emulator for Local Testing
+# S3 emulator (unused)
 
-A minimal S3-compatible HTTP server (Python 3, no external dependencies) for testing the Document Manager's S3 backup feature without connecting to AWS.
+**Not used by Paperstow 1.1.** S3 backup was removed from the Play build. This tree is leftover from Document Manager experiments. Do not treat it as a supported feature.
+
+A minimal S3-compatible HTTP server (Python 3, no external dependencies) for testing the old S3 backup path without connecting to AWS.
 
 ## Quick Start
 

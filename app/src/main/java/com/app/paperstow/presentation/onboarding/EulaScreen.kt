@@ -215,7 +215,7 @@ You further acknowledge that this App was built and tested with the assistance o
         "6. DATA AND PRIVACY" to """
 The App stores all user data locally on your device. Developer does not operate servers, collect user data, or have access to your documents, metadata, or personal information.
 
-If you share a document or export a password-protected backup, you acknowledge that data will leave your device at your explicit direction. Developer bears no responsibility for data once it leaves the App's local encrypted storage.
+If you share a document or export a backup ZIP (password optional; an unprotected ZIP contains readable files), you acknowledge that data will leave your device at your explicit direction. Developer bears no responsibility for data once it leaves the App's local encrypted storage.
 
 If you enable anonymous telemetry (opt-in only), only non-identifying usage counts are stored locally. No document content or personal information is collected.
 

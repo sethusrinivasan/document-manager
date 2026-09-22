@@ -13,7 +13,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Implements file import with format validation for the Document Manager.
+ * Implements file import with format validation for Paperstow.
  * Accepts PDF, JPG, and PNG formats, validates content via magic bytes,
  * and returns descriptive errors for unsupported or invalid files.
  */

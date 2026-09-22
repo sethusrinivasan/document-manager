@@ -1,5 +1,7 @@
 # Kiro Generation Prompt — Document Manager
 
+> **Historical.** Prompt used to generate the first Document Manager build. The shipping app is Paperstow (`com.app.paperstow`). Several prompt features (Drive, S3, Android Auto, required backup PIN, SQLCipher) are not in 1.1. Package in the prompt body was later updated to `com.app.paperstow`.
+
 This file contains the prompt used to generate this app with Kiro. Use it to regenerate or create a similar app from scratch.
 
 ---

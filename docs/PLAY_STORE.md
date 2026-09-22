@@ -4,7 +4,7 @@
 
 **Title (9 / 30):** `Paperstow`
 
-Package stays `com.app.paperstow`. Do not rename the applicationId.
+**Package:** `com.app.paperstow`. Do not rename `applicationId`. This id does not upgrade leftover `com.app.traveldocs` installs.
 
 **Do not use these titles**
 
@@ -23,95 +23,105 @@ Package stays `com.app.paperstow`. Do not rename the applicationId.
 Stow family passports, visas, tickets. OCR on-device. Encrypted. No cloud.
 ```
 
-**Full description** (paste into Play Console; no Auto, GPS, medical, expiry, Schengen, or cloud-backup claims):
+**Full description** (paste into Play Console; no Auto, cloud backup, medical-device, expiry, or Schengen claims):
 
 ```
 Paperstow is where the family stows travel papers: passports, visas, boarding passes, hotel bookings, and insurance.
 
 They live on this phone, encrypted, and stay searchable at the gate — even in airplane mode. No Paperstow account. No Paperstow servers.
 
-Import from the camera, a single file, or a whole folder. On-device OCR reads the page, suggests a type (passport, visa, ticket, and similar), and tags it. Search by name, tag, or words from the page. If you already keep scans in folders on the phone, subfolder names become tags.
+Import from the camera, a single file, or a whole folder. On-device OCR reads the page, suggests a type (passport, visa, ticket, and similar), and tags it. Search by name, tag, or words from the page. If you already keep scans in folders on the phone, subfolder names become tags. You can also write a note or a checklist and tag it.
 
-When a family member needs a copy, share through Android’s share sheet. When you change phones, archive everything as a password-protected ZIP to a folder you pick, then restore it.
+When a family member needs a copy, share through Android’s share sheet. When you change phones, export a ZIP archive to a folder you pick (password optional), then restore it.
+
+Optional My Trail keeps unique places from the last 24 hours on this phone only. Locations are not uploaded.
 
 • AES-256-GCM encryption; keys stay in Android KeyStore
 • Unlock with this device’s fingerprint, face, or screen lock
 • Search tags and extracted text
 • Folder import with subfolder tags
-• Password-protected ZIP archive and restore
-• No ads. No document cap. Open source (Apache 2.0)
+• ZIP archive and restore (password optional)
+• No ads. Open source (Apache 2.0)
 
-Documents never leave the phone unless you share or export them.
+Documents never leave the phone unless you share or export them. There is a per-member document limit in the app.
 
 Digital copies do not replace originals. Paperstow is not a government or border-control app and does not give immigration advice. Check entry rules with official sources.
 ```
 
 **Category:** Tools (or Productivity). Not Travel & Local — that shelf is trip planners.
 
-## Android Auto (the current rejection)
+## Android Auto (version code 2 rejection)
 
 Play rejected version code 2 because reviewers opened Android Auto and the media browser failed.
 
-This release **removes Android Auto completely**:
+This release **keeps Android Auto out**:
+
 - No `MediaBrowserService`
-- No `com.google.android.gms.car.application` metadata
-- Manifest uses `tools:node="remove"` so libraries cannot merge Auto back in
-- `androidx.media` dependency removed
+- Manifest uses `tools:node="remove"` on `com.google.android.gms.car.application`
+- `androidx.media` is not a dependency
 
-### You must still do this in Play Console
-
-Google requires the compliant AAB on **every track**, not only Production.
-
-1. Open each track that still has version code 2: Internal / Closed / Open / Production.
-2. Create a new release (or edit a draft). Discard any draft that still contains the old bundle.
-3. Upload `app/build/outputs/bundle/release/app-release.aab` (versionCode **3**).
-4. Confirm version code 2 is under **Not included**.
-5. Save → Review release → roll out to 100%.
-6. Repeat for every testing track.
-7. In Play Console, turn off / leave the **Android Auto** program if it is still enrolled. Do not claim Android Auto in the listing.
+Upload the versionCode **3** AAB on every track that still has version code 2. Leave the Android Auto program if it is still enrolled. Do not claim Android Auto in the listing.
 
 ## Data safety form
 
-- Location: **no**
-- Photos / files: user-provided, stored on device
-- Shared with third parties: **no**
-- Collected: none, except optional local telemetry the user can turn on
-- Encryption in transit: only if the user exports a password-protected ZIP
-- ML Kit: on-device; optional model download
+Match the **merged manifest**, not an older checklist:
+
+| Data type | Declare |
+|-----------|---------|
+| Location | Yes — optional My Trail, on device only, not shared. Fine + coarse. Foreground service while the user has started the trail. Not background location. |
+| Photos / files | User-provided, stored on device |
+| Shared with third parties | No |
+| Collected by developer | None. Optional usage counts stay on the device unless the user emails a report. |
+| Encryption in transit | Only if the user exports a ZIP and then uploads that file themselves |
+| ML Kit | On-device Latin OCR (bundled). Play services may refresh a model. Documents are not uploaded to a Paperstow server. |
 
 ## Permissions (must match the binary)
 
 Declared and used:
-- Camera — Take Photo only
-- Internet — optional ML Kit OCR model refresh; documents are not uploaded
 
-Explicitly removed from the merged manifest:
-- Location (fine/coarse/background)
-- Foreground service / location FGS
-- Wi-Fi state
-- Notifications
-- Android Auto (`com.google.android.gms.car.application`)
+- `CAMERA` — fallback Take Photo / scanner path; requested when that action runs
+- `INTERNET` — optional ML Kit / scanner model refresh; documents are not uploaded
+- `ACCESS_FINE_LOCATION`, `ACCESS_COARSE_LOCATION` — My Trail only, when the user starts it
+- `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_LOCATION` — My Trail while recording
+- `POST_NOTIFICATIONS` — shown while My Trail is recording
+
+Explicitly stripped from the merged manifest:
+
+- `ACCESS_BACKGROUND_LOCATION`
+- `ACCESS_NETWORK_STATE`, `ACCESS_WIFI_STATE`
 - Automotive hardware feature
+- Android Auto application metadata
 
-Do **not** declare location, SMS, Android Auto, or media-read in Play Console.
+Do **not** declare SMS, media-read, or Android Auto in Play Console. Do declare location if you keep My Trail in the binary.
 
 ## Privacy policy URL
 
 In-app and Console: `https://sethusrinivasan.github.io/document-manager/privacy.html`
 
-Enable GitHub Pages for this repo (Settings → Pages → Deploy from branch `main` / `/docs`).
+Enable GitHub Pages (Settings → Pages → Deploy from branch `main` / `/docs`). Source: [PRIVACY_POLICY.md](PRIVACY_POLICY.md) and [privacy.html](privacy.html).
 
 ## Screenshots
 
-Use import, tags, preview, search, and settings only. Do not show Experimental Features, WiFi Share, GPS, or Android Auto.
+Phone captures from `docs/screenshots/` (Paperstow 1.1 emulator, sample trip loaded). Prefer:
+
+- `2.jpg` Home with sample folders
+- `3.jpg` Tag folder
+- `4.jpg` Document preview
+- `6.jpg` Import (file / folder / scan — no Drive)
+- `7.jpg` Search
+- `13.jpg` Settings
+- `14.jpg` About
+
+Do not upload EULA, diagnostics, or any leftover Drive / Experimental Features shots.
 
 ## Release signing
-
-Set these before `./gradlew bundleRelease`:
 
 ```
 export DOCVAULT_KEYSTORE=$HOME/release.keystore
 export DOCVAULT_STORE_PASSWORD=...
 export DOCVAULT_KEY_ALIAS=upload_key
 export DOCVAULT_KEY_PASSWORD=...
+./scripts/build-release.sh
 ```
+
+Keystore helper: `./scripts/release_keystore.sh` → `~/release.keystore`.

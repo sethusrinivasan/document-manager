@@ -1,5 +1,7 @@
 # Implementation Plan: Document Manager
 
+> **Historical spec.** Original Kiro task list. Many items (Drive, S3, Auto, SQLCipher, experimental flags) were later removed. Current source of truth: the `main` tree and [README.md](../../../README.md).
+
 ## Overview
 
 This plan implements the Document Manager Android application using Kotlin, Jetpack Compose, Room+SQLCipher, ML Kit, and Hilt. The implementation proceeds bottom-up: domain models and interfaces first, then data layer implementations, followed by presentation layer and wiring. Property-based tests (Kotest) and unit tests (JUnit 5 + MockK) validate correctness at each layer.

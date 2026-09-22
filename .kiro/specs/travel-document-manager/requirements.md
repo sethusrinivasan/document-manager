@@ -1,5 +1,7 @@
 # Requirements Document
 
+> **Historical spec.** This is the original Kiro requirements list (Document Manager, PIN auth, Drive, S3, experimental flags, SQLCipher, DICOM, Android Auto). The shipping app is **Paperstow** (`com.app.paperstow`) 1.1. See [README.md](../../../README.md) and [docs/ARCHITECTURE.md](../../../docs/ARCHITECTURE.md) for what actually runs. Do not implement from this file without checking the current code.
+
 ## Introduction
 
 A mobile application for families to securely store, organize, and manage travel documents on Android devices. The app provides local storage with on-device OCR scanning and metadata extraction, PIN authentication for security, and intelligent document search capabilities. All functionality works offline without any cloud dependencies.

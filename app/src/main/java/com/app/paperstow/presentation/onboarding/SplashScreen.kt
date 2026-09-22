@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -58,7 +59,7 @@ fun SplashScreen(onContinue: (skipInFuture: Boolean) -> Unit) {
                 Column(Modifier.weight(1f)) {
                     Text("Paperstow", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.White)
                     Text(
-                        "A pocket for the family’s travel papers.",
+                        stringResource(R.string.splash_tagline),
                         fontSize = 14.sp,
                         color = Color.White.copy(alpha = 0.9f)
                     )
@@ -76,7 +77,7 @@ fun SplashScreen(onContinue: (skipInFuture: Boolean) -> Unit) {
             Text("Paperstow", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color.White)
             Spacer(Modifier.height(8.dp))
             Text(
-                "A pocket for the family’s travel papers.",
+                stringResource(R.string.splash_tagline),
                 fontSize = 16.sp,
                 color = Color.White.copy(alpha = 0.9f),
                 textAlign = TextAlign.Center

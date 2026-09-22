@@ -23,3 +23,6 @@ app/src/main/java/com/app/paperstow/debug/debug_logs/
 # Build artifacts
 build_output.txt
 logs/
+
+# Local emulator recording (upload separately; see docs/demo/README.md)
+docs/demo/*.mp4

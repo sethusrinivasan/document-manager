@@ -69,7 +69,7 @@ fun AboutScreen(onBack: () -> Unit) {
             SectionTitle("Security")
             InfoRow("File Encryption", "AES-256-GCM (Android KeyStore)")
             InfoRow("Authentication", "This device's fingerprint, face, or screen lock")
-            InfoRow("Archive", "Password-protected ZIP to a folder you pick")
+            InfoRow("Archive", "ZIP to a folder you pick. Password is optional.")
             Spacer(Modifier.height(16.dp))
 
             SectionTitle("Privacy")
