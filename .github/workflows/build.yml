@@ -41,7 +41,7 @@ jobs:
         cp app/build/outputs/apk/release/app-release*.apk artifacts/document-manager-release.apk 2>/dev/null || true
         cp app/build/outputs/sbom/debug/sbom.json artifacts/sbom.json 2>/dev/null || true
     - name: Upload artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: apks-v1.0.${{ github.run_number }}
         path: artifacts/
