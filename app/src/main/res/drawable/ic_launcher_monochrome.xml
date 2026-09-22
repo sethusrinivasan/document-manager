@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Themed / monochrome mark. Stays inside the adaptive safe zone. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Back sheet -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M34,28 h22 a5,5 0 0 1 5,5 v26 h-27 v-26 a5,5 0 0 1 5,-5 z" />
+
+    <!-- Front sheet with folded corner -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M47,26 h22 a5,5 0 0 1 5,5 v4 h-8 a4,4 0 0 1 -4,-4 v-5 h-15 a5,5 0 0 0 -5,5 v24 h32 v-20 h-27 v-9 a5,5 0 0 1 5,-5 z" />
+
+    <!-- Pocket -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M26,58
+            C26,52 31,48 38,48
+            h32
+            C77,48 82,52 82,58
+            v18
+            C82,86 74,92 54,92
+            C34,92 26,86 26,76
+            z" />
+</vector>

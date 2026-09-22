@@ -23,7 +23,7 @@
 │  │ GPS Service   │  └──────────────────────────────────────────┘ │
 │  └───────────────┘                                               │
 ├─────────────────────────────────────────────────────────────────┤
-│  Storage: /data/data/com.app.traveldocs/                         │
+│  Storage: /data/data/com.app.paperstow/                         │
 │  ├── databases/traveldocs.db        (Room, unencrypted)          │
 │  ├── files/docs/{member}/{id}.enc   (AES-256-GCM encrypted)     │
 │  ├── files/debug_logs/              (Debug log file)             │
@@ -76,8 +76,8 @@ Jetpack Compose screens + Hilt ViewModels.
 ```
 presentation/
 ├── MainActivity.kt         → Navigation host, screen router, biometric gate, pull-to-refresh
-├── auth/                   → BiometricAuthScreen, PinEntryScreen
-├── onboarding/             → DisclaimerScreen, ConsentScreen
+├── auth/                   → BiometricAuthScreen
+├── onboarding/             → DisclaimerScreen, SplashScreen, EulaScreen
 ├── documents/              → ImportScreen, DocumentListScreen, DocumentViewerScreen
 │                             BatchImportViewModel, CameraImportViewModel
 ├── search/                 → SearchScreen, SearchViewModel
@@ -329,7 +329,7 @@ Gating rules:
 ## File System Layout
 
 ```
-/data/data/com.app.traveldocs/
+/data/data/com.app.paperstow/
 ├── databases/
 │   └── traveldocs.db                    # Room database
 ├── files/

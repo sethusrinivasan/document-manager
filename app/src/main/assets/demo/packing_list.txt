@@ -1,0 +1,11 @@
+Packing list — Lakeside week (sample)
+------------------------------------
+[ ] Passports and visa letter
+[ ] Insurance card
+[ ] Vaccination record and blood test copy
+[ ] Chargers and power bank
+[ ] Light jacket
+[ ] Medicines
+[ ] Copies of bookings (also in Paperstow)
+
+Sample note you can edit after import.

@@ -5,7 +5,7 @@
 -dontwarn org.bouncycastle.**
 
 # Keep Room entities and database classes
--keep class com.app.traveldocs.data.local.** { *; }
+-keep class com.app.paperstow.data.local.** { *; }
 -keep class * extends androidx.room.RoomDatabase { *; }
 -keep @androidx.room.Entity class * { *; }
 -keep @androidx.room.Database class * { *; }
@@ -30,21 +30,9 @@
 -keep class com.google.mlkit.** { *; }
 -dontwarn com.google.mlkit.**
 
-# Google Play Services & API Client
+# Google Play Services (ML Kit)
 -keep class com.google.android.gms.** { *; }
--keep class com.google.api.** { *; }
 -dontwarn com.google.android.gms.**
--dontwarn com.google.api.**
-
-# Apache HttpClient (for Google Drive API)
--keep class org.apache.http.** { *; }
--dontwarn org.apache.http.**
--dontwarn javax.naming.**
--dontwarn org.ietf.jgss.**
-
-# Retrofit/OkHttp (for Drive/S3 backend)
--keep class retrofit2.** { *; }
--keep class okhttp3.** { *; }
 
 # AndroidX Core
 -keep class androidx.core.** { *; }
@@ -65,4 +53,4 @@
 -keep class dagger.hilt.internal.** { *; }
 
 # Keep auto-generated code for Navigation
--keep class com.app.traveldocs.di.** { *; }
+-keep class com.app.paperstow.di.** { *; }
