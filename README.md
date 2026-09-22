@@ -7,6 +7,8 @@
 [![API](https://img.shields.io/badge/minSdk-26-informational.svg)](app/build.gradle.kts)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.2.21-7F52FF.svg?logo=kotlin&logoColor=white)](https://kotlinlang.org)
 [![Latest release](https://img.shields.io/github/v/release/sethusrinivasan/document-manager)](https://github.com/sethusrinivasan/document-manager/releases/latest)
+[![Built with Kiro](https://img.shields.io/badge/Built%20with-Kiro-FF6B00)](https://kiro.dev)
+[![Built with Cursor](https://img.shields.io/badge/Built%20with-Cursor-000000)](https://cursor.com)
 
 Keep a copy of your family travel papers on this device. Encrypted. No account. No cloud.
 
@@ -48,15 +50,19 @@ Limits that still apply: 100 documents per family member, 20 tags per document, 
 
 ## Built with AI
 
-This app was built and tested with AI assistance (originally Kiro). All document processing (OCR, classification, tagging) happens on the device using third-party libraries (ML Kit and others). Classification errors can and will occur. Always verify extracted data against the original page.
+This app was built and tested with AI assistance: first [Kiro](https://kiro.dev) (spec-first generation), then [Cursor](https://cursor.com). All document processing (OCR, classification, tagging) happens on the device using third-party libraries (ML Kit and others). Classification errors can and will occur. Always verify extracted data against the original page.
 
 The code compiles and runs. If something could be cleaner: PRs and issues are welcome.
 
 ## Demo
 
-Local emulator capture (Paperstow 1.1, sample trip loaded): [`docs/demo/paperstow-emulator-demo.mp4`](docs/demo/paperstow-emulator-demo.mp4)
+Emulator walkthrough of Paperstow 1.1 after loading the sample trip. Home, a tag folder, preview, import, search, checklist, backup, and About.
 
-Older public clip (Document Manager UI): [YouTube](https://youtube.com/shorts/E43BueHc3gQ?feature=share)
+<video src="docs/demo/paperstow-emulator-demo.mp4" controls width="360" poster="docs/screenshots/2.jpg">
+  <a href="docs/demo/paperstow-emulator-demo.mp4">Play the demo video</a>
+</video>
+
+If the player does not show: [docs/demo/paperstow-emulator-demo.mp4](docs/demo/paperstow-emulator-demo.mp4)
 
 ## Screenshots
 
@@ -238,6 +244,7 @@ How to report a vulnerability: [SECURITY.md](SECURITY.md).
 | [docs/THIRD_PARTY_LICENSES.md](docs/THIRD_PARTY_LICENSES.md) | Dependency licenses |
 | [docs/wireframes.md](docs/wireframes.md) | Current screen map + historical ASCII |
 | [LICENSE](LICENSE) / [NOTICE](NOTICE) | Apache 2.0 + attribution |
+| [docs/demo/paperstow-emulator-demo.mp4](docs/demo/paperstow-emulator-demo.mp4) | Emulator demo (sample trip) |
 | [docs/KIRO_GENERATION_PROMPT.md](docs/KIRO_GENERATION_PROMPT.md) | Historical generation prompt |
 | [.kiro/specs/…](.kiro/specs/travel-document-manager/requirements.md) | Original spec (not the shipping feature set) |
 

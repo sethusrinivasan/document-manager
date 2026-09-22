@@ -10,7 +10,7 @@ CI uploads `document-manager-debug.apk` from `assembleDebug`. A release APK is n
 
 ## Demo video
 
-https://youtube.com/shorts/E43BueHc3gQ?feature=share — recorded against the older Document Manager UI.
+Current capture (Paperstow 1.1, sample trip): [docs/demo/paperstow-emulator-demo.mp4](demo/paperstow-emulator-demo.mp4)
 
 ## What shipped for the hackathon
 

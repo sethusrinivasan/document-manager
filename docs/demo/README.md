@@ -1,8 +1,8 @@
-# Local demo capture
+# Demo video
 
-`paperstow-emulator-demo.mp4` is a screen recording from the `Paperstow_API36` emulator after loading the sample trip. Walks home, a tag folder, preview, all documents, import, search, checklist, backup, and About.
+[`paperstow-emulator-demo.mp4`](paperstow-emulator-demo.mp4) is a screen recording from the `Paperstow_API36` emulator after loading the sample trip. It walks home, a tag folder, preview, all documents, import, search, checklist, backup, and About.
 
-Recorded so you can upload it (YouTube, Play listing, etc.). It is not published from this repo.
+This file is tracked in the repo and linked from the README.
 
 Re-record:
 
