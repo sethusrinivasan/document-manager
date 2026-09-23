@@ -111,6 +111,24 @@ Upload these from `docs/play/` (also copied to `app/src/main/ic_launcher-playsto
 
 The icon is a full-bleed square. Play applies the rounded mask — do not upload a screenshot or a file with transparent corners.
 
+## FOREGROUND_SERVICE_LOCATION video
+
+Play Console asks for a video of the location foreground service. File:
+
+[docs/play/foreground-service-location.mp4](play/foreground-service-location.mp4)
+
+Play wants a **link**, not the file itself. Upload that MP4 to YouTube as **Unlisted**, then paste the YouTube URL into the declaration form.
+
+The clip shows: menu → My Trail → Start trail → the ongoing **My Trail is on** notification → Home (app in background, notification stays) → return to My Trail with a last-known place.
+
+Paste this as the core-functionality / task description:
+
+```
+My Trail is an optional, user-started trail. After the user taps Start trail, a location foreground service records unique places on this device and keeps a visible notification (My Trail is on) until they tap Stop. Location is not used after they stop. Places stay on the phone for 24 hours and are not uploaded.
+```
+
+Do not declare `ACCESS_BACKGROUND_LOCATION`. The selected task should be location while the user has started the trail (not “all the time in the background”).
+
 ## Screenshots
 
 Phone captures from `docs/screenshots/` (Paperstow 1.1 emulator, sample trip loaded). Prefer:
