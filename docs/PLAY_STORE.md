@@ -100,6 +100,17 @@ In-app and Console: `https://sethusrinivasan.github.io/document-manager/privacy.
 
 Enable GitHub Pages (Settings → Pages → Deploy from branch `main` / `/docs`). Source: [PRIVACY_POLICY.md](PRIVACY_POLICY.md) and [privacy.html](privacy.html).
 
+## Store graphics
+
+Upload these from `docs/play/` (also copied to `app/src/main/ic_launcher-playstore.png`):
+
+| Play Console field | File | Spec |
+|--------------------|------|------|
+| App icon | [docs/play/app-icon-512.png](play/app-icon-512.png) | PNG, 512×512, RGB, no alpha, 172 KB |
+| Feature graphic | [docs/play/feature-graphic-1024x500.png](play/feature-graphic-1024x500.png) | PNG, 1024×500, RGB, no alpha, 151 KB |
+
+The icon is a full-bleed square. Play applies the rounded mask — do not upload a screenshot or a file with transparent corners.
+
 ## Screenshots
 
 Phone captures from `docs/screenshots/` (Paperstow 1.1 emulator, sample trip loaded). Prefer:
