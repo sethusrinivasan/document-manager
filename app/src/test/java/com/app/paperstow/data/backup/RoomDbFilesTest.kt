@@ -31,7 +31,8 @@ class RoomDbFilesTest {
     @Test
     fun `non sqlite header is rejected`() {
         val f = File.createTempFile("text", ".db")
-        f.writeText("this is not a sqlite database file!!")
+        // Must be >= 100 bytes so inspect() reaches the header check, not the size gate.
+        f.writeText("this is not a sqlite database file!!".repeat(4))
         try {
             val check = RoomDbFiles.inspect(f)
             assertFalse(check.validSqlite)
