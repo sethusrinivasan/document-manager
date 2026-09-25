@@ -15,6 +15,19 @@ updates:
     commit-message:
       prefix: "deps:"
       include: "scope"
+    # Stay on AGP 8.13 + Gradle 8.13 + JUnit 5 while Play 1.1 is shipping.
+    # AGP 9 / Gradle 9 / JUnit 6 need a dedicated upgrade, not a weekly PR pile.
+    ignore:
+      - dependency-name: "com.android.application"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "com.android.library"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "com.android.tools.build:gradle"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "gradle"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "org.junit:junit-bom"
+        update-types: ["version-update:semver-major"]
     groups:
       androidx:
         patterns:
