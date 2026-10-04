@@ -1,58 +1,196 @@
-name: Build Android App
+name: Build & Package Android App
 
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      custom_notes:
+        description: 'Optional release notes description'
+        required: false
+        default: ''
 
 permissions:
   contents: write
 
 jobs:
   build:
+    name: Build & Package (APK, AAB, Artifacts)
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v5
+    - name: Checkout repository
+      uses: actions/checkout@v5
+      with:
+        fetch-depth: 0
+
     - name: Set up JDK 17
       uses: actions/setup-java@v5
       with:
         java-version: '17'
         distribution: 'zulu'
+
     - name: Setup Android SDK
       uses: android-actions/setup-android@v4
       with:
-        # v3 defaulted to the removed `tools` package and sdkmanager exits 1.
         packages: platform-tools
+
     - name: Cache Gradle
       uses: actions/cache@v4
       with:
-        path: ~/.gradle/caches
-        key: gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', '**/libs.versions.toml') }}
-    - name: Bump version
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', '**/libs.versions.toml') }}
+        restore-keys: |
+          gradle-${{ runner.os }}-
+
+    - name: Bump version & set build metadata
+      id: versioning
       run: |
-        sed -i "s/versionCode = [0-9]*/versionCode = ${{ github.run_number }}/" app/build.gradle.kts
-        sed -i "s/versionName = \"[^\"]*\"/versionName = \"1.0.${{ github.run_number }}\"/" app/build.gradle.kts
-    - name: Build Debug
-      run: chmod +x gradlew && ./gradlew assembleDebug
-    - name: Run Tests
+        BASE_VERSION=$(grep 'versionName =' app/build.gradle.kts | head -1 | sed -E 's/.*"([0-9]+\.[0-9]+).*"/\1/')
+        if [ -z "$BASE_VERSION" ]; then
+          BASE_VERSION="1.1"
+        fi
+        VERSION_NAME="${BASE_VERSION}.${{ github.run_number }}"
+        VERSION_CODE="${{ github.run_number }}"
+
+        echo "Bumping to versionName: ${VERSION_NAME}, versionCode: ${VERSION_CODE}"
+        sed -i "s/versionCode = [0-9]*/versionCode = ${VERSION_CODE}/" app/build.gradle.kts
+        sed -i "s/versionName = \"[^\"]*\"/versionName = \"${VERSION_NAME}\"/" app/build.gradle.kts
+
+        echo "version_name=${VERSION_NAME}" >> $GITHUB_OUTPUT
+        echo "version_code=${VERSION_CODE}" >> $GITHUB_OUTPUT
+        echo "VERSION_NAME=${VERSION_NAME}" >> $GITHUB_ENV
+        echo "VERSION_CODE=${VERSION_CODE}" >> $GITHUB_ENV
+
+    - name: Configure Release Keystore & Signing
+      id: keystore
+      run: |
+        KEYSTORE_DIR="$RUNNER_TEMP/signing"
+        mkdir -p "$KEYSTORE_DIR"
+        KEYSTORE_PATH="$KEYSTORE_DIR/release.keystore"
+
+        if [ -n "${{ secrets.DOCVAULT_KEYSTORE_BASE64 }}" ]; then
+          echo "Decoding keystore from DOCVAULT_KEYSTORE_BASE64 secret..."
+          echo "${{ secrets.DOCVAULT_KEYSTORE_BASE64 }}" | base64 -d > "$KEYSTORE_PATH"
+          echo "DOCVAULT_KEYSTORE=$KEYSTORE_PATH" >> $GITHUB_ENV
+          echo "DOCVAULT_STORE_PASSWORD=${{ secrets.DOCVAULT_STORE_PASSWORD }}" >> $GITHUB_ENV
+          echo "DOCVAULT_KEY_ALIAS=${{ secrets.DOCVAULT_KEY_ALIAS || 'upload_key' }}" >> $GITHUB_ENV
+          echo "DOCVAULT_KEY_PASSWORD=${{ secrets.DOCVAULT_KEY_PASSWORD }}" >> $GITHUB_ENV
+          echo "signing_type=production" >> $GITHUB_OUTPUT
+          echo "::notice::Using production signing key from DOCVAULT_KEYSTORE_BASE64."
+        elif [ -n "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" ]; then
+          echo "Decoding keystore from RELEASE_KEYSTORE_BASE64 secret..."
+          echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 -d > "$KEYSTORE_PATH"
+          echo "DOCVAULT_KEYSTORE=$KEYSTORE_PATH" >> $GITHUB_ENV
+          echo "DOCVAULT_STORE_PASSWORD=${{ secrets.RELEASE_STORE_PASSWORD || secrets.DOCVAULT_STORE_PASSWORD }}" >> $GITHUB_ENV
+          echo "DOCVAULT_KEY_ALIAS=${{ secrets.RELEASE_KEY_ALIAS || secrets.DOCVAULT_KEY_ALIAS || 'upload_key' }}" >> $GITHUB_ENV
+          echo "DOCVAULT_KEY_PASSWORD=${{ secrets.RELEASE_KEY_PASSWORD || secrets.DOCVAULT_KEY_PASSWORD }}" >> $GITHUB_ENV
+          echo "signing_type=production" >> $GITHUB_OUTPUT
+          echo "::notice::Using production signing key from RELEASE_KEYSTORE_BASE64."
+        else
+          echo "Generating automated release keystore for CI build..."
+          keytool -genkeypair -v -keystore "$KEYSTORE_PATH" \
+            -storepass "paperstow_ci_signing" \
+            -keypass "paperstow_ci_signing" \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -alias "upload_key" \
+            -dname "CN=Paperstow CI, OU=Engineering, O=Paperstow, C=US"
+          echo "DOCVAULT_KEYSTORE=$KEYSTORE_PATH" >> $GITHUB_ENV
+          echo "DOCVAULT_STORE_PASSWORD=paperstow_ci_signing" >> $GITHUB_ENV
+          echo "DOCVAULT_KEY_ALIAS=upload_key" >> $GITHUB_ENV
+          echo "DOCVAULT_KEY_PASSWORD=paperstow_ci_signing" >> $GITHUB_ENV
+          echo "signing_type=ci_fallback" >> $GITHUB_OUTPUT
+          echo "::warning::Using automated CI keystore. To sign with your official store key, configure DOCVAULT_KEYSTORE_BASE64, DOCVAULT_STORE_PASSWORD, DOCVAULT_KEY_ALIAS, and DOCVAULT_KEY_PASSWORD in repository secrets."
+        fi
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: Run Unit Tests
       run: ./gradlew testDebugUnitTest
-    - name: Prepare artifacts
+
+    - name: Build Debug Package
+      run: ./gradlew assembleDebug
+
+    - name: Build Release Packages (APK & AAB) & SBOM
+      run: ./gradlew assembleRelease bundleRelease generateReleaseSbom
+
+    - name: Prepare & Package App Store Artifacts
+      id: package_artifacts
       run: |
         mkdir -p artifacts
-        cp app/build/outputs/apk/debug/app-debug.apk artifacts/document-manager-debug.apk
-        cp app/build/outputs/apk/release/app-release*.apk artifacts/document-manager-release.apk 2>/dev/null || true
-        cp app/build/outputs/sbom/debug/sbom.json artifacts/sbom.json 2>/dev/null || true
-    - name: Upload artifacts
+        VNAME="${{ env.VERSION_NAME }}"
+
+        # Release APK (for Amazon Appstore, sideloading, Galaxy Store, alternative stores)
+        if [ -f app/build/outputs/apk/release/app-release.apk ]; then
+          cp app/build/outputs/apk/release/app-release.apk artifacts/paperstow-${VNAME}-release.apk
+          cp app/build/outputs/apk/release/app-release.apk artifacts/paperstow-release-latest.apk
+        elif [ -f app/build/outputs/apk/release/app-release-unsigned.apk ]; then
+          cp app/build/outputs/apk/release/app-release-unsigned.apk artifacts/paperstow-${VNAME}-release-unsigned.apk
+        fi
+
+        # Release Android App Bundle (for Google Play Store, Amazon Appstore AAB)
+        if [ -f app/build/outputs/bundle/release/app-release.aab ]; then
+          cp app/build/outputs/bundle/release/app-release.aab artifacts/paperstow-${VNAME}-release.aab
+          cp app/build/outputs/bundle/release/app-release.aab artifacts/paperstow-release-latest.aab
+        fi
+
+        # Debug APK (for QA and developer testing)
+        if [ -f app/build/outputs/apk/debug/app-debug.apk ]; then
+          cp app/build/outputs/apk/debug/app-debug.apk artifacts/paperstow-${VNAME}-debug.apk
+        fi
+
+        # ProGuard / R8 Deobfuscation Mapping file (needed for crash reports on Amazon Appstore & Play Store)
+        if [ -f app/build/outputs/mapping/release/mapping.txt ]; then
+          cp app/build/outputs/mapping/release/mapping.txt artifacts/mapping-${VNAME}.txt
+        fi
+
+        # CycloneDX SBOM (Software Bill of Materials)
+        if [ -f app/build/outputs/sbom/release/sbom.json ]; then
+          cp app/build/outputs/sbom/release/sbom.json artifacts/sbom-${VNAME}-release.json
+        elif [ -f app/build/outputs/sbom/debug/sbom.json ]; then
+          cp app/build/outputs/sbom/debug/sbom.json artifacts/sbom-${VNAME}-debug.json
+        fi
+
+        # Generate SHA-256 Checksums
+        cd artifacts
+        sha256sum * > SHA256SUMS.txt
+        cd ..
+
+        echo "Artifacts prepared:"
+        ls -la artifacts/
+
+    - name: Upload Artifacts to Workflow Run
       uses: actions/upload-artifact@v4
       with:
-        name: apks-v1.0.${{ github.run_number }}
+        name: paperstow-build-${{ env.VERSION_NAME }}
         path: artifacts/
-    - name: Create Release
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if-no-files-found: error
+
+    - name: Create GitHub Release
+      if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
       uses: softprops/action-gh-release@v2
       with:
-        tag_name: v1.0.${{ github.run_number }}
-        name: v1.0.${{ github.run_number }}
-        body: "Build #${{ github.run_number }} from commit ${{ github.sha }}"
+        tag_name: v${{ env.VERSION_NAME }}
+        name: Paperstow v${{ env.VERSION_NAME }}
+        body: |
+          ## Paperstow Release v${{ env.VERSION_NAME }} (Build #${{ env.VERSION_CODE }})
+
+          Commit: `${{ github.sha }}`
+          ${{ github.event.inputs.custom_notes }}
+
+          ### App Store & Release Packages
+          - **Amazon Appstore & Sideloading (APK):** `paperstow-${{ env.VERSION_NAME }}-release.apk`
+          - **Google Play Store & Amazon App Bundle (AAB):** `paperstow-${{ env.VERSION_NAME }}-release.aab`
+          - **QA & Testing (Debug APK):** `paperstow-${{ env.VERSION_NAME }}-debug.apk`
+          - **R8 / ProGuard Mapping:** `mapping-${{ env.VERSION_NAME }}.txt`
+          - **Software Bill of Materials (CycloneDX SBOM):** `sbom-${{ env.VERSION_NAME }}-release.json`
+
+          ### Verification
+          Verify asset integrity using `SHA256SUMS.txt` included with this release.
         files: artifacts/*
