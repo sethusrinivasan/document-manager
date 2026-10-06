@@ -112,15 +112,47 @@ fun SettingsScreen(onBack: () -> Unit, onReset: () -> String, indexViewModel: Se
         )
     }
 
-    Scaffold(topBar = { TopAppBar(title = { Text("Settings") }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") } }) }) { padding ->
-        Column(modifier = Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp)) {
-            Text("Personalization", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-            Spacer(Modifier.height(8.dp))
-            Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = colors.surfaceVariant)) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Settings") },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                }
+            )
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Personalization",
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = colors.surfaceVariant)
+            ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text("Home Page Title", fontSize = 14.sp)
-                    Spacer(Modifier.height(4.dp))
-                    var homeTitle by remember { mutableStateOf(context.getSharedPreferences("app_settings", 0).getString("home_title", "Paperstow") ?: "Paperstow") }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    var homeTitle by remember {
+                        mutableStateOf(
+                            context.getSharedPreferences("app_settings", 0)
+                                .getString("home_title", "Paperstow") ?: "Paperstow"
+                        )
+                    }
                     OutlinedTextField(
                         value = homeTitle,
                         onValueChange = { homeTitle = it },
@@ -128,8 +160,18 @@ fun SettingsScreen(onBack: () -> Unit, onReset: () -> String, indexViewModel: Se
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
-                    Spacer(Modifier.height(8.dp))
-                    Button(onClick = { context.getSharedPreferences("app_settings", 0).edit().putString("home_title", homeTitle).apply() }, modifier = Modifier.fillMaxWidth()) { Text("Save") }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Button(
+                        onClick = {
+                            context.getSharedPreferences("app_settings", 0)
+                                .edit()
+                                .putString("home_title", homeTitle)
+                                .apply()
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Save")
+                    }
                 }
             }
 

@@ -123,7 +123,14 @@ fun SbomScreen(onBack: () -> Unit) {
         topBar = {
             TopAppBar(
                 title = { Text("SBOM") },
-                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") } },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
                 actions = {
                     if (sbom != null) {
                         IconButton(onClick = {

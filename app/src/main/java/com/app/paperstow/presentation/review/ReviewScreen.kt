@@ -110,32 +110,74 @@ fun ReviewScreen(onBack: () -> Unit, viewModel: ReviewViewModel = hiltViewModel(
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             PrimaryTabRow(selectedTabIndex = selectedTab) {
-                Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 }, text = { Text("Untagged (${untaggedDocs.size})") })
-                Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 }, text = { Text("OCR Review (${reviewDocs.size})") })
+                Tab(
+                    selected = selectedTab == 0,
+                    onClick = { selectedTab = 0 },
+                    text = { Text("Untagged (${untaggedDocs.size})") }
+                )
+                Tab(
+                    selected = selectedTab == 1,
+                    onClick = { selectedTab = 1 },
+                    text = { Text("OCR Review (${reviewDocs.size})") }
+                )
             }
 
             when (selectedTab) {
                 0 -> {
                     // Classify untagged documents
                     if (untaggedDocs.isEmpty()) {
-                        Column(Modifier.fillMaxSize().padding(32.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-                            Icon(Icons.Filled.CheckCircle, null, tint = Color(0xFF4CAF50), modifier = Modifier.size(48.dp))
-                            Spacer(Modifier.height(12.dp))
-                            Text("All documents are tagged!", color = Color.Gray)
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(32.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.CheckCircle,
+                                contentDescription = null,
+                                tint = Color(0xFF4CAF50),
+                                modifier = Modifier.size(48.dp)
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(text = "All documents are tagged!", color = Color.Gray)
                         }
                     } else {
-                        Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text("${selectedDocIds.size} selected", fontSize = 13.sp, color = Color.Gray, modifier = Modifier.weight(1f))
+                                Text(
+                                    text = "${selectedDocIds.size} selected",
+                                    fontSize = 13.sp,
+                                    color = Color.Gray,
+                                    modifier = Modifier.weight(1f)
+                                )
                                 if (selectedDocIds.isNotEmpty()) {
-                                    Button(onClick = { showTagDialog = true }, modifier = Modifier.height(36.dp)) {
-                                        Icon(Icons.AutoMirrored.Filled.Label, null, Modifier.size(16.dp))
-                                        Spacer(Modifier.width(4.dp))
+                                    Button(
+                                        onClick = { showTagDialog = true },
+                                        modifier = Modifier.height(36.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.AutoMirrored.Filled.Label,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
                                         Text("Assign Tag", fontSize = 12.sp)
                                     }
                                 }
-                                TextButton(onClick = { selectedDocIds = if (selectedDocIds.size == untaggedDocs.size) emptySet() else untaggedDocs.map { it.id }.toSet() }) {
-                                    Text(if (selectedDocIds.size == untaggedDocs.size) "Deselect All" else "Select All", fontSize = 12.sp)
+                                TextButton(
+                                    onClick = {
+                                        selectedDocIds = if (selectedDocIds.size == untaggedDocs.size) {
+                                            emptySet()
+                                        } else {
+                                            untaggedDocs.map { it.id }.toSet()
+                                        }
+                                    }
+                                ) {
+                                    Text(
+                                        text = if (selectedDocIds.size == untaggedDocs.size) "Deselect All" else "Select All",
+                                        fontSize = 12.sp
+                                    )
                                 }
                             }
                         }

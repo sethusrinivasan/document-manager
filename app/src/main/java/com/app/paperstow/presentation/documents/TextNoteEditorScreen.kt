@@ -60,7 +60,12 @@ fun TextNoteEditorScreen(
             TopAppBar(
                 title = { Text(if (existing == null) "New note" else "Edit note") },
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") }
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
                 },
                 actions = {
                     if (saving) {

@@ -129,18 +129,47 @@ fun DocumentViewerScreen(
             dismissButton = { TextButton(onClick = { showAddTagDialog = false }) { Text("Cancel") } })
     }
 
-    Scaffold(topBar = { TopAppBar(title = { Text(docName, maxLines = 1) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") } },
-        actions = {
-            if (document.format in listOf(DocumentFormat.TEXT, DocumentFormat.MARKDOWN) && fileBytes != null && onEditNote != null) {
-                IconButton(onClick = {
-                    val text = try { String(fileBytes!!, Charsets.UTF_8) } catch (_: Exception) { "" }
-                    onEditNote(text)
-                }) { Icon(Icons.Filled.Edit, "Edit note") }
-            } else {
-                IconButton(onClick = { showRenameDialog = true }) { Icon(Icons.Filled.Edit, "Rename") }
-            }
-            if (fileBytes != null && !loading) { IconButton(onClick = { shareDocument(context, fileBytes!!, docName, document.format) }) { Icon(Icons.Filled.Share, "Share") } }
-        }) }
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(docName, maxLines = 1) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
+                actions = {
+                    if (document.format in listOf(DocumentFormat.TEXT, DocumentFormat.MARKDOWN) && fileBytes != null && onEditNote != null) {
+                        IconButton(onClick = {
+                            val text = try {
+                                String(fileBytes!!, Charsets.UTF_8)
+                            } catch (_: Exception) {
+                                ""
+                            }
+                            onEditNote(text)
+                        }) {
+                            Icon(Icons.Filled.Edit, contentDescription = "Edit note")
+                        }
+                    } else {
+                        IconButton(onClick = { showRenameDialog = true }) {
+                            Icon(Icons.Filled.Edit, contentDescription = "Rename")
+                        }
+                    }
+                    if (fileBytes != null && !loading) {
+                        IconButton(
+                            onClick = {
+                                shareDocument(context, fileBytes!!, docName, document.format)
+                            }
+                        ) {
+                            Icon(Icons.Filled.Share, contentDescription = "Share")
+                        }
+                    }
+                }
+            )
+        }
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             Box(modifier = Modifier.fillMaxWidth().weight(1f).background(Color.White)

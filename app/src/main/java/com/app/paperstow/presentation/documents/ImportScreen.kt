@@ -62,7 +62,11 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ImportScreen(onDone: () -> Unit, importViewModel: ImportViewModel = hiltViewModel(), batchViewModel: BatchImportViewModel = hiltViewModel()) {
+fun ImportScreen(
+    onDone: () -> Unit,
+    importViewModel: ImportViewModel = hiltViewModel(),
+    batchViewModel: BatchImportViewModel = hiltViewModel()
+) {
     val singleState by importViewModel.state.collectAsState()
     val batchState by batchViewModel.state.collectAsState()
     var mode by remember { mutableStateOf("choose") } // choose, single, batch_progress
@@ -70,11 +74,21 @@ fun ImportScreen(onDone: () -> Unit, importViewModel: ImportViewModel = hiltView
     var showSubfolderDialog by remember { mutableStateOf(false) }
 
     val context = androidx.compose.ui.platform.LocalContext.current
-    val filePickerLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        if (uri != null) { importViewModel.importFile(uri); mode = "single" }
+    val filePickerLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            importViewModel.importFile(uri)
+            mode = "single"
+        }
     }
-    val folderPickerLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri: Uri? ->
-        if (uri != null) { pendingFolderUri = uri; showSubfolderDialog = true }
+    val folderPickerLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocumentTree()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            pendingFolderUri = uri
+            showSubfolderDialog = true
+        }
     }
     var capturedBytes by remember { mutableStateOf<ByteArray?>(null) }
     var showTagDialog by remember { mutableStateOf(false) }
@@ -135,44 +149,174 @@ fun ImportScreen(onDone: () -> Unit, importViewModel: ImportViewModel = hiltView
     // Duplicate dialog
     if (singleState.duplicateFound != null) {
         val dup = singleState.duplicateFound!!
-        AlertDialog(onDismissRequest = { importViewModel.cancelDuplicate() }, icon = { Icon(Icons.Filled.ContentCopy, null, tint = Color(0xFFFFC107)) }, title = { Text("Duplicate Document") },
-            text = { Column { Text("\"${dup.newFileName}\" already exists."); Spacer(Modifier.height(8.dp)); Text("Replace or cancel?", fontSize = 13.sp, color = Color.Gray) } },
-            confirmButton = { Button(onClick = { importViewModel.confirmReplace() }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF44336))) { Text("Replace") } },
-            dismissButton = { TextButton(onClick = { importViewModel.cancelDuplicate() }) { Text("Cancel") } })
-    }
-    // Tag dialog after camera capture
-    if (showTagDialog && capturedBytes != null) {
-        AlertDialog(onDismissRequest = { showTagDialog = false; val fn = "camera_" + System.currentTimeMillis() + ".jpg"; importViewModel.importFromBytes(capturedBytes!!, com.app.paperstow.domain.model.DocumentFormat.JPG, fn); mode = "single" },
-            title = { Text("Add Tags") },
-            text = { Column { Text("Add comma-separated tags:", fontSize = 13.sp, color = Color.Gray); Spacer(Modifier.height(8.dp)); OutlinedTextField(value = cameraTags, onValueChange = { cameraTags = it }, label = { Text("Tags") }, singleLine = true, modifier = Modifier.fillMaxWidth()) } },
-            confirmButton = { TextButton(onClick = { showTagDialog = false; val fn = "camera_" + System.currentTimeMillis() + ".jpg"; importViewModel.importFromBytes(capturedBytes!!, com.app.paperstow.domain.model.DocumentFormat.JPG, fn); mode = "single" }) { Text("Import") } },
-            dismissButton = { TextButton(onClick = { showTagDialog = false; val fn = "camera_" + System.currentTimeMillis() + ".jpg"; importViewModel.importFromBytes(capturedBytes!!, com.app.paperstow.domain.model.DocumentFormat.JPG, fn); mode = "single" }) { Text("Skip") } }
+        AlertDialog(
+            onDismissRequest = { importViewModel.cancelDuplicate() },
+            icon = { Icon(Icons.Filled.ContentCopy, contentDescription = null, tint = Color(0xFFFFC107)) },
+            title = { Text("Duplicate Document") },
+            text = {
+                Column {
+                    Text("\"${dup.newFileName}\" already exists.")
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("Replace or cancel?", fontSize = 13.sp, color = Color.Gray)
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = { importViewModel.confirmReplace() },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF44336))
+                ) {
+                    Text("Replace")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { importViewModel.cancelDuplicate() }) {
+                    Text("Cancel")
+                }
+            }
         )
     }
+
+    // Tag dialog after camera capture
+    if (showTagDialog && capturedBytes != null) {
+        fun importCaptured() {
+            showTagDialog = false
+            val fn = "camera_" + System.currentTimeMillis() + ".jpg"
+            importViewModel.importFromBytes(
+                bytes = capturedBytes!!,
+                format = com.app.paperstow.domain.model.DocumentFormat.JPG,
+                fileName = fn
+            )
+            mode = "single"
+        }
+
+        AlertDialog(
+            onDismissRequest = { importCaptured() },
+            title = { Text("Add Tags") },
+            text = {
+                Column {
+                    Text("Add comma-separated tags:", fontSize = 13.sp, color = Color.Gray)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = cameraTags,
+                        onValueChange = { cameraTags = it },
+                        label = { Text("Tags") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { importCaptured() }) {
+                    Text("Import")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { importCaptured() }) {
+                    Text("Skip")
+                }
+            }
+        )
+    }
+
     // Subfolder scan dialog
     if (showSubfolderDialog && pendingFolderUri != null) {
+        val folderUri = pendingFolderUri!!
         AlertDialog(
-            onDismissRequest = { showSubfolderDialog = false; pendingFolderUri = null },
+            onDismissRequest = {
+                showSubfolderDialog = false
+                pendingFolderUri = null
+            },
             title = { Text("Scan Subfolders?") },
-            text = { Column {
-                Text("Should we scan subfolders recursively?", fontSize = 14.sp)
-                Spacer(Modifier.height(8.dp))
-                Text("If yes, the first-level subfolder name will be added as a tag to each imported document.", fontSize = 12.sp, color = Color.Gray)
-            } },
-            confirmButton = { Button(onClick = { showSubfolderDialog = false; batchViewModel.importFromLocalFolder(pendingFolderUri!!, includeSubfolders = true); pendingFolderUri = null; mode = "batch_progress" }) { Text("Yes, include subfolders") } },
-            dismissButton = { OutlinedButton(onClick = { showSubfolderDialog = false; batchViewModel.importFromLocalFolder(pendingFolderUri!!, includeSubfolders = false); pendingFolderUri = null; mode = "batch_progress" }) { Text("No, root only") } }
+            text = {
+                Column {
+                    Text("Should we scan subfolders recursively?", fontSize = 14.sp)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        "If yes, the first-level subfolder name will be added as a tag to each imported document.",
+                        fontSize = 12.sp,
+                        color = Color.Gray
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showSubfolderDialog = false
+                        pendingFolderUri = null
+                        batchViewModel.importFromLocalFolder(folderUri, includeSubfolders = true)
+                        mode = "batch_progress"
+                    }
+                ) {
+                    Text("Yes, include subfolders")
+                }
+            },
+            dismissButton = {
+                OutlinedButton(
+                    onClick = {
+                        showSubfolderDialog = false
+                        pendingFolderUri = null
+                        batchViewModel.importFromLocalFolder(folderUri, includeSubfolders = false)
+                        mode = "batch_progress"
+                    }
+                ) {
+                    Text("No, root only")
+                }
+            }
         )
     }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Import") }, navigationIcon = { IconButton(onClick = { importViewModel.clearState(); batchViewModel.reset(); onDone() }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") } }) },
+        topBar = {
+            TopAppBar(
+                title = { Text("Import") },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            importViewModel.clearState()
+                            batchViewModel.reset()
+                            onDone()
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                }
+            )
+        },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
-        Column(modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(16.dp)
+        ) {
             when (mode) {
-                "choose" -> ImportChooser(onSingleFile = { filePickerLauncher.launch("*/*") }, onLocalFolder = { folderPickerLauncher.launch(null) }, onCamera = { startScan() })
-                "single" -> SingleImportResult(state = singleState, onDone = { importViewModel.clearState(); onDone() }, onRetry = { importViewModel.clearState(); mode = "choose" })
-                "batch_progress" -> BatchImportProgressScreen(viewModel = batchViewModel, onDone = { batchViewModel.reset(); onDone() })
+                "choose" -> ImportChooser(
+                    onSingleFile = { filePickerLauncher.launch("*/*") },
+                    onLocalFolder = { folderPickerLauncher.launch(null) },
+                    onCamera = { startScan() }
+                )
+                "single" -> SingleImportResult(
+                    state = singleState,
+                    onDone = {
+                        importViewModel.clearState()
+                        onDone()
+                    },
+                    onRetry = {
+                        importViewModel.clearState()
+                        mode = "choose"
+                    }
+                )
+                "batch_progress" -> BatchImportProgressScreen(
+                    viewModel = batchViewModel,
+                    onDone = {
+                        batchViewModel.reset()
+                        onDone()
+                    }
+                )
             }
         }
     }

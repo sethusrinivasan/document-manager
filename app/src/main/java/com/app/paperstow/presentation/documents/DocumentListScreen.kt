@@ -114,28 +114,70 @@ fun DocumentListScreen(
             confirmButton = { if (bulkState.isComplete) TextButton(onClick = { viewModel.dismissBulkDelete() }) { Text("OK") } })
     }
 
-    Scaffold(topBar = {
-        TopAppBar(
-            title = { Text(if (selectionMode) "${selectedIds.size} selected" else if (showingTrash) "Recycle Bin" else filterTag ?: "My Documents") },
-            navigationIcon = {
-                IconButton(onClick = { if (selectionMode) viewModel.clearSelection() else if (showingTrash) viewModel.toggleTrashView() else onBack() }) {
-                    Icon(if (selectionMode) Icons.Filled.Close else Icons.AutoMirrored.Filled.ArrowBack, "Back")
-                }
-            },
-            actions = {
-                if (selectionMode) {
-                    IconButton(onClick = { viewModel.selectAll() }) { Icon(Icons.Filled.SelectAll, "Select all") }
-                    IconButton(onClick = { viewModel.shareSelected(context) }) { Icon(Icons.Filled.Share, "Share selected") }
-                    IconButton(onClick = { showBulkConfirm = true }) { Icon(Icons.Filled.Delete, "Delete selected", tint = Color(0xFFF44336)) }
-                } else if (!filtered) {
-                    if (showingTrash && recycleBin.isNotEmpty()) IconButton(onClick = { viewModel.emptyTrash() }) { Icon(Icons.Filled.DeleteForever, "Empty", tint = Color(0xFFF44336)) }
-                    BadgedBox(badge = { if (recycleBin.isNotEmpty()) Badge { Text("${recycleBin.size}") } }) {
-                        IconButton(onClick = { viewModel.toggleTrashView() }) { Icon(if (showingTrash) Icons.Filled.Description else Icons.Filled.DeleteSweep, "Trash") }
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = when {
+                            selectionMode -> "${selectedIds.size} selected"
+                            showingTrash -> "Recycle Bin"
+                            else -> filterTag ?: "My Documents"
+                        }
+                    )
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            when {
+                                selectionMode -> viewModel.clearSelection()
+                                showingTrash -> viewModel.toggleTrashView()
+                                else -> onBack()
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = if (selectionMode) Icons.Filled.Close else Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
+                actions = {
+                    if (selectionMode) {
+                        IconButton(onClick = { viewModel.selectAll() }) {
+                            Icon(Icons.Filled.SelectAll, contentDescription = "Select all")
+                        }
+                        IconButton(onClick = { viewModel.shareSelected(context) }) {
+                            Icon(Icons.Filled.Share, contentDescription = "Share selected")
+                        }
+                        IconButton(onClick = { showBulkConfirm = true }) {
+                            Icon(Icons.Filled.Delete, contentDescription = "Delete selected", tint = Color(0xFFF44336))
+                        }
+                    } else if (!filtered) {
+                        if (showingTrash && recycleBin.isNotEmpty()) {
+                            IconButton(onClick = { viewModel.emptyTrash() }) {
+                                Icon(Icons.Filled.DeleteForever, contentDescription = "Empty", tint = Color(0xFFF44336))
+                            }
+                        }
+                        BadgedBox(
+                            badge = {
+                                if (recycleBin.isNotEmpty()) {
+                                    Badge { Text("${recycleBin.size}") }
+                                }
+                            }
+                        ) {
+                            IconButton(onClick = { viewModel.toggleTrashView() }) {
+                                Icon(
+                                    imageVector = if (showingTrash) Icons.Filled.Description else Icons.Filled.DeleteSweep,
+                                    contentDescription = "Trash"
+                                )
+                            }
+                        }
                     }
                 }
-            }
-        )
-    }) { padding ->
+            )
+        }
+    ) { padding ->
         if (showingTrash) {
             if (recycleBin.isEmpty()) {
                 Column(Modifier.fillMaxSize().padding(padding), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {

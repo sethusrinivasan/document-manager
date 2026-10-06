@@ -88,7 +88,12 @@ fun ChecklistEditorScreen(
             TopAppBar(
                 title = { Text(if (existing == null) "New checklist" else "Edit checklist") },
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") }
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
                 },
                 actions = {
                     if (saving) {

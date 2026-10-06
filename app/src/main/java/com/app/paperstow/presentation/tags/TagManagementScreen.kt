@@ -124,8 +124,21 @@ fun TagManagementScreen(
                     }
                 }
             },
-            confirmButton = { TextButton(onClick = { viewModel.deleteTag(tagToDelete!!.name); tagToDelete = null }) { Text("Delete", color = Color(0xFFF44336)) } },
-            dismissButton = { TextButton(onClick = { tagToDelete = null }) { Text("Cancel") } }
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        tagToDelete?.let { viewModel.deleteTag(it.name) }
+                        tagToDelete = null
+                    }
+                ) {
+                    Text("Delete", color = Color(0xFFF44336))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { tagToDelete = null }) {
+                    Text("Cancel")
+                }
+            }
         )
     }
 
@@ -133,7 +146,14 @@ fun TagManagementScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Manage Tags") },
-                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") } },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
                 actions = {
                     IconButton(onClick = { viewModel.refresh() }) {
                         Icon(Icons.Filled.Refresh, "Refresh tags")
@@ -149,12 +169,31 @@ fun TagManagementScreen(
         }
     ) { padding ->
         if (tags.isEmpty()) {
-            Column(modifier = Modifier.fillMaxSize().padding(padding), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-                Icon(Icons.AutoMirrored.Filled.Label, null, modifier = Modifier.size(64.dp), tint = Color.LightGray)
-                Spacer(Modifier.height(16.dp))
-                Text("No tags yet", fontSize = 18.sp, color = Color.Gray)
-                Spacer(Modifier.height(8.dp))
-                Text("Tags are created when you import documents or add them manually", fontSize = 13.sp, color = Color.LightGray)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.Label,
+                    contentDescription = null,
+                    modifier = Modifier.size(64.dp),
+                    tint = Color.LightGray
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "No tags yet",
+                    fontSize = 18.sp,
+                    color = Color.Gray
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Tags are created when you import documents or add them manually",
+                    fontSize = 13.sp,
+                    color = Color.LightGray
+                )
             }
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp)) {

@@ -38,51 +38,136 @@ import com.app.paperstow.domain.model.SearchResult
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchScreen(onBack: () -> Unit, onDocumentClick: (Document) -> Unit = {}, viewModel: SearchViewModel = hiltViewModel()) {
+fun SearchScreen(
+    onBack: () -> Unit,
+    onDocumentClick: (Document) -> Unit = {},
+    viewModel: SearchViewModel = hiltViewModel()
+) {
     val results by viewModel.results.collectAsState()
     var query by remember { mutableStateOf("") }
 
-    Scaffold(topBar = { TopAppBar(title = { Text("Search Documents") }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") } }) }) { padding ->
-        Column(modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp)) {
-            OutlinedTextField(value = query, onValueChange = { query = it; viewModel.search(it) }, modifier = Modifier.fillMaxWidth(), placeholder = { Text("Search tags, file names, or text from the page") }, leadingIcon = { Icon(Icons.Filled.Search, null) }, singleLine = true)
-            Spacer(Modifier.height(16.dp))
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Search Documents") },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                }
+            )
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(16.dp)
+        ) {
+            OutlinedTextField(
+                value = query,
+                onValueChange = { newQuery ->
+                    query = newQuery
+                    viewModel.search(newQuery)
+                },
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text("Search tags, file names, or text from the page") },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Filled.Search,
+                        contentDescription = null
+                    )
+                },
+                singleLine = true
+            )
+            Spacer(modifier = Modifier.height(16.dp))
 
             when (val r = results) {
                 is SearchResult.DocumentResults -> {
                     if (r.documents.isEmpty() && query.isNotEmpty()) {
-                        Text("No results found", color = Color.Gray, modifier = Modifier.align(Alignment.CenterHorizontally))
+                        Text(
+                            text = "No results found",
+                            color = Color.Gray,
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        )
                     } else {
                         LazyColumn {
                             items(r.documents) { doc ->
-                                Card(modifier = Modifier.fillMaxWidth().clickable { onDocumentClick(doc) }) {
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable { onDocumentClick(doc) }
+                                ) {
                                     Column(modifier = Modifier.padding(12.dp)) {
-                                        Text(doc.originalFileName ?: "Document", fontWeight = FontWeight.Medium, fontSize = 14.sp)
-                                        Text("${doc.type.name} | ${doc.format.name}", fontSize = 12.sp, color = Color.Gray)
-                                        if (doc.tags.isNotEmpty()) Text(doc.tags.joinToString(", ") { it.name }, fontSize = 11.sp, color = Color(0xFF1565C0))
+                                        Text(
+                                            text = doc.originalFileName ?: "Document",
+                                            fontWeight = FontWeight.Medium,
+                                            fontSize = 14.sp
+                                        )
+                                        Text(
+                                            text = "${doc.type.name} | ${doc.format.name}",
+                                            fontSize = 12.sp,
+                                            color = Color.Gray
+                                        )
+                                        if (doc.tags.isNotEmpty()) {
+                                            Text(
+                                                text = doc.tags.joinToString(", ") { it.name },
+                                                fontSize = 11.sp,
+                                                color = Color(0xFF1565C0)
+                                            )
+                                        }
                                     }
                                 }
-                                Spacer(Modifier.height(8.dp))
+                                Spacer(modifier = Modifier.height(8.dp))
                             }
                         }
                     }
                 }
                 is SearchResult.TravelChecklist -> {
-                    Text("Travel Checklist", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = "Travel Checklist",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
                     r.checklist.requiredDocuments.forEach { req ->
-                        Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                        ) {
                             Column(modifier = Modifier.padding(12.dp)) {
-                                Text("${req.type.name} x${req.countNeeded}", fontWeight = FontWeight.Medium)
-                                Text(req.description, fontSize = 12.sp, color = Color.Gray)
+                                Text(
+                                    text = "${req.type.name} x${req.countNeeded}",
+                                    fontWeight = FontWeight.Medium
+                                )
+                                Text(
+                                    text = req.description,
+                                    fontSize = 12.sp,
+                                    color = Color.Gray
+                                )
                             }
                         }
                     }
                 }
                 is SearchResult.NeedMoreInfo -> {
-                    Text("Need more details: ${r.missingParams.joinToString(", ")}", color = Color.Gray, fontSize = 13.sp)
+                    Text(
+                        text = "Need more details: ${r.missingParams.joinToString(", ")}",
+                        color = Color.Gray,
+                        fontSize = 13.sp
+                    )
                 }
                 null -> {
-                    if (query.isEmpty()) Text("Try: \"passport\" or \"what documents do I need for Singapore?\"", color = Color.Gray, fontSize = 13.sp)
+                    if (query.isEmpty()) {
+                        Text(
+                            text = "Try: \"passport\" or \"what documents do I need for Singapore?\"",
+                            color = Color.Gray,
+                            fontSize = 13.sp
+                        )
+                    }
                 }
             }
         }

@@ -68,22 +68,79 @@ fun DiagnosticsScreen(onBack: () -> Unit, onViewLogs: () -> Unit) {
             val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
             val caps = cm?.activeNetwork?.let { cm.getNetworkCapabilities(it) }
             isOnline = caps?.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) ?: false
-            networkType = when { caps == null -> "Offline"; caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> "WiFi"; caps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> "Cellular"; else -> "Other" }
+            networkType = when {
+                caps == null -> "Offline"
+                caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> "WiFi"
+                caps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> "Cellular"
+                else -> "Other"
+            }
             delay(5000)
         }
     }
 
-    Scaffold(topBar = { TopAppBar(title = { Text("Diagnostics") }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") } }) }) { padding ->
-        Column(modifier = Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp)) {
-            Text("System Status", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-            Spacer(Modifier.height(12.dp))
-            StatusRow(if (isCharging) Icons.Filled.BatteryChargingFull else Icons.Filled.Battery4Bar, when { batteryLevel > 50 -> Color(0xFF4CAF50); batteryLevel > 20 -> Color(0xFFFFC107); else -> Color(0xFFF44336) }, "Battery", "${batteryLevel}%", if (isCharging) "Charging" else "Discharging")
-            Spacer(Modifier.height(8.dp))
-            StatusRow(if (isOnline) Icons.Filled.SignalWifi4Bar else Icons.Filled.SignalWifiOff, if (isOnline) Color(0xFF4CAF50) else Color(0xFFF44336), "Network", networkType, if (isOnline) "Connected" else "Offline")
-            Spacer(Modifier.height(20.dp))
-            Text("Debug Logs", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-            Spacer(Modifier.height(8.dp))
-            Button(onClick = onViewLogs, modifier = Modifier.fillMaxWidth()) { Text("View Debug Logs") }
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Diagnostics") },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                }
+            )
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "System Status",
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+
+            val batteryColor = when {
+                batteryLevel > 50 -> Color(0xFF4CAF50)
+                batteryLevel > 20 -> Color(0xFFFFC107)
+                else -> Color(0xFFF44336)
+            }
+            StatusRow(
+                icon = if (isCharging) Icons.Filled.BatteryChargingFull else Icons.Filled.Battery4Bar,
+                iconColor = batteryColor,
+                title = "Battery",
+                value = "$batteryLevel%",
+                subtitle = if (isCharging) "Charging" else "Discharging"
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            StatusRow(
+                icon = if (isOnline) Icons.Filled.SignalWifi4Bar else Icons.Filled.SignalWifiOff,
+                iconColor = if (isOnline) Color(0xFF4CAF50) else Color(0xFFF44336),
+                title = "Network",
+                value = networkType,
+                subtitle = if (isOnline) "Connected" else "Offline"
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(
+                text = "Debug Logs",
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(
+                onClick = onViewLogs,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("View Debug Logs")
+            }
                 Spacer(Modifier.height(8.dp))
                 OutlinedButton(onClick = { shareLogsAsZip(context) }, modifier = Modifier.fillMaxWidth()) { Text("Share Logs (ZIP)") }
 
@@ -139,12 +196,49 @@ fun DiagnosticsScreen(onBack: () -> Unit, onViewLogs: () -> Unit) {
 }
 
 @Composable
-private fun StatusRow(icon: ImageVector, iconColor: Color, title: String, value: String, subtitle: String) {
-    Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(10.dp), colors = CardDefaults.cardColors(containerColor = Color.White), elevation = CardDefaults.cardElevation(1.dp)) {
-        Row(modifier = Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(icon, title, tint = iconColor, modifier = Modifier.size(30.dp))
-            Spacer(Modifier.width(12.dp))
-            Column(Modifier.weight(1f)) { Text(title, fontSize = 11.sp, color = Color.Gray); Text(value, fontSize = 14.sp, fontWeight = FontWeight.SemiBold); Text(subtitle, fontSize = 10.sp, color = Color.Gray) }
+private fun StatusRow(
+    icon: ImageVector,
+    iconColor: Color,
+    title: String,
+    value: String,
+    subtitle: String
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(10.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = title,
+                tint = iconColor,
+                modifier = Modifier.size(30.dp)
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    fontSize = 11.sp,
+                    color = Color.Gray
+                )
+                Text(
+                    text = value,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = subtitle,
+                    fontSize = 10.sp,
+                    color = Color.Gray
+                )
+            }
         }
     }
 }

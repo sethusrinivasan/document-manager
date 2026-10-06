@@ -713,16 +713,16 @@ private fun colorFor(type: DocumentType): Color = when (type) {
     DocumentType.UNKNOWN -> Color.Gray
 }
 
-private fun tagIcon(tag: String): androidx.compose.ui.graphics.vector.ImageVector {
+private fun tagIcon(tag: String): ImageVector {
     return when (tag.lowercase()) {
-        "passport" -> androidx.compose.material.icons.Icons.Filled.AccountBox
-        "visa" -> androidx.compose.material.icons.Icons.Filled.CreditCard
-        "ticket", "flight" -> androidx.compose.material.icons.Icons.Filled.AirplanemodeActive
-        "accommodation", "hotel" -> androidx.compose.material.icons.Icons.Filled.Hotel
-        "health", "insurance" -> androidx.compose.material.icons.Icons.Filled.LocalHospital
-        "travel", "trip" -> androidx.compose.material.icons.Icons.Filled.FlightTakeoff
-        "family" -> androidx.compose.material.icons.Icons.Filled.Public
-        "business", "work" -> androidx.compose.material.icons.Icons.Filled.Description
-        else -> androidx.compose.material.icons.Icons.Filled.Sell
+        "passport" -> Icons.Filled.AccountBox
+        "visa" -> Icons.Filled.CreditCard
+        "ticket", "flight" -> Icons.Filled.AirplanemodeActive
+        "accommodation", "hotel" -> Icons.Filled.Hotel
+        "health", "insurance" -> Icons.Filled.LocalHospital
+        "travel", "trip" -> Icons.Filled.FlightTakeoff
+        "family" -> Icons.Filled.Public
+        "business", "work" -> Icons.Filled.Description
+        else -> Icons.Filled.Sell
     }
 }

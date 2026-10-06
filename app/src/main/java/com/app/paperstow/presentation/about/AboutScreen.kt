@@ -50,8 +50,28 @@ fun AboutScreen(onBack: () -> Unit) {
         SbomScreen(onBack = { showSbom = false })
         return
     }
-    Scaffold(topBar = { TopAppBar(title = { Text("About") }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") } }) }) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp)) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("About") },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                }
+            )
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp)
+        ) {
             Text("Paperstow", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = colors.primary)
             Text("Version ${BuildConfig.VERSION_NAME}", fontSize = 14.sp, color = colors.onSurfaceVariant)
             Text("Package ${ctx.packageName}", fontSize = 13.sp, color = colors.onSurfaceVariant)

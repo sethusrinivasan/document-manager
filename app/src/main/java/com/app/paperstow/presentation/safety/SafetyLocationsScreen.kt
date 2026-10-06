@@ -154,7 +154,14 @@ fun SafetyLocationsScreen(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.safety_title)) },
-                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.btn_back)) } }
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.btn_back)
+                        )
+                    }
+                }
             )
         }
     ) { padding ->
