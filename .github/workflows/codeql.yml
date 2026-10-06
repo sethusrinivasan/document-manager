@@ -55,6 +55,7 @@ jobs:
       with:
         languages: java-kotlin
         build-mode: manual
+        queries: security-extended
 
     - name: Build for CodeQL
       run: |
