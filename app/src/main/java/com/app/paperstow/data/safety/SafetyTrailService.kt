@@ -45,11 +45,6 @@ class SafetyTrailService : Service() {
                 repository.recordFix(location.latitude, location.longitude, location.accuracy)
             }
         }
-
-        @Deprecated("Deprecated in Java")
-        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) = Unit
-        override fun onProviderEnabled(provider: String) = Unit
-        override fun onProviderDisabled(provider: String) = Unit
     }
 
     override fun onBind(intent: Intent?): IBinder? = null

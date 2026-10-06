@@ -18,7 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
@@ -61,7 +61,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.app.paperstow.domain.model.Document
 import com.app.paperstow.domain.model.DocumentType
 
@@ -119,7 +119,7 @@ fun DocumentListScreen(
             title = { Text(if (selectionMode) "${selectedIds.size} selected" else if (showingTrash) "Recycle Bin" else filterTag ?: "My Documents") },
             navigationIcon = {
                 IconButton(onClick = { if (selectionMode) viewModel.clearSelection() else if (showingTrash) viewModel.toggleTrashView() else onBack() }) {
-                    Icon(if (selectionMode) Icons.Filled.Close else Icons.Filled.ArrowBack, "Back")
+                    Icon(if (selectionMode) Icons.Filled.Close else Icons.AutoMirrored.Filled.ArrowBack, "Back")
                 }
             },
             actions = {

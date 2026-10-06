@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,7 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.app.paperstow.domain.model.Document
 import com.app.paperstow.domain.model.SearchResult
 
@@ -42,7 +42,7 @@ fun SearchScreen(onBack: () -> Unit, onDocumentClick: (Document) -> Unit = {}, v
     val results by viewModel.results.collectAsState()
     var query by remember { mutableStateOf("") }
 
-    Scaffold(topBar = { TopAppBar(title = { Text("Search Documents") }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Filled.ArrowBack, "Back") } }) }) { padding ->
+    Scaffold(topBar = { TopAppBar(title = { Text("Search Documents") }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") } }) }) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp)) {
             OutlinedTextField(value = query, onValueChange = { query = it; viewModel.search(it) }, modifier = Modifier.fillMaxWidth(), placeholder = { Text("Search tags, file names, or text from the page") }, leadingIcon = { Icon(Icons.Filled.Search, null) }, singleLine = true)
             Spacer(Modifier.height(16.dp))

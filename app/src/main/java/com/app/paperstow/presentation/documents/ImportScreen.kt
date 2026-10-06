@@ -19,7 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Error
@@ -58,7 +58,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -165,7 +165,7 @@ fun ImportScreen(onDone: () -> Unit, importViewModel: ImportViewModel = hiltView
     }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Import") }, navigationIcon = { IconButton(onClick = { importViewModel.clearState(); batchViewModel.reset(); onDone() }) { Icon(Icons.Filled.ArrowBack, "Back") } }) },
+        topBar = { TopAppBar(title = { Text("Import") }, navigationIcon = { IconButton(onClick = { importViewModel.clearState(); batchViewModel.reset(); onDone() }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") } }) },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp)) {

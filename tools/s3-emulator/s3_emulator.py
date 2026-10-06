@@ -549,8 +549,8 @@ def main():
 
     print(f"\nS3 Emulator running on http://localhost:{args.port}")
     print(f"  Access Key: {args.access_key}")
-    masked_secret = "*" * 8 if args.secret_key else "None"
-    print(f"  Secret Key: {masked_secret}")
+    key_configured = "[configured]" if args.secret_key else "[none]"
+    print(f"  Secret Key: {key_configured}")
     print(f"  Storage:    {os.path.abspath(STORAGE_DIR)}")
     print(f"  Region:     {DEFAULT_REGION}")
     print(f"  Bucket:     {DEFAULT_BUCKET}")

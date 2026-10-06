@@ -4,6 +4,7 @@ import java.io.File
 import android.content.Context
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.core.content.IntentCompat
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,14 +29,14 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.FlightTakeoff
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.Hotel
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.AirplanemodeActive
 import androidx.compose.material.icons.filled.CreditCard
-import androidx.compose.material.icons.filled.InsertDriveFile
+import androidx.compose.material.icons.automirrored.filled.InsertDriveFile
 import androidx.compose.material.icons.filled.LocalHospital
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Sell
@@ -80,7 +81,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.app.paperstow.debug.DebugLogger
 import com.app.paperstow.debug.TempFileCleanup
 import com.app.paperstow.domain.model.Document
@@ -124,7 +125,7 @@ class MainActivity : androidx.fragment.app.FragmentActivity() {
             val sharedUri = remember {
                 val action = intent?.action
                 if (action == android.content.Intent.ACTION_SEND) {
-                    intent?.getParcelableExtra<android.net.Uri>(android.content.Intent.EXTRA_STREAM)
+                    intent?.let { IntentCompat.getParcelableExtra(it, android.content.Intent.EXTRA_STREAM, android.net.Uri::class.java) }
                 } else if (action == android.content.Intent.ACTION_VIEW) {
                     intent?.data
                 } else null
@@ -589,7 +590,7 @@ fun MainScreen(
                     else -> selectedTag!!
                 }
                 Row(Modifier.fillMaxWidth().padding(bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = { onFolderChange(null) }) { Icon(Icons.Filled.ArrowBack, "Back to folders") }
+                    IconButton(onClick = { onFolderChange(null) }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back to folders") }
                     Text(folderTitle, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                     Spacer(Modifier.weight(1f))
                     Text("${folderDocs.size} docs", fontSize = 12.sp, color = Color.Gray)
@@ -700,7 +701,7 @@ private fun iconFor(type: DocumentType): ImageVector = when (type) {
     DocumentType.TICKET -> Icons.Filled.AirplanemodeActive
     DocumentType.HOTEL_BOOKING -> Icons.Filled.Hotel
     DocumentType.HEALTH_INSURANCE -> Icons.Filled.LocalHospital
-    DocumentType.UNKNOWN -> Icons.Filled.InsertDriveFile
+    DocumentType.UNKNOWN -> Icons.AutoMirrored.Filled.InsertDriveFile
 }
 
 private fun colorFor(type: DocumentType): Color = when (type) {

@@ -83,7 +83,6 @@ class DeviceKeyManager @Inject constructor() {
     }
 
     private fun getOrCreateNonce(): ByteArray {
-        val prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(null)
         // Fallback: use a fixed-but-non-zero nonce derived from the key alias
         return "travel_docs_nonce_v1".toByteArray(Charsets.UTF_8).copyOf(12)
     }

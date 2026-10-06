@@ -20,12 +20,8 @@
     <uses-feature android:name="android.hardware.location" android:required="false" />
     <uses-feature android:name="android.hardware.location.gps" android:required="false" />
 
-    <!-- Strip leftover capabilities from libraries / older releases. Reviewers see the merged manifest. -->
+    <!-- Strip ACCESS_NETWORK_STATE injected transitively by libraries. -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" tools:node="remove" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" tools:node="remove" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" tools:node="remove" />
-    <uses-feature android:name="android.hardware.bluetooth" android:required="false" tools:node="remove" />
-    <uses-feature android:name="android.hardware.type.automotive" android:required="false" tools:node="remove" />
 
     <application
         android:name=".TravelDocsApplication"
@@ -99,10 +95,6 @@
             android:foregroundServiceType="location"
             android:stopWithTask="false" />
 
-        <!-- Exclude this app from Android Auto on every merged APK/AAB. -->
-        <meta-data
-            android:name="com.google.android.gms.car.application"
-            tools:node="remove" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -17,6 +17,13 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        freeCompilerArgs.add("-Xannotation-default-target=param-property")
+    }
+}
+
 android {
     namespace = "com.app.paperstow"
     compileSdk = 36
@@ -76,9 +83,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
 
     buildFeatures {
         compose = true
@@ -108,6 +112,14 @@ android {
 configurations.configureEach {
     resolutionStrategy {
         failOnChangingVersions()
+        // Supply chain hardening: force patched versions across all configurations
+        force(
+            "com.google.code.gson:gson:2.14.0",
+            "com.google.protobuf:protobuf-java:3.25.5",
+            "org.bouncycastle:bcprov-jdk18on:1.86",
+            "org.bouncycastle:bcpkix-jdk18on:1.86",
+            "org.apache.commons:commons-compress:1.28.0"
+        )
     }
 }
 
@@ -155,9 +167,13 @@ dependencies {
     testRuntimeOnly(libs.junit.jupiter.engine)
     testRuntimeOnly(libs.junit.platform.launcher)
 
-    // security-crypto 1.1.0 still pulls Gson 2.8.9 via Tink; force a patched line.
+    // Supply chain security constraints: force secure patched versions for transitive dependencies
     constraints {
         implementation(libs.gson)
+        implementation("com.google.protobuf:protobuf-java:3.25.5")
+        implementation("org.bouncycastle:bcprov-jdk18on:1.86")
+        implementation("org.bouncycastle:bcpkix-jdk18on:1.86")
+        implementation("org.apache.commons:commons-compress:1.28.0")
     }
 
     testImplementation(libs.kotest.runner.junit5)
@@ -167,7 +183,7 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.kotlin.test)
     testImplementation(libs.coroutines.test)
-    testImplementation("org.json:json:20250517")
+    testImplementation("org.json:json:20260814")
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.espresso.core)

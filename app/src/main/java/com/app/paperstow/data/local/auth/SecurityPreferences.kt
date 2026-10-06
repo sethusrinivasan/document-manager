@@ -1,3 +1,4 @@
+@file:Suppress("DEPRECATION")
 package com.app.paperstow.data.local.auth
 
 import android.content.Context

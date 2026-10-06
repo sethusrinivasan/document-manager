@@ -26,13 +26,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.OpenInNew
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -73,7 +73,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.app.paperstow.data.local.TagColorStore
 import com.app.paperstow.debug.DebugLogger
 import com.app.paperstow.domain.model.Document
@@ -129,7 +129,7 @@ fun DocumentViewerScreen(
             dismissButton = { TextButton(onClick = { showAddTagDialog = false }) { Text("Cancel") } })
     }
 
-    Scaffold(topBar = { TopAppBar(title = { Text(docName, maxLines = 1) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Filled.ArrowBack, "Back") } },
+    Scaffold(topBar = { TopAppBar(title = { Text(docName, maxLines = 1) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") } },
         actions = {
             if (document.format in listOf(DocumentFormat.TEXT, DocumentFormat.MARKDOWN) && fileBytes != null && onEditNote != null) {
                 IconButton(onClick = {
@@ -247,7 +247,7 @@ fun DocumentViewerScreen(
                             Text("Could not read as text", color = Color.Gray, fontSize = 14.sp)
                         }
                     }
-                    fileBytes != null && (document.format == DocumentFormat.VIDEO || document.format == DocumentFormat.AUDIO) -> { Column(horizontalAlignment = Alignment.CenterHorizontally) { Icon(Icons.Filled.OpenInNew, null, tint = Color(0xFF2196F3), modifier = Modifier.size(64.dp)); Spacer(Modifier.height(12.dp)); Text(if (document.format == DocumentFormat.AUDIO) "Audio" else "Video", fontSize = 16.sp); Text("${fileBytes!!.size / 1024} KB", color = Color.Gray, fontSize = 13.sp); Spacer(Modifier.height(16.dp)); Button(onClick = {
+                    fileBytes != null && (document.format == DocumentFormat.VIDEO || document.format == DocumentFormat.AUDIO) -> { Column(horizontalAlignment = Alignment.CenterHorizontally) { Icon(Icons.AutoMirrored.Filled.OpenInNew, null, tint = Color(0xFF2196F3), modifier = Modifier.size(64.dp)); Spacer(Modifier.height(12.dp)); Text(if (document.format == DocumentFormat.AUDIO) "Audio" else "Video", fontSize = 16.sp); Text("${fileBytes!!.size / 1024} KB", color = Color.Gray, fontSize = 13.sp); Spacer(Modifier.height(16.dp)); Button(onClick = {
                             val mime = if (document.format == DocumentFormat.AUDIO) "audio/mpeg" else "video/mp4"
                             // Ensure file has proper extension for media players
                             val ext = if (document.format == DocumentFormat.AUDIO) ".mp3" else ".mp4"
@@ -273,7 +273,7 @@ fun DocumentViewerScreen(
                         Icon(Icons.Filled.Edit, null, Modifier.size(18.dp)); Spacer(Modifier.width(4.dp)); Text("Edit", fontSize = 12.sp)
                     }
                 }
-                Button(onClick = { openExternally(context, fileBytes!!, docName, mimeFor(document.format)) }, modifier = Modifier.weight(1f)) { Icon(Icons.Filled.OpenInNew, null, Modifier.size(18.dp)); Spacer(Modifier.width(4.dp)); Text("Open External", fontSize = 12.sp) }
+                Button(onClick = { openExternally(context, fileBytes!!, docName, mimeFor(document.format)) }, modifier = Modifier.weight(1f)) { Icon(Icons.AutoMirrored.Filled.OpenInNew, null, Modifier.size(18.dp)); Spacer(Modifier.width(4.dp)); Text("Open External", fontSize = 12.sp) }
             } }
             // Properties toggle
             TextButton(onClick = { detailsExpanded = !detailsExpanded }, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) { Icon(if (detailsExpanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore, null, Modifier.size(18.dp)); Spacer(Modifier.width(4.dp)); Text(if (detailsExpanded) "Hide Properties" else "Show Properties", fontSize = 13.sp) }
