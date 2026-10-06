@@ -45,6 +45,16 @@ object RoomDbFiles {
         }
     }
 
+    fun invalidateDatabase(context: Context) {
+        try {
+            val db = EntryPointAccessors.fromApplication(context, DatabaseEntryPoint::class.java).database()
+            db.invalidationTracker.refreshVersionsAsync()
+            DebugLogger.i("DB", "Invalidated Room database cache via InvalidationTracker")
+        } catch (e: Exception) {
+            DebugLogger.w("DB", "Could not invalidate Room database: ${e.message}")
+        }
+    }
+
     fun snapshot(context: Context, dest: File) {
         dest.parentFile?.mkdirs()
         if (dest.exists()) dest.delete()

@@ -57,7 +57,7 @@ fun EulaScreen(onAccepted: () -> Unit, onDeclined: () -> Unit) {
 
         Card(
             modifier = Modifier.fillMaxWidth().weight(1f),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFFFAFAFA))
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
         ) {
             Column(
                 modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState())
@@ -89,7 +89,7 @@ fun EulaScreen(onAccepted: () -> Unit, onDeclined: () -> Unit) {
             Button(
                 onClick = onAccepted,
                 modifier = Modifier.weight(1f).padding(start = 8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1565C0))
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
                 Text("I Accept")
             }
@@ -141,7 +141,7 @@ fun EulaViewScreen(onBack: () -> Unit) {
 
         Card(
             modifier = Modifier.fillMaxWidth().weight(1f),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFFFAFAFA))
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
         ) {
             Column(modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState())) {
                 EulaText()

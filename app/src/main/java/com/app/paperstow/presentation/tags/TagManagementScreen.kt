@@ -34,6 +34,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -159,10 +160,14 @@ fun TagManagementScreen(
                         Icon(Icons.Filled.Refresh, "Refresh tags")
                     }
                     IconButton(onClick = { viewModel.toggleSort() }) {
-                        Icon(Icons.Filled.SortByAlpha, "Sort", tint = if (sortByCount) Color(0xFF1565C0) else Color.Gray)
+                        Icon(
+                            Icons.Filled.SortByAlpha,
+                            "Sort",
+                            tint = if (sortByCount) MaterialTheme.colorScheme.primary else Color.Gray
+                        )
                     }
                     IconButton(onClick = { showCreateDialog = true }) {
-                        Icon(Icons.Filled.Add, "Create tag", tint = Color(0xFF1565C0))
+                        Icon(Icons.Filled.Add, "Create tag", tint = MaterialTheme.colorScheme.primary)
                     }
                 }
             )
@@ -283,8 +288,15 @@ private fun TagListItem(
                     Switch(checked = tag.showOnHome, onCheckedChange = onShowOnHome)
                 }
             }
-            Badge(containerColor = Color(0xFFE3F2FD)) { Text("${tag.usageCount}", fontSize = 11.sp) }
-            IconButton(onClick = onViewDocs, modifier = Modifier.size(32.dp)) { Icon(Icons.Filled.Visibility, "View documents", tint = Color(0xFF1565C0), modifier = Modifier.size(20.dp)) }
+            Badge(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+            ) {
+                Text("${tag.usageCount}", fontSize = 11.sp)
+            }
+            IconButton(onClick = onViewDocs, modifier = Modifier.size(32.dp)) {
+                Icon(Icons.Filled.Visibility, "View documents", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+            }
             IconButton(onClick = onRename, modifier = Modifier.size(32.dp)) { Icon(Icons.Filled.Edit, "Rename", tint = Color(0xFF757575), modifier = Modifier.size(18.dp)) }
             IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) { Icon(Icons.Filled.Delete, "Delete", tint = Color(0xFFBDBDBD), modifier = Modifier.size(18.dp)) }
         }

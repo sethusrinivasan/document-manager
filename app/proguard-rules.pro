@@ -4,6 +4,10 @@
 -keep class org.bouncycastle.** { *; }
 -dontwarn org.bouncycastle.**
 
+# Keep Zip4j for encrypted archive and restore
+-keep class net.lingala.zip4j.** { *; }
+-dontwarn net.lingala.zip4j.**
+
 # Keep Room entities and database classes
 -keep class com.app.paperstow.data.local.** { *; }
 -keep class * extends androidx.room.RoomDatabase { *; }

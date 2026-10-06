@@ -37,11 +37,17 @@ object ShareHelper {
                 val result = fileStorage.retrieve(doc.id)
                 val bytes = result.getOrNull() ?: continue
 
-                val fileName = doc.originalFileName ?: "document_${doc.id.take(8)}"
-                val file = File(cacheDir, fileName)
+                val rawName = doc.originalFileName ?: "document_${doc.id.take(8)}"
+                val ext = extensionForFormat(doc.format)
+                val safeName = if (ext.isNotEmpty() && !rawName.contains('.')) rawName + ext else rawName
+                val file = File(cacheDir, safeName)
                 file.writeBytes(bytes)
 
-                val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+                val uri = FileProvider.getUriForFile(
+                    context,
+                    "${context.packageName}.fileprovider",
+                    file
+                )
                 val mime = mimeForFormat(doc.format)
                 urisAndMimes.add(uri to mime)
             } catch (e: Exception) {
@@ -54,10 +60,21 @@ object ShareHelper {
             return
         }
 
+        val clipData = if (urisAndMimes.isNotEmpty()) {
+            val cd = android.content.ClipData.newRawUri("Documents", urisAndMimes[0].first)
+            for (i in 1 until urisAndMimes.size) {
+                cd.addItem(android.content.ClipData.Item(urisAndMimes[i].first))
+            }
+            cd
+        } else {
+            null
+        }
+
         val intent = if (urisAndMimes.size == 1) {
             Intent(Intent.ACTION_SEND).apply {
                 type = urisAndMimes[0].second
                 putExtra(Intent.EXTRA_STREAM, urisAndMimes[0].first)
+                this.clipData = clipData
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
         } else {
@@ -65,7 +82,22 @@ object ShareHelper {
                 type = "*/*"
                 val uriList = ArrayList(urisAndMimes.map { it.first })
                 putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList)
+                this.clipData = clipData
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+        }
+
+        val resInfoList = context.packageManager.queryIntentActivities(
+            intent,
+            android.content.pm.PackageManager.MATCH_DEFAULT_ONLY
+        )
+        for (ri in resInfoList) {
+            for (pair in urisAndMimes) {
+                context.grantUriPermission(
+                    ri.activityInfo.packageName,
+                    pair.first,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
             }
         }
 
@@ -76,6 +108,22 @@ object ShareHelper {
 
         DebugLogger.i("Share", "Share sheet launched for ${urisAndMimes.size} file(s)")
         UsageTelemetry.action("Share", "share_launched", "files=${urisAndMimes.size}")
+    }
+
+    private fun extensionForFormat(format: DocumentFormat): String = when (format) {
+        DocumentFormat.PDF -> ".pdf"
+        DocumentFormat.JPG -> ".jpg"
+        DocumentFormat.PNG -> ".png"
+        DocumentFormat.TEXT -> ".txt"
+        DocumentFormat.MARKDOWN -> ".md"
+        DocumentFormat.GPX -> ".gpx"
+        DocumentFormat.WEBP -> ".webp"
+        DocumentFormat.HEIC -> ".heic"
+        DocumentFormat.BMP -> ".bmp"
+        DocumentFormat.GIF -> ".gif"
+        DocumentFormat.VIDEO -> ".mp4"
+        DocumentFormat.AUDIO -> ".mp3"
+        else -> ""
     }
 
     private fun mimeForFormat(format: DocumentFormat): String = when (format) {

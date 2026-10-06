@@ -42,20 +42,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.paperstow.debug.DebugLogger
 import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.concurrent.Executors
+import kotlin.coroutines.coroutineContext
 
 private sealed class PdfUi {
     data object Loading : PdfUi()
-    data class Ready(val pages: List<Bitmap>) : PdfUi()
+    data class Ready(val pages: List<Bitmap>, val totalPages: Int) : PdfUi()
     data class Failed(val reason: String) : PdfUi()
 }
 
+private const val MAX_PREVIEW_PAGES = 50
+
 /**
- * Renders a PDF on one background thread. PdfRenderer is not thread-safe;
- * creating it on IO and paging it on another thread is what broke preview.
+ * Renders a PDF on one background thread with memory controls.
+ * Previews up to MAX_PREVIEW_PAGES to avoid OOM / ANRs on 100+ page documents.
  */
 @Composable
 fun PdfPreview(bytes: ByteArray, modifier: Modifier = Modifier) {
@@ -81,9 +85,12 @@ fun PdfPreview(bytes: ByteArray, modifier: Modifier = Modifier) {
                     file.writeBytes(bytes)
                     val fd = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
                     val renderer = PdfRenderer(fd)
-                    val pages = ArrayList<Bitmap>(renderer.pageCount)
+                    val totalPages = renderer.pageCount
+                    val renderCount = minOf(totalPages, MAX_PREVIEW_PAGES)
+                    val pages = ArrayList<Bitmap>(renderCount)
                     try {
-                        for (i in 0 until renderer.pageCount) {
+                        for (i in 0 until renderCount) {
+                            if (!coroutineContext.isActive) break
                             val page = renderer.openPage(i)
                             val srcW = page.width.coerceAtLeast(1)
                             val srcH = page.height.coerceAtLeast(1)
@@ -97,7 +104,7 @@ fun PdfPreview(bytes: ByteArray, modifier: Modifier = Modifier) {
                             page.close()
                             pages += bmp
                         }
-                        PdfUi.Ready(pages)
+                        PdfUi.Ready(pages, totalPages)
                     } finally {
                         renderer.close()
                         fd.close()
@@ -113,6 +120,9 @@ fun PdfPreview(bytes: ByteArray, modifier: Modifier = Modifier) {
             job.cancel()
             dispatcher.close()
             executor.shutdownNow()
+            (ui as? PdfUi.Ready)?.pages?.forEach { bmp ->
+                if (!bmp.isRecycled) bmp.recycle()
+            }
         }
     }
 
@@ -148,7 +158,7 @@ fun PdfPreview(bytes: ByteArray, modifier: Modifier = Modifier) {
             LazyColumn(
                 Modifier
                     .fillMaxSize()
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
                     .graphicsLayer(scaleX = scale, scaleY = scale, translationX = ox, translationY = oy)
             ) {
                 itemsIndexed(state.pages) { idx, bmp ->
@@ -158,6 +168,28 @@ fun PdfPreview(bytes: ByteArray, modifier: Modifier = Modifier) {
                         modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
                         contentScale = ContentScale.FillWidth
                     )
+                }
+                if (state.totalPages > state.pages.size) {
+                    item {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                "Showing first ${state.pages.size} of ${state.totalPages} pages",
+                                fontSize = 13.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(Modifier.height(4.dp))
+                            Text(
+                                "Use 'Open externally' to read the full document.",
+                                fontSize = 11.sp,
+                                color = Color.Gray
+                            )
+                        }
+                    }
                 }
             }
         }

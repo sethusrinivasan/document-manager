@@ -67,7 +67,7 @@ android {
         }
         release {
             val releaseSigning = signingConfigs.getByName("release")
-            if (releaseSigning.storeFile?.exists() == true) {
+            if (releaseSigning.storeFile?.exists() == true && !releaseSigning.storePassword.isNullOrBlank()) {
                 signingConfig = releaseSigning
             }
             isMinifyEnabled = true

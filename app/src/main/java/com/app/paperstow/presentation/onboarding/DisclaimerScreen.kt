@@ -32,48 +32,101 @@ fun DisclaimerScreen(onAccepted: (telemetryConsent: Boolean) -> Unit) {
 
     Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp)) {
         Spacer(Modifier.height(32.dp))
-        Text("Terms of Use", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1565C0))
+        Text(
+            "Terms of Use",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = androidx.compose.material3.MaterialTheme.colorScheme.primary
+        )
         Spacer(Modifier.height(20.dp))
 
         // Section 1: No Warranty
-        Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF8E1))) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant)
+        ) {
             Column(Modifier.padding(14.dp)) {
-                Text("No Warranty", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                Text(
+                    "No Warranty",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp,
+                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
+                )
                 Spacer(Modifier.height(4.dp))
-                Text("This application is provided \"as-is\" without any warranties, express or implied. The developer offers no additional support, service level guarantees, or fitness for any particular purpose. It is the user's responsibility to verify functionality and suitability before relying on this application for important documents.", fontSize = 12.sp, color = Color(0xFF5D4037))
+                Text(
+                    "This application is provided \"as-is\" without any warranties, express or implied. The developer offers no additional support, service level guarantees, or fitness for any particular purpose. It is the user's responsibility to verify functionality and suitability before relying on this application for important documents.",
+                    fontSize = 12.sp,
+                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
 
         Spacer(Modifier.height(12.dp))
 
         // Section 2: Data Responsibility
-        Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD))) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant)
+        ) {
             Column(Modifier.padding(14.dp)) {
-                Text("Your Data, Your Responsibility", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                Text(
+                    "Your Data, Your Responsibility",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp,
+                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
+                )
                 Spacer(Modifier.height(4.dp))
-                Text("Sharing a document or exporting a backup ZIP (password optional) can move files off this phone to another app or folder you choose. An unprotected ZIP contains readable document bytes. Once data leaves this device, it is subject to that destination's policies.", fontSize = 12.sp, color = Color(0xFF1A237E))
+                Text(
+                    "Sharing a document or exporting a backup ZIP (password optional) can move files off this phone to another app or folder you choose. An unprotected ZIP contains readable document bytes. Once data leaves this device, it is subject to that destination's policies.",
+                    fontSize = 12.sp,
+                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
 
         Spacer(Modifier.height(12.dp))
 
         // Section 3: Privacy
-        Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = Color(0xFFE8F5E9))) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant)
+        ) {
             Column(Modifier.padding(14.dp)) {
-                Text("Privacy", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                Text(
+                    "Privacy",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp,
+                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
+                )
                 Spacer(Modifier.height(4.dp))
-                Text("This application has no intent to collect, access, or transmit your personal documents or their content. Your papers stay encrypted on this phone. Only you can open them. Nothing is sent off the device unless you share or archive it.", fontSize = 12.sp, color = Color(0xFF1B5E20))
+                Text(
+                    "This application has no intent to collect, access, or transmit your personal documents or their content. Your papers stay encrypted on this phone. Only you can open them. Nothing is sent off the device unless you share or archive it.",
+                    fontSize = 12.sp,
+                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
 
         Spacer(Modifier.height(12.dp))
 
         // Section 4: Telemetry
-        Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = Color(0xFFF3E5F5))) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant)
+        ) {
             Column(Modifier.padding(14.dp)) {
-                Text("Usage Telemetry (Optional)", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                Text(
+                    "Usage Telemetry (Optional)",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp,
+                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
+                )
                 Spacer(Modifier.height(4.dp))
-                Text("To improve the app experience, the developer may collect anonymous usage telemetry such as: which screens are visited, which features are used, and timing of operations. This data contains NO document content, personal information, or file names. Telemetry is entirely optional and requires your explicit consent below.", fontSize = 12.sp, color = Color(0xFF4A148C))
+                Text(
+                    "To improve the app experience, the developer may collect anonymous usage telemetry such as: which screens are visited, which features are used, and timing of operations. This data contains NO document content, personal information, or file names. Telemetry is entirely optional and requires your explicit consent below.",
+                    fontSize = 12.sp,
+                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
 

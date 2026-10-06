@@ -277,6 +277,7 @@ object BackupRestore {
                 return RestoreResult(false, filesProcessed, filesRestored, filesFailedVerification, msg, reportLines.joinToString("\n"))
             }
             rollback.delete()
+            RoomDbFiles.invalidateDatabase(context)
             val msg = "Restored $filesRestored of $filesProcessed documents"
             DebugLogger.i("Restore", msg)
             return RestoreResult(true, filesProcessed, filesRestored, filesFailedVerification, msg, reportLines.joinToString("\n"))

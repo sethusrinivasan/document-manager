@@ -191,6 +191,7 @@ class BatchImportViewModel @Inject constructor(
         val files = mutableListOf<FileToImport>()
         val root = DocumentFile.fromTreeUri(context, treeUri) ?: return files
         for (child in root.listFiles()) {
+            if (files.size >= MAX_FOLDER_FILES) break
             if (child.isDirectory) {
                 if (includeSubfolders) {
                     val pathTags = mutableListOf<String>()
@@ -206,8 +207,11 @@ class BatchImportViewModel @Inject constructor(
         }
         return files
     }
+
     private fun collectFilesRecursive(dir: DocumentFile, out: MutableList<FileToImport>, pathTags: List<String>) {
+        if (out.size >= MAX_FOLDER_FILES) return
         for (child in dir.listFiles()) {
+            if (out.size >= MAX_FOLDER_FILES) break
             if (child.isDirectory) {
                 val folderName = child.name?.trim()?.takeIf { it.isNotEmpty() }
                 val deeperTags = if (folderName != null) pathTags + folderName else pathTags

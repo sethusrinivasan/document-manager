@@ -44,10 +44,18 @@ fun TagMark(
         )
     } else {
         Box(
-            Modifier.size(size).clip(shape).background(Color(0xFFE8EEF5)),
+            Modifier
+                .size(size)
+                .clip(shape)
+                .background(androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant),
             contentAlignment = Alignment.Center
         ) {
-            Icon(Icons.Filled.Folder, tagName, tint = Color(0xFF5C6B7A), modifier = Modifier.size(size * 0.55f))
+            Icon(
+                Icons.Filled.Folder,
+                tagName,
+                tint = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(size * 0.55f)
+            )
         }
     }
 }
@@ -75,10 +83,17 @@ fun TagCover(
             )
         } else {
             Box(
-                Modifier.fillMaxSize().background(Color(0xFFE8EEF5)),
+                Modifier
+                    .fillMaxSize()
+                    .background(androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Filled.Folder, tagName, tint = Color(0xFF5C6B7A), modifier = Modifier.size(icon))
+                Icon(
+                    Icons.Filled.Folder,
+                    tagName,
+                    tint = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(icon)
+                )
             }
         }
     }
