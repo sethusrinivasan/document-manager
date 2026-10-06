@@ -29,7 +29,7 @@ allprojects {
                 "io.netty:netty-resolver:4.1.137.Final",
                 "io.netty:netty-transport-native-unix-common:4.1.137.Final",
                 "io.opentelemetry:opentelemetry-api:1.62.0",
-                "org.bitbucket.b_c:jose4j:0.9.6",
+                "org.bitbucket.b_c:jose4j:0.9.7",
                 "org.jdom:jdom2:2.0.6.1"
             )
         }
