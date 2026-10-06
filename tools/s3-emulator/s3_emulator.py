@@ -40,11 +40,25 @@ class S3EmulatorHandler(BaseHTTPRequestHandler):
         sys.stderr.write(f"[{datetime.now().isoformat()}] {format % args}\n")
 
     def _get_storage_path(self, bucket, key=""):
-        """Get the filesystem path for a bucket/key."""
-        base = Path(STORAGE_DIR) / bucket
-        if key:
-            return base / key
-        return base
+        """Get the filesystem path for a bucket/key with strict path traversal validation."""
+        safe_root = os.path.realpath(STORAGE_DIR)
+        safe_root_prefix = safe_root + os.sep
+
+        safe_bucket = os.path.basename(bucket.strip("/\\")) or DEFAULT_BUCKET
+        bucket_dir = os.path.realpath(os.path.join(safe_root, safe_bucket))
+
+        if not key:
+            if bucket_dir.startswith(safe_root_prefix):
+                return Path(bucket_dir)
+            raise ValueError("Invalid bucket path")
+
+        norm_key = os.path.normpath(key).lstrip("/\\")
+        target_path = os.path.realpath(os.path.join(bucket_dir, norm_key))
+        bucket_prefix = bucket_dir + os.sep
+
+        if target_path.startswith(bucket_prefix):
+            return Path(target_path)
+        raise ValueError("Invalid object path")
 
     def _parse_path(self):
         """Parse the request path into bucket and key."""
@@ -71,13 +85,13 @@ class S3EmulatorHandler(BaseHTTPRequestHandler):
             self._send_error(403, "InvalidAccessKeyId", "The access key does not match.")
             return False
 
-        # Check Authorization header
+        # Check Authorization header (deterministic parsing to avoid polynomial regex)
         auth_header = self.headers.get("Authorization", "")
         if auth_header.startswith("AWS4-HMAC-SHA256"):
             # Extract credential from: AWS4-HMAC-SHA256 Credential=key/date/region/s3/aws4_request, ...
-            match = re.search(r"Credential=([^/]+)/", auth_header)
-            if match:
-                access_key = match.group(1)
+            if "Credential=" in auth_header:
+                cred_part = auth_header.split("Credential=", 1)[1]
+                access_key = cred_part.split("/", 1)[0].strip()
                 if access_key == self.server.access_key:
                     return True
                 self._send_error(403, "InvalidAccessKeyId", "The access key does not match.")
@@ -124,7 +138,11 @@ class S3EmulatorHandler(BaseHTTPRequestHandler):
 
         # Create bucket (PUT /bucket with no key)
         if not key:
-            bucket_path = self._get_storage_path(bucket)
+            try:
+                bucket_path = self._get_storage_path(bucket)
+            except ValueError:
+                self._send_error(400, "InvalidBucketName", "Invalid bucket name.")
+                return
             bucket_path.mkdir(parents=True, exist_ok=True)
             self.send_response(200)
             self.send_header("Content-Length", "0")
@@ -132,7 +150,13 @@ class S3EmulatorHandler(BaseHTTPRequestHandler):
             return
 
         # Upload object
-        bucket_path = self._get_storage_path(bucket)
+        try:
+            bucket_path = self._get_storage_path(bucket)
+            object_path = self._get_storage_path(bucket, key)
+        except ValueError:
+            self._send_error(400, "InvalidURI", "Invalid bucket or object path.")
+            return
+
         if not bucket_path.exists():
             self._send_error(404, "NoSuchBucket", f"The bucket '{bucket}' does not exist.")
             return
@@ -140,7 +164,6 @@ class S3EmulatorHandler(BaseHTTPRequestHandler):
         content_length = int(self.headers.get("Content-Length", 0))
         body = self.rfile.read(content_length) if content_length > 0 else b""
 
-        object_path = self._get_storage_path(bucket, key)
         object_path.parent.mkdir(parents=True, exist_ok=True)
         object_path.write_bytes(body)
 
@@ -164,7 +187,12 @@ class S3EmulatorHandler(BaseHTTPRequestHandler):
             self._list_all_buckets()
             return
 
-        bucket_path = self._get_storage_path(bucket)
+        try:
+            bucket_path = self._get_storage_path(bucket)
+        except ValueError:
+            self._send_error(400, "InvalidBucketName", "Invalid bucket name.")
+            return
+
         if not bucket_path.exists():
             self._send_error(404, "NoSuchBucket", f"The bucket '{bucket}' does not exist.")
             return
@@ -175,7 +203,12 @@ class S3EmulatorHandler(BaseHTTPRequestHandler):
             return
 
         # Get object
-        object_path = self._get_storage_path(bucket, key)
+        try:
+            object_path = self._get_storage_path(bucket, key)
+        except ValueError:
+            self._send_error(400, "InvalidURI", "Invalid object path.")
+            return
+
         if not object_path.exists() or object_path.is_dir():
             self._send_error(404, "NoSuchKey", f"The specified key '{key}' does not exist.")
             return
@@ -202,9 +235,16 @@ class S3EmulatorHandler(BaseHTTPRequestHandler):
             self._send_error(400, "InvalidBucketName", "Bucket name is required.")
             return
 
+        try:
+            bucket_path = self._get_storage_path(bucket)
+        except ValueError:
+            self.send_response(400)
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+            return
+
         if not key:
             # HEAD bucket
-            bucket_path = self._get_storage_path(bucket)
             if bucket_path.exists():
                 self.send_response(200)
                 self.send_header("Content-Length", "0")
@@ -216,7 +256,14 @@ class S3EmulatorHandler(BaseHTTPRequestHandler):
             return
 
         # HEAD object
-        object_path = self._get_storage_path(bucket, key)
+        try:
+            object_path = self._get_storage_path(bucket, key)
+        except ValueError:
+            self.send_response(400)
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+            return
+
         if not object_path.exists() or object_path.is_dir():
             self.send_response(404)
             self.send_header("Content-Length", "0")
@@ -244,9 +291,14 @@ class S3EmulatorHandler(BaseHTTPRequestHandler):
             self._send_error(400, "InvalidBucketName", "Bucket name is required.")
             return
 
+        try:
+            bucket_path = self._get_storage_path(bucket)
+        except ValueError:
+            self._send_error(400, "InvalidBucketName", "Invalid bucket name.")
+            return
+
         if not key:
             # Delete bucket (only if empty)
-            bucket_path = self._get_storage_path(bucket)
             if not bucket_path.exists():
                 self._send_error(404, "NoSuchBucket", f"The bucket '{bucket}' does not exist.")
                 return
@@ -260,7 +312,14 @@ class S3EmulatorHandler(BaseHTTPRequestHandler):
             return
 
         # Delete object
-        object_path = self._get_storage_path(bucket, key)
+        try:
+            object_path = self._get_storage_path(bucket, key)
+        except ValueError:
+            self.send_response(204)
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+            return
+
         if object_path.exists() and not object_path.is_dir():
             object_path.unlink()
 
@@ -299,7 +358,11 @@ class S3EmulatorHandler(BaseHTTPRequestHandler):
 
     def _list_bucket(self, bucket, query_params):
         """List objects in a bucket (supports list-type=2 for ListObjectsV2)."""
-        bucket_path = self._get_storage_path(bucket)
+        try:
+            bucket_path = self._get_storage_path(bucket)
+        except ValueError:
+            self._send_error(400, "InvalidBucketName", "Invalid bucket name.")
+            return
         prefix = query_params.get("prefix", [""])[0]
         delimiter = query_params.get("delimiter", [""])[0]
         max_keys = int(query_params.get("max-keys", ["1000"])[0])
@@ -486,7 +549,8 @@ def main():
 
     print(f"\nS3 Emulator running on http://localhost:{args.port}")
     print(f"  Access Key: {args.access_key}")
-    print(f"  Secret Key: {args.secret_key}")
+    masked_secret = "*" * 8 if args.secret_key else "None"
+    print(f"  Secret Key: {masked_secret}")
     print(f"  Storage:    {os.path.abspath(STORAGE_DIR)}")
     print(f"  Region:     {DEFAULT_REGION}")
     print(f"  Bucket:     {DEFAULT_BUCKET}")

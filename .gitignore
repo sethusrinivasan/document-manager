@@ -23,3 +23,7 @@ app/src/main/java/com/app/paperstow/debug/debug_logs/
 # Build artifacts
 build_output.txt
 logs/
+
+# Python
+__pycache__/
+*.py[cod]

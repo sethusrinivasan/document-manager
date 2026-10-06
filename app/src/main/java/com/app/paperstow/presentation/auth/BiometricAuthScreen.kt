@@ -64,7 +64,8 @@ private fun launchBiometric(activity: FragmentActivity, onSuccess: () -> Unit, o
     val executor = ContextCompat.getMainExecutor(activity)
     val callback = object : BiometricPrompt.AuthenticationCallback() {
         override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-            DebugLogger.i("BiometricAuth", "Authentication SUCCESS")
+            val crypto = result.cryptoObject
+            DebugLogger.i("BiometricAuth", "Authentication SUCCESS (crypto=${crypto?.cipher?.algorithm ?: "none"})")
             onSuccess()
         }
         override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
