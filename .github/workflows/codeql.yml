@@ -60,7 +60,7 @@ jobs:
     - name: Build for CodeQL
       run: |
         chmod +x gradlew
-        ./gradlew compileDebugSources --no-daemon
+        ./gradlew clean compileDebugSources --no-build-cache --rerun-tasks --no-daemon
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v4
