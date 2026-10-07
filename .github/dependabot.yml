@@ -33,6 +33,9 @@ updates:
         versions: [">=2026.08.00"]
       - dependency-name: "androidx.hilt:hilt-navigation-compose"
         versions: [">=1.4.0"]
+      # Netty 4.2.x has breaking API changes incompatible with gRPC 1.57. Stay on 4.1.x LTS.
+      - dependency-name: "io.netty:*"
+        versions: [">=4.2.0"]
     groups:
       androidx:
         patterns:
