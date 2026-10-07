@@ -166,7 +166,7 @@ jobs:
         ls -la artifacts/
 
     - name: Upload Artifacts to Workflow Run
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: paperstow-build-${{ env.VERSION_NAME }}
         path: artifacts/
