@@ -20,7 +20,7 @@ allprojects {
                 "org.apache.commons:commons-compress:1.28.0",
                 "io.netty:netty-codec:4.1.137.Final",
                 "io.netty:netty-codec-http:4.1.137.Final",
-                "io.netty:netty-codec-http2:4.1.137.Final",
+                "io.netty:netty-codec-http2:4.1.141.Final",
                 "io.netty:netty-common:4.1.137.Final",
                 "io.netty:netty-buffer:4.1.137.Final",
                 "io.netty:netty-transport:4.1.137.Final",
