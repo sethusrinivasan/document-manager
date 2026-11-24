@@ -128,7 +128,7 @@ configurations.configureEach {
             "io.netty:netty-buffer:4.1.137.Final",
             "io.netty:netty-transport:4.1.137.Final",
             "io.netty:netty-handler:4.1.137.Final",
-            "io.netty:netty-handler-proxy:4.1.137.Final",
+            "io.netty:netty-handler-proxy:4.1.141.Final",
             "io.netty:netty-resolver:4.1.137.Final",
             "io.netty:netty-transport-native-unix-common:4.1.137.Final",
             "io.opentelemetry:opentelemetry-api:1.62.0",
@@ -198,7 +198,7 @@ dependencies {
         implementation("io.netty:netty-buffer:4.1.137.Final")
         implementation("io.netty:netty-transport:4.1.137.Final")
         implementation("io.netty:netty-handler:4.1.137.Final")
-        implementation("io.netty:netty-handler-proxy:4.1.137.Final")
+        implementation("io.netty:netty-handler-proxy:4.1.141.Final")
         implementation("io.netty:netty-resolver:4.1.137.Final")
         implementation("io.netty:netty-transport-native-unix-common:4.1.137.Final")
         implementation("io.opentelemetry:opentelemetry-api:1.62.0")
