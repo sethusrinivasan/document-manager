@@ -121,7 +121,7 @@ configurations.configureEach {
             "org.bouncycastle:bcpkix-jdk18on:1.86",
             "org.bouncycastle:bcpg-jdk18on:1.86",
             "org.apache.commons:commons-compress:1.28.0",
-            "io.netty:netty-codec:4.1.137.Final",
+            "io.netty:netty-codec:4.1.141.Final",
             "io.netty:netty-codec-http:4.1.137.Final",
             "io.netty:netty-codec-http2:4.1.137.Final",
             "io.netty:netty-common:4.1.137.Final",
@@ -191,7 +191,7 @@ dependencies {
         implementation("org.bouncycastle:bcpkix-jdk18on:1.86")
         implementation("org.bouncycastle:bcpg-jdk18on:1.86")
         implementation("org.apache.commons:commons-compress:1.28.0")
-        implementation("io.netty:netty-codec:4.1.137.Final")
+        implementation("io.netty:netty-codec:4.1.141.Final")
         implementation("io.netty:netty-codec-http:4.1.137.Final")
         implementation("io.netty:netty-codec-http2:4.1.137.Final")
         implementation("io.netty:netty-common:4.1.137.Final")
