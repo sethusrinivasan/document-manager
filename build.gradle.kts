@@ -14,7 +14,7 @@ allprojects {
                 "com.google.code.gson:gson:2.14.0",
                 "com.google.protobuf:protobuf-java:3.25.5",
                 "com.google.protobuf:protobuf-kotlin:3.25.5",
-                "org.bouncycastle:bcprov-jdk18on:1.86",
+                "org.bouncycastle:bcprov-jdk18on:1.87",
                 "org.bouncycastle:bcpkix-jdk18on:1.86",
                 "org.bouncycastle:bcpg-jdk18on:1.86",
                 "org.apache.commons:commons-compress:1.28.0",
