@@ -118,7 +118,7 @@ configurations.configureEach {
             "com.google.protobuf:protobuf-java:3.25.5",
             "com.google.protobuf:protobuf-kotlin:3.25.5",
             "org.bouncycastle:bcprov-jdk18on:1.86",
-            "org.bouncycastle:bcpkix-jdk18on:1.86",
+            "org.bouncycastle:bcpkix-jdk18on:1.87",
             "org.bouncycastle:bcpg-jdk18on:1.86",
             "org.apache.commons:commons-compress:1.28.0",
             "io.netty:netty-codec:4.1.137.Final",
@@ -188,7 +188,7 @@ dependencies {
         implementation("com.google.protobuf:protobuf-java:3.25.5")
         implementation("com.google.protobuf:protobuf-kotlin:3.25.5")
         implementation("org.bouncycastle:bcprov-jdk18on:1.86")
-        implementation("org.bouncycastle:bcpkix-jdk18on:1.86")
+        implementation("org.bouncycastle:bcpkix-jdk18on:1.87")
         implementation("org.bouncycastle:bcpg-jdk18on:1.86")
         implementation("org.apache.commons:commons-compress:1.28.0")
         implementation("io.netty:netty-codec:4.1.137.Final")
